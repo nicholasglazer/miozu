@@ -1,0 +1,451 @@
+#+title: my whole system config and install guide
+
+*This may be handy [[https://wiki.archlinux.org/index.php/ASUS_Zenbook_Pro_UX501][Zenbook Pro UX501VM]]*
+** Installing Arch
+*** Live usb
+I assumed that you'r already have bootable flash drive.
+If not check [[https://wiki.archlinux.org/index.php/disk_cloning][dd]] and official website for arch [[https://www.archlinux.org/download/][downloading]].
+*** BIOS config
+So the first step will be to load the flash drive. 
+You will need to change the boot priority in BIOS. So just after reboot press 'F2' or 'delete' to see the BIOS menu.
+*** Kernel boot options
+To avoid problems with tiny fonts or fan speed, we should run the new install with kernel option which will disable console frame buffer.
+To do so: select the first option, press 'E', type 'nomodeset' in the very beginning of the line and press 'Enter'
+*** Changing layout
+My keyboard layout is [[https://wiki.archlinux.org/index.php/Dvorak][dvorak]]. So my first step will be changing keyboard layout: 
+'loadkeys dvorak'
+If you'r using 'querty' just skip this step.
+*** Network connection
+After archiso boot we want to connect to the internet: 'wifi-menu'
+Now lets check the connection:
+$ ping -c 3 www.google.com
+*** Lets make sure we're using [[https://wiki.archlinux.org/index.php/Unified_Extensible_Firmware_Interface][UEFI]] mode
+$ efivar -l
+If output have some variables, everything is fine.
+*** Partition scheme (more explanation in SSD)
+Good. Now lets use 'lsblk' to see your partition scheme.
+$ lsblk
+
+In most cases you will see at least 2 drives. I have 3 drives:
+sda      8:0    0 119.2G  0 disk                              *SSD*
+├─sda1   8:1    0     1G  0 part /boot
+├─sda2   8:2    0    80G  0 part /
+└─sda3   8:3    0  38.2G  0 part 
+sdb      8:16   0 931.5G  0 disk                              *HDD*
+├─sdb1   8:17   0   400G  0 part /home
+├─sdb2   8:18   0    24G  0 part [SWAP]
+├─sdb3   8:19   0   300G  0 part 
+└─sdb4   8:20   0 207.5G  0 part 
+sdc      8:32   1   7.5G  0 disk                              *Flash Drive*
+└─sdc1   8:33   1   7.5G  0 part 
+
+*NB* I decided to make dual boot with Windows 10 only for games or other weired stuff like photoshop. And I don't rly want to use wine.
+So if you want just clean arch install, ignore Windows steps.
+
+**** So lets start partitioning
+$ gdisk /dev/sda
+
+Press 'enter' first, then 'x' for advanced config and 'z' for zap.
+*NB* this may destroy data on your disk
+
+***** SSD
+For my root I set 80G, you will be fine even with 30G. So if you may want to devide space for more 'roots', like other distros(ubuntu, fedora, etc..), 30G should be enough.
+I left *sda3* for Windows. I will make double boot later.
+
+sda1 - 1g   EF00 boot
+sda2 - 80g  8300 root
+sda3 - else 0700 (this one is for future Windows install)
+***** HHD
+And sdb(HDD) I will use as home for user files( movies, music, pics, ect...).
+*sdb2* depends on your RAM quantity. Usually you should take 1.5 of your RAM.
+Notice that *sdb3* I set as 0700 and it will contain Windows files
+*sdb4* you can use however you want
+
+sdb1 - 400g 8300 home (linux filesystem)
+sdb2 -  24g 8200 swap (1.5 of my RAM memory[16G])
+sdb3 - 300g 0700 whome(microsoft basic data)
+sbd4 - else 207.5g 8300 (just in case I will mount /var or install another linux there, so if you don't need 3d system, just ignore this)
+*** Assigning file system to drives
+Boot need to be Fat32 as UEFI requirement.
+***** /boot
+$ mkfs.fat -F32 /dev/sda1
+***** SWAP
+$ mkswap /dev/sdb2
+***** Linux
+$ mkfs.ext4 /dev/sda2
+$ mkfs.ext4 /dev/sdb1
+$ mkfs.ext4 /dev/sdb4
+
+If there is something like (/dev/sda2 contains a ext4 file system, you should press 'y')
+*** Mounting partitions
+***** So first what we want to do is assign /mnt to our root partiton
+mount /dev/sda2 /mnt
+***** Next we need to create some new folders in our /mnt
+mkdir /mnt/boot
+mkdir /mnt/home
+***** So lets mount this folders
+mount /dev/sda1 /mnt/boot
+mount /dev/sdb1 /mnt/home
+***** And enable swap
+swapon /dev/sdb2
+*** Mirrorlist
+I prefer to download files fast, that why I want to use fastest mirrors.
+For detailed commands explanation check [[https://wiki.archlinux.org/index.php/mirrors#List_by_speed][wiki]]
+**** Backup
+$ cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
+**** Uncommenting
+$ sed -i 's/^#Server/Server/' /etc/pacman.d/mirrorlist.backup
+**** Ranking
+$ rankmirrors -n 6 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
+**** Update
+After mirrors ranked we should [[https://wiki.archlinux.org/index.php/mirrors#Force_pacman_to_refresh_the_package_lists][let arch know about them]]
+$ sudo pacman -Syyu
+
+*NB* If ranking process was very fast(<1min), you should check if your internet connection is available.
+The process may take up to 10 min.
+*** Arch base files
+Ok, now lets install base packages to our '/' root.
+In this step you may want to install also some useful packages you will need while installing system like *git* or *wget*
+$ pacstrap -i /mnt base base-devel git
+Press 'enter' and agree with everything.
+*** Generate and edit fstab file
+**** Generate
+$ genfstab -U -p /mnt >> /mnt/etc/fstab
+**** Enable [[https://ru.wikipedia.org/wiki/TRIM][TRIM]] (for SSD) 
+$ nano /mnt/etc/fstab
+
+*NB* In case your swap is on SSD. Change defaults to defaults,discard:
+/dev/sdX none swap defaults,discard 0 0
+
+=P.S= While this is first editing with [[https://wiki.archlinux.org/index.php/nano][nano]]. You should know at least how to exit it. So save and exit with ctrl+o(save), ctrl+x(exit)
+=P.P.S= You can also write down your root UUID '/'. It will be useful later in [[https://wiki.archlinux.org/index.php/systemd-boot#Standard_root_installations][bootloader]] step.
+*** Chroot into system
+Lets enter the system.
+$ arch-chroot /mnt
+*** Vim
+My next step will be installing [[https://wiki.archlinux.org/index.php/vim][vim]] text editor.
+If you'r not familiar with vim and you don't have time to learn this great console editor, just skip this step and continue using *nano*
+$ pacman -S vim
+=Vim tips=
+***** Press 'esc' to make sure you are in *command mode*
+***** For search press '/' and type 'en_US.UTF-8'
+***** Press 'enter' and go into the *insert mode* by pressing 'i' (now you can type), so delete comments '#'
+***** Save and exit; type ':qw' (you will see letters in a very bottom)
+*** Locale
+$ vim /etc/locale.gen
+$ locale-gen
+$ echo LANG=en_US.UTF-8 > /etc/locale.conf
+$ export LANG=en_US.UTF-8
+*** Localtime
+Replace *Israel* with your country. You may also want to 'ls /usr/share/zoneinfo/' first.
+$ ln -s /usr/share/zoneinfo/Israel > /etc/localtime
+*** Hardware clock
+$ hwclock --systohc -–utc
+*** Hostname
+***** Basic method (working in arch-chroot)
+[[https://en.wikipedia.org/wiki/Hostname][Hostname]] is a unique name created to identify a machine on a network.
+Replace uniquename with anything you want 
+$ echo uniquename > /etc/hostname
+
+*NB* Later you will see something like user@uniquename
+***** Generate with hostnamectl (*not working in arch-chroot!*)
+$ hostnamectl set-hostname myhostname
+*** Add repositories
+Enabling multilib and Arch AUR community repositories.
+If you are running a 64bit system then you need to enable the multilib repository. 
+**** To do this open the pacman.conf file:
+$ vim /etc/pacman.conf
+**** Modifying
+***** Uncomment
+#[multilib]
+#Include = /etc/pacman.d/mirrorlist
+***** While we are still inside pacman.conf file
+Let’s also add the AUR repo so we can easily install packages from AUR. 
+Add these lines at the bottom of the file:
+
+[archlinuxfr]
+Server = http://repo.archlinux.fr/$arch
+SigLevel = Never
+
+Also you may want to add infinality lib:
+
+[infinality-bundle-fonts]
+Server = http://bohoomil.com/repo/fonts
+SigLevel = Never
+
+***** And update 
+$ pacman -Syyu
+*** Deps
+Lets install some imortant dependecies
+$ sudo pacman -S yaourt zsh emacs rfkill unzip openssh
+$ yaourt -S htop powertop lm_sensors termite
+*** Passwords
+***** Root
+$ passwd
+***** User
+****** First we need to add one:
+Replace *username* with one preffered by you:
+$ useradd -m -g users -G wheel,storage,power -s /bin/zsh username
+****** and set password for new user
+$ passwd username
+*** Sudoers
+$ EDITOR=vim visudo
+and we should uncomment this line - '%wheel ALL=(ALL) ALL'
+*NB* This system will be only for my own usage. 
+If you are using server or someone else have access to the wheel group. You may want to require sudoers to type root password, instead of their own.
+In this case add this line 'Defaults rootpw'
+*** Bootloader
+***** checking EFI
+@gloriouseggroll recommended to double check if our EFI variables have already been mounted
+$ mount -t efivarfs efivarfs /sys/firmware/efi/efivars
+You will see something like "efivarfs is already mounted", this means everything is fine.
+***** boot manager
+So the [[https://wiki.archlinux.org/index.php/systemd-boot#Standard_root_installations][systemd-boot]] is a replacement for [[https://wiki.archlinux.org/index.php/GRUB][grub]].
+$ bootctl install
+***** root UUID
+Do you remember I told you to write down your UUID of a root partition?
+If you didn't write it somewhere, type this:
+$ blkid -s PARTUUID -o value /dev/sdxY
+Where ‘x’ is the device letter and ‘Y’ is the partition number for the root partition.
+=P.S.= In my case I have root folder in sda2
+***** [[https://wiki.archlinux.org/index.php/systemd-boot#Standard_root_installations][ker]]nel config file (add more description about intel and nvidia)
+****** Update [[https://wiki.archlinux.org/index.php/microcode#systemd-boot][microcode]] to avoid freezes
+$ pacman -S intel-ucode
+****** lets create a conf file
+$ vim /boot/loader/entries/arch.conf
+****** and write down 
+*ATTENTION* The root options are very delicate part, you should double check them for your laptop model. For [[https://wiki.archlinux.org/index.php/ASUS_Zenbook_Pro_UX501][Zenbook Pro UX501VM]] I have this options working properly.
+title Arch Linux
+linux /vmlinuz-linux
+initrd /intel-ucode.img
+initrd /initramfs-linux.img
+options root=PARTUUID=write_down_root_UUID_here rw i915.preliminary_hw_support=1 intel_idle.max_cstate=1 i915.enable_execlists=0 acpi_osi= acpi_backlight=native quiet
+*** Network
+**** General
+***** Checking drivers
+Lets see our drivers, what we need is *Network controller*
+$ lspci -k
+$ ip link
+***** And lets bring the interface up:
+It usually starts with 'w', in my case I have 'wlp3s0', so:
+$ ip link set wlp3s0 up
+
+=Tip= You can check [[https://wiki.archlinux.org/index.php/Wireless_network_configuration#Check_the_driver_status][more]] commands if you have any problems.
+
+I'm using [[https://wiki.archlinux.org/index.php/Connman][connman]], so there are few other options [[https://wiki.archlinux.org/index.php/netctl#Installation][netctl]], [[https://wiki.archlinux.org/index.php/NetworkManager][NetworkManager]], [[https://wiki.archlinux.org/index.php/Wicd][Wicd]], [[https://wiki.archlinux.org/index.php/systemd-networkd][systemd-networkd]]. Last one preffered if you want manually to control the network connection.
+**** Connman
+So connman itself a command-line network manager.
+[[https://github.com/wavexx/connman-notify#why-connman][Why should I use it?]]
+
+$ sudo pacman -S connman wpa_supplicant connman_dmenu-git connman-notify
+
+***** Make sure you disable everything that can be in conflict
+$ sudo systemctl disable netctl.service / NetworkManager.service / dhcpcd.service
+
+**** If Netctl
+I felt some pain with ntectl bugs, trying to configure everything to work properly takes too much time. But just in case you still need/want this one.
+***** Installing drivers
+$ pacman -S wpa_actiond wpa_supplicant dhclient dialog
+***** Default DHCP client
+I've had issues with connections, and 'dhclient' solved them.
+
+$ sudo vim /etc/netctl/dhcp
+
+#!/bin/sh
+DHCPClient='dhclient'
+***** Issues
+I had iwlwifi [[https://bbs.archlinux.org/viewtopic.php?id=213363][bug]] and [[https://wiki.archlinux.org/index.php/Wireless_network_configuration#iwlwifi][iwlwifi.conf]] just in case
+*** Drivers
+**** Touchpad
+For touchpad *tapping* use [[https://wiki.archlinux.org/index.php/Libinput#Touchpad_tapping][t]]his X11/xorg.conf.d/30-touchpad.conf
+$ sudo pacman -S xf86-input-libinput
+
+*$xmodmap -pke* will add more comments later
+**** Video *(more explanation later)
+*NB* Be careful, this part may cause problems if you don't know what you are doing. Read [[https://wiki.archlinux.org/index.php/bumblebee#Installing_Bumblebee_with_Intel.2FNVIDIA][bumblebee]] article first.
+****** install deps
+$ sudo pacman -S bumblebee mesa xf86-video-intel nvidia lib32-virtualgl lib32-nvidia-utils lib32-mesa-libgl
+pick mesa-libgl if conflict as in bumblebee installation guide
+pick xf86-input-libinput if conflict for [[https://wiki.archlinux.org/index.php/ASUS_Zenbook_Pro_UX501#Touch_Pad][touch pad]] working properly
+****** Add username to bumblebee group
+Change USER with your username
+$ gpasswd -a USER bumblebee
+****** enable bumblebee
+$ systemctl enable bumblebeed.service
+**** Audio 
+[[https://wiki.archlinux.org/index.php/Advanced_Linux_Sound_Architecture#Installation][ALSA]] is a set of buit-in kernel modules,, but after install it may be muted. 
+***** So lets install utils and manage it:
+$ sudo pacman -S alsa-lib alsa-utils [[https://wiki.archlinux.org/index.php/PulseAudio#Installation][pulseaudio]]
+***** And now lets unmute
+$ alsamixer
+For more details see: [[https://wiki.archlinux.org/index.php/Advanced_Linux_Sound_Architecture#Unmute_with_alsamixer][#unmute with alsamixer]]
+***** We can test it
+$ speaker-test -c 2
+*** Reboot
+So now we can reboot:
+$ exit
+$ umount -R /mnt
+$ reboot
+** Desktop
+*** X server
+$ sudo pacman -S xorg-server xorg-server-utils xorg-xbacklight xbindkeys xorg-xinit xorg-xinput xorg-twm xorg-xclock xterm xdotool
+**** xinit
+***** So first we need to check if we have [[https://wiki.archlinux.org/index.php/Xinit#xinitrc][xinitrc]] file in our user directory.
+$ cat ~/.xinitrc
+***** If not we should create or copy it:
+$ sudo touch ~/. Xinitrc
+***** Or we can just copy it from X11/xinit folder
+$ cp /etc/X11/xinit/xinitrc ~/.xinitrc
+***** don't forget to make it executable
+$ sudo chmod +x ~/.xinitrc
+***** I want to load dvorak layout each time my system is loading:
+setxkbmap dvorak &&
+***** And lets execute wm
+Depending on [[https://wiki.archlinux.org/index.php/window_manager][window manager]] you choose, we should 'exec' it:
+'exec awesome'
+***** Recommendations
+ 'exit 0' in the very end.
+ To check if everything is working properly we can execute command 'startx'
+**** xkeybindings
+$ sudo pacman -S xbindkeys
+If not using *script* Create a default file using xbindkeys
+$ xbindkeys --defaults > $HOME/.xbindkeysrc
+Restart .xkeybindings 
+$ xbindkeys -p
+
+*** Login manager
+$ sudo pacman -S [[https://wiki.archlinux.org/index.php/SLiM#Configuration][slim]] 
+$ sudo systemctl enable slim.service
+$ sudo git clone https://github.com/naglis/slim-minimal.git /usr/share/slim/themes/slim-minimal
+$ sudo vim /etc/slim.conf
+default_user        me
+current_theme       slim-minimal
+=Tip= To enter console, type 'console' instead of name
+*** Display manager 
+If you had never used tilling wm's before, read this [[https://awesomewm.org/wiki/My_first_awesome#Change_the_theme][beginners guide]]
+$ sudo pacman -S [[https://wiki.archlinux.org/index.php/awesome][awesome]] vicious shifty
+***** Themes
+This one is pretty good, but seems too dark for me, maybe later I will use it.
+$ sudo git clone --recursive https://github.com/barwinco/pro /.config/awesome
+
+This is the current one I'm using now, basically its a bundle of themes, so you can switch them:
+cd ~/.config/awesome
+git clone --recursive https://github.com/copycat-killer/awesome-copycats.git
+*** Terminal *(more explanation needed)
+So the [[https://wiki.archlinux.org/index.php/Termite][termite]] is kind of vim based terminal, which you can control with a lot of useful vim keybindings.
+We already have [[https://wiki.archlinux.org/index.php/Xterm][xterm]] - simple but stable.
+$ sudo pacman -S termite w3m
+*** Keboard
+$sudo pacman -S [[https://wiki.archlinux.org/index.php/ASUS_Zenbook_Prime_UX31A#Using_asus-kbd-backlight_from_AUR][asus-kbd-backlight]]  
+To allow users to change the brightness, write:
+$ asus-kbd-backlight allowusers
+Enable service 
+$ systemctl daemon-reload
+$ systemctl start asus-kbd-backlight.service
+$ systemctl enable asus-kbd-backlight.service
+*** Power management 
+I will use [[https://wiki.archlinux.org/index.php/TLP][tlp]] tool for power management, also we already installed 'powertop'
+$ sudo pacman -S tlp acpi_call
+$ systemctl enable tlp.service
+$ systemctl enable tlp-sleep.service
+*NB* Archwiki recommended to disable 'systemd-rfkill.service' to avoid conflicts.
+*** Fonts
+**** Infinality
+The [[https://wiki.archlinux.org/index.php/Infinality][infinality]] patchset aims to greatly improve font rendering in freetype2 and friends. It adds multiple new capabilities.
+***** adding keyring
+And if you skip the step with adding infinality lib into 'arch.conf', you should do this now.
+$ sudo pacman-key -r ID 962DDE58  
+ 
+If you don't need fonts and you already know which fonts you want to set, you may want to install 'infinality-bundle' for all goods
+$ yaourt -S infinality-bundle
+$ yaourt -S freetype2-infinality fontconfig-infinality
+***** if you want [[https://wiki.archlinux.org/index.php/Fonts#Font_packages][more fonts]] run:
+=Make sure you know what you are doing. A lot of fonts may trash your cache.=
+
+There is a good fonts for terminal [[https://github.com/powerline/fonts][powerline fonts]] .
+$ cd && git clone https://github.com/powerline/fonts.git && cd _$ && ./install
+This will install powerline fonts into your system.
+
+USEFUL
+you can check your font path with 
+$ xset q
+and update cache there
+$ fc-cache -vf ~/.local/share/fonts
+
+A huge collection of free fonts (including ubuntu, inconsolata, droid, etc.) 
+$ yaourt -S ttf-google-fonts-git
+*NB* Your font dialog might get very long as >100 fonts will be added and 250mb will be downloaded.
+***** picking preset
+Now lets configure your fonts
+$ sudo fc-presets set
+
+pick combi preset
+***** fontconfig parameters
+When you activate the combi preset, the content of 'custom' configuration files 
+(/etc/fonts/conf.avail.infinality/combi) can be changed.
+So I will change monospace and sans-serif to 'Roboto'
+When you are done, do not forget to create a backup copy of the 'combi' directory.
+
+=Tip= To see all installed fonts:
+$ fc-list : file
+
+*NB* The README for fontconfig-infinality says that '/etc/fonts/local.conf' should either not exist, or have no infinality-related configurations in it. The local.conf is now obsolete and completely replaced by this configuration.
+***** realtime font preview
+$ yaourt -S grip-git
+and run
+$ g
+*** emacs *(more explanation needed)
+=Tip= Be aware of [[https://wiki.archlinux.org/index.php/Infinality#Emacs][Noto Font]].
+First time I didn't realized that this may cause a problem, so I just picked this Noto font and I can tell you that spacemacs is pretty ugly with this font family.
+***** So now I will install my IDE and configure it a bit
+$ sudo pacman -S emacs
+***** I'm using [[https://github.com/syl20bnr/spacemacs#introduction][spacemacs]] so lets install it
+
+$ git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d
+
+*** zsh
+$ git clone https://github.com/tarjoilija/zgen.git .zgen
+$ git clone https://github.com/unixorn/zsh-quickstart-kit.git
+
+ [[https://github.com/sorin-ionescu/prezto][prezto]]  
+***** So first we need to run zsh
+$ zsh
+***** clone prezto repo 
+$ git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
+***** Create a new Zsh configuration by copying the Zsh configuration files provided:
+$ setopt EXTENDED_GLOB
+$ for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
+    ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
+  done
+***** Set Zsh as your default shell:
+$ chsh -s /bin/zsh
+and open new window with zsh
+***** Themes
+****** Check themes list
+$ prompt -l
+****** To preview a theme
+Lest set the preffered one
+$ prompt -s adam2
+Load the theme you like in ~/.zpreztorc then open a new Zsh terminal window or tab.
+*** Media
+**** Browser
+$ yaourt -S chromium chromium-pepper-flash
+**** Video
+$ sudo pacman -S ffmpeg
+**** Broadcasting
+$ yaourt -S obs-studio
+**** Screenshots
+$ sudo yaourt -S [[https://github.com/naelstrof/maim][maim]] slop
+**** Audio
+$ sudo pacman -S lollypop cmus
+**** CPU
+For more explanations check this [[https://forums.opensuse.org/showthread.php/499036-How-do-I-set-the-CPU-Frequency-Governor-In-Opensuse-13-1?p=2650573#post2650573][link]] 
+$ sudo pacman -S cpupower
+$ sudo systemctl enable cpupower.service
+$ sudo systemctl start cpupower.service
+cpupower frequency-info
+**** Torrent tracker
+$ yaourt -S rtorrent-vi-color
+You may want to install '$ yaourt -S rtorrent' if you want rtorrent without vim keybindings
+** Config script
+*C* Dont forget to make infinality script for replacing combi folder
