@@ -321,24 +321,24 @@ Defaults rootpw
    #+END_SRC
    Where =x= is the device letter and =Y= is the partition number for the root partition.
    In my case I have root folder in sda2.
-- [[https://wiki.archlinux.org/index.php/systemd-boot#Standard_root_installations][Ker]]nel config file (add more description about intel and nvidia)
+- [[https://wiki.archlinux.org/index.php/systemd-boot#Standard_root_installations][Kernel]] config file (add more description about intel and nvidia)
   1) Update [[https://wiki.archlinux.org/index.php/microcode#systemd-boot][microcode]] to avoid freezes
-   #+BEGIN_SRC sh
-   sudo pacman -S intel-ucode
-   #+END_SRC
+     #+BEGIN_SRC sh
+     sudo pacman -S intel-ucode
+     #+END_SRC
   2) lets create a conf file
      #+BEGIN_SRC sh
      vim /boot/loader/entries/arch.conf
      #+END_SRC
   3) and write down
-   *ATTENTION* The root options are very delicate part, you should double check them for your laptop model. For [[https://wiki.archlinux.org/index.php/ASUS_Zenbook_Pro_UX501][Zenbook Pro UX501VM]] I have this options working properly.
-   #+BEGIN_SRC org
-   title Arch Linux
-   linux /vmlinuz-linux
-   initrd /intel-ucode.img
-   initrd /initramfs-linux.img
-   options root=PARTUUID=write_down_root_UUID_here rw i915.preliminary_hw_support=1 intel_idle.max_cstate=1 i915.enable_execlists=0 acpi_osi= acpi_backlight=native quiet
-   #+END_SRC
+     *ATTENTION* The root options are very delicate part, you should double check them for your laptop model. For [[https://wiki.archlinux.org/index.php/ASUS_Zenbook_Pro_UX501][Zenbook Pro UX501VM]] I have this options working properly.
+     #+BEGIN_SRC org
+     title Arch Linux
+     linux /vmlinuz-linux
+     initrd /intel-ucode.img
+     initrd /initramfs-linux.img
+     options root=PARTUUID=write_down_root_UUID_here rw i915.preliminary_hw_support=1 intel_idle.max_cstate=1 i915.enable_execlists=0 acpi_osi= acpi_backlight=native quiet
+     #+END_SRC
 *** Network
 **** General
 ***** Checking drivers
