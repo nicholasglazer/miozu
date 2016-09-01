@@ -137,12 +137,12 @@ For detailed commands explanation check [[https://wiki.archlinux.org/index.php/m
   cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
   #+END_SRC
 - Uncommenting
-#+BEGIN_SRC sh
- sed -i 's/^#Server/Server/' /etc/pacman.d/mirrorlist.backup
-#+END_SRC
+  #+BEGIN_SRC sh
+  sed -i 's/^#Server/Server/' /etc/pacman.d/mirrorlist.backup
+  #+END_SRC
 - Ranking
   #+BEGIN_SRC sh
- rankmirrors -n 6 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
+  rankmirrors -n 6 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
   #+END_SRC
 - Update
 After mirrors ranked we should [[https://wiki.archlinux.org/index.php/mirrors#Force_pacman_to_refresh_the_package_lists][let arch to know about them]].
@@ -188,16 +188,17 @@ If you'r not familiar with vim and you don't have time to learn this *great* con
 #+BEGIN_SRC sh
 pacman -S vim
 #+END_SRC
-Vim tips
+*Vim tips:*
 - Press =esc= to make sure you are in *command mode*.
 - For search press =/= and type:
-  #+BEGIN_SRC org
+  #+BEGIN_SRC sh
   en_US.UTF-8
   #+END_SRC
 - Press =enter= and go into the *insert mode*
-1) by pressing =i= (so now you can type)
-2) delete comments =#=
-- Save and exit; type =:qw= (you will see letters in a very bottom)
+  1) by pressing ~i~ (so now you can type)
+  2) delete comments =#=
+- Save and exit
+  type =:wq= (you will see this letters in a very bottom)
 *** Locale
 $ vim /etc/locale.gen
 $ locale-gen
