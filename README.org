@@ -82,6 +82,8 @@ I had left *sda3* for Windows. I will make double boot later.
 | sdb2 | 24g         |    8200 | swap  | 1.5 of my RAM memory[16G]                                     |
 | sdb3 | 300g        |    0700 | whome | microsoft basic data                                          |
 | sbd4 | else 207.5g |    8300 | -     | Just in case I will mount /var or install another linux there |
+
+
 *** Assigning file system to drives
 Boot need to be Fat32 as UEFI requirement.
 - /boot
@@ -104,20 +106,20 @@ If there is any warning like: ~/dev/sda2~ contains a ext4 file system, you shoul
   #+BEGIN_SRC sh
   mount /dev/sda2 /mnt
   #+END_SRC
- 2) Next we need to create some new folders in our /mnt
-    #+BEGIN_SRC sh
-    mkdir /mnt/boot
-    mkdir /mnt/home
-    #+END_SRC sh
- 3) So lets mount this folders
-    #+BEGIN_SRC
-    mount /dev/sda1 /mnt/boot
-    mount /dev/sdb1 /mnt/home
-    #+END_SRC sh
- 4) And enable swap
-    #+BEGIN_SRC sh
-    swapon /dev/sdb2
-    #+END_SRC
+2) Next we need to create some new folders in our /mnt
+   #+BEGIN_SRC sh
+   mkdir /mnt/boot
+   mkdir /mnt/home
+   #+END_SRC sh
+3) So lets mount this folders
+   #+BEGIN_SRC
+   mount /dev/sda1 /mnt/boot
+   mount /dev/sdb1 /mnt/home
+   #+END_SRC sh
+4) And enable swap
+   #+BEGIN_SRC sh
+   swapon /dev/sdb2
+   #+END_SRC
 *** Mirrorlist
  I prefer to download files fast, that why I want to use fastest mirrors.
  For detailed commands explanation check [[https://wiki.archlinux.org/index.php/mirrors#List_by_speed][wiki]].
@@ -134,10 +136,10 @@ If there is any warning like: ~/dev/sda2~ contains a ext4 file system, you shoul
    rankmirrors -n 6 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
    #+END_SRC
  - Update
- After mirrors ranked we should [[https://wiki.archlinux.org/index.php/mirrors#Force_pacman_to_refresh_the_package_lists][let arch to know about them]].
  #+BEGIN_SRC sh
  sudo pacman -Syyu
  #+END_SRC
+ After mirrors ranked we should [[https://wiki.archlinux.org/index.php/mirrors#Force_pacman_to_refresh_the_package_lists][let arch to know about them]].
 
  *Note* If ranking process was very fast(<1min), you should check if your internet connection is available.
  The process may take up to 10 min.
@@ -325,7 +327,8 @@ Defaults rootpw
      #+BEGIN_SRC sh
      vim /boot/loader/entries/arch.conf
      #+END_SRC
-  - and write down
+  - And write down
+
      *Note!* The root options is very delicate part, you should double check them for your laptop model. For [[https://wiki.archlinux.org/index.php/ASUS_Zenbook_Pro_UX501][Zenbook Pro UX501VM]] I have this options working properly.
      #+BEGIN_SRC org
      title Arch Linux
@@ -336,39 +339,49 @@ Defaults rootpw
      #+END_SRC
 *** Network
 **** General
-***** Checking drivers
-Lets see our drivers, what we need is *Network controller*
-$ lspci -k
-$ ip link
-***** And lets bring the interface up:
-It usually starts with 'w', in my case I have 'wlp3s0', so:
-$ ip link set wlp3s0 up
+- Checking drivers
+  Lets see our drivers, what we need is *Network controller*
+  #+BEGIN_SRC sh
+  lspci -k
+  ip link
+  #+END_SRC
+- And lets bring the interface up:
+  It usually starts with =w=, in my case I have ~wlp3s0~:
+  #+BEGIN_SRC sh
+  ip link set wlp3s0 up
+  #+END_SRC
 
-=Tip= You can check [[https://wiki.archlinux.org/index.php/Wireless_network_configuration#Check_the_driver_status][more]] commands if you have any problems.
+*Tip* You can check [[https://wiki.archlinux.org/index.php/Wireless_network_configuration#Check_the_driver_status][more]] commands if you have any problems.
 
 I'm using [[https://wiki.archlinux.org/index.php/Connman][connman]], so there are few other options [[https://wiki.archlinux.org/index.php/netctl#Installation][netctl]], [[https://wiki.archlinux.org/index.php/NetworkManager][NetworkManager]], [[https://wiki.archlinux.org/index.php/Wicd][Wicd]], [[https://wiki.archlinux.org/index.php/systemd-networkd][systemd-networkd]]. Last one preffered if you want manually to control the network connection.
 **** Connman
 So connman itself a command-line network manager.
 [[https://github.com/wavexx/connman-notify#why-connman][Why should I use it?]]
-
-$ sudo pacman -S connman wpa_supplicant connman_dmenu-git connman-notify
-
-***** Make sure you disable everything that can be in conflict
-$ sudo systemctl disable netctl.service / NetworkManager.service / dhcpcd.service
-
+#+BEGIN_SRC sh
+sudo pacman -S connman wpa_supplicant connman_dmenu-git connman-notify
+#+END_SRC
+- *Note!* Make sure you disable everything that can be in conflict
+#+BEGIN_SRC sh
+sudo systemctl disable netctl.service / NetworkManager.service / dhcpcd.service
+#+END_SRC
 **** If Netctl
 I felt some pain with ntectl bugs, trying to configure everything to work properly takes too much time. But just in case you still need/want this one.
-***** Installing drivers
-$ pacman -S wpa_actiond wpa_supplicant dhclient dialog
-***** Default DHCP client
-I've had issues with connections, and 'dhclient' solved them.
+- Installing drivers
+  #+BEGIN_SRC sh
+  pacman -S wpa_actiond wpa_supplicant dhclient dialog
+  #+END_SRC
+- Default DHCP client
+  I've had issues with connections, and 'dhclient' solved them.
 
-$ sudo vim /etc/netctl/dhcp
-
-#!/bin/sh
-DHCPClient='dhclient'
-***** Issues
-I had iwlwifi [[https://bbs.archlinux.org/viewtopic.php?id=213363][bug]] and [[https://wiki.archlinux.org/index.php/Wireless_network_configuration#iwlwifi][iwlwifi.conf]] just in case
+  #+BEGIN_SRC sh
+  sudo vim /etc/netctl/dhcp
+  #+END_SRC
+  #+BEGIN_SRC org
+  #!/bin/sh
+  DHCPClient='dhclient'
+  #+END_SRC
+- Issues
+  I had iwlwifi [[https://bbs.archlinux.org/viewtopic.php?id=213363][bug]] and [[https://wiki.archlinux.org/index.php/Wireless_network_configuration#iwlwifi][iwlwifi.conf]] just in case.
 *** Drivers
 **** Touchpad
 For touchpad *tapping* use [[https://wiki.archlinux.org/index.php/Libinput#Touchpad_tapping][t]]his X11/xorg.conf.d/30-touchpad.conf
