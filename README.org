@@ -1,315 +1,316 @@
-#+TITLE:  Arch Linux install guide
-#+AUTHOR: Nicholas Glazer
-#+EMAIL:  glazer.nicholas@gmail.com
-#+DATE:   2016-08-25
+ #+TITLE:  Arch Linux install guide
+ #+AUTHOR: Nicholas Glazer
+ #+EMAIL:  glazer.nicholas@gmail.com
+ #+DATE:   2016-08-25
 
-#+name: Arch
-#+caption: Arch Linux image
-#+attr_html: :align center
-[[./arch-logo.png]]
-
-
-
-** Installing Arch
-*** Live usb
-I assumed that you'r already have bootable flash drive.
-If not check [[https://wiki.archlinux.org/index.php/disk_cloning][dd]] and official website for arch [[https://www.archlinux.org/download/][downloading]].
-*** BIOS config
-So the first step will be to load the flash drive.
-You will need to change the boot priority in BIOS. So just after reboot press =F2= or =del= to see the BIOS menu.
-*** Kernel boot options
-To avoid problems with tiny fonts or fan speed, we should run the new install with kernel option which will disable console frame buffer.
-When selection menu appears, press =E=, type =nomodeset= in the very beginning of the line and press =Enter=.
-*** Changing layout
-My keyboard layout is [[https://wiki.archlinux.org/index.php/Dvorak][dvorak]]. So my first step will be changing keyboard layout:
-#+BEGIN_SRC sh
-loadkeys dvorak
-#+END_SRC
-If you'r using =querty= just skip this step.
-*** Network connection
-After archiso boot we want to connect to the internet: 'wifi-menu'
-Now lets check the connection:
-#+BEGIN_SRC sh
-ping -c 3 google.com
-#+END_SRC
-*** Lets make sure we're using [[https://wiki.archlinux.org/index.php/Unified_Extensible_Firmware_Interface][UEFI]] mode
-#+BEGIN_SRC sh
-efivar -l
-#+END_SRC
-If output have some variables, everything is fine.
-*** Partition scheme (more explanation in SSD)
-Good. Now lets use =lsblk= to see your partition scheme.
-#+BEGIN_SRC sh
-lsblk
-#+END_SRC
-In most cases you will see at least 2 drives. I have 3 drives:
-#+BEGIN_SRC org
-sda      8:0    0 119.2G  0 disk                              *SSD*
-├─sda1   8:1    0     1G  0 part /boot
-├─sda2   8:2    0    80G  0 part /
-└─sda3   8:3    0  38.2G  0 part
-sdb      8:16   0 931.5G  0 disk                              *HDD*
-├─sdb1   8:17   0   400G  0 part /home
-├─sdb2   8:18   0    24G  0 part [SWAP]
-├─sdb3   8:19   0   300G  0 part
-└─sdb4   8:20   0 207.5G  0 part
-sdc      8:32   1   7.5G  0 disk                              *Flash Drive*
-└─sdc1   8:33   1   7.5G  0 part
-#+END_SRC
+ #+name: Arch
+ #+caption: Arch Linux image
+ #+attr_html: :align center
+ [[./arch-logo.png]]
 
 
-*Note* I decided to make dual boot with Windows 10 only for games or other weired stuff like photoshop. And I don't rly want to use wine.
-So if you want just clean arch install, ignore Windows steps.
 
-**** So lets start partitioning
-#+BEGIN_SRC sh
-gdisk /dev/sda
-#+END_SRC
+ ** Installing Arch
+ *** Live usb
+ I assumed that you'r already have bootable flash drive.
+ If not check [[https://wiki.archlinux.org/index.php/disk_cloning][dd]] and official website for arch [[https://www.archlinux.org/download/][downloading]].
+ *** BIOS config
+ So the first step will be to load the flash drive.
+ You will need to change the boot priority in BIOS. So just after reboot press =F2= or =del= to see the BIOS menu.
+ *** Kernel boot options
+ To avoid problems with tiny fonts or fan speed, we should run the new install with kernel option which will disable console frame buffer.
+ When selection menu appears, press =E=, type =nomodeset= in the very beginning of the line and press =Enter=.
+ *** Changing layout
+ My keyboard layout is [[https://wiki.archlinux.org/index.php/Dvorak][dvorak]]. So my first step will be changing keyboard layout:
+ #+BEGIN_SRC sh
+ loadkeys dvorak
+ #+END_SRC
+ If you'r using =querty= just skip this step.
+ *** Network connection
+ After archiso boot we want to connect to the internet: 'wifi-menu'
+ Now lets check the connection:
+ #+BEGIN_SRC sh
+ ping -c 3 google.com
+ #+END_SRC
+ *** Lets make sure we're using [[https://wiki.archlinux.org/index.php/Unified_Extensible_Firmware_Interface][UEFI]] mode
+ #+BEGIN_SRC sh
+ efivar -l
+ #+END_SRC
+ If output have some variables, everything is fine.
+ *** Partition scheme (more explanation in SSD)
+ Good. Now lets use =lsblk= to see your partition scheme.
+ #+BEGIN_SRC sh
+ lsblk
+ #+END_SRC
+ In most cases you will see at least 2 drives. I have 3 drives:
+ #+BEGIN_SRC org
+ sda      8:0    0 119.2G  0 disk                              *SSD*
+ ├─sda1   8:1    0     1G  0 part /boot
+ ├─sda2   8:2    0    80G  0 part /
+ └─sda3   8:3    0  38.2G  0 part
+ sdb      8:16   0 931.5G  0 disk                              *HDD*
+ ├─sdb1   8:17   0   400G  0 part /home
+ ├─sdb2   8:18   0    24G  0 part [SWAP]
+ ├─sdb3   8:19   0   300G  0 part
+ └─sdb4   8:20   0 207.5G  0 part
+ sdc      8:32   1   7.5G  0 disk                              *Flash Drive*
+ └─sdc1   8:33   1   7.5G  0 part
+ #+END_SRC
 
-Press =enter= first, then =x= for advanced config and =z= for zap.
-*Note* this may destroy data on your disk.
-***** SSD
-For my root I'd set 80G, you will be fine even with 30G. So if you may want to devide space for more 'roots', e.g. for other distros(ubuntu, fedora, etc..), 30G should be enough.
-I had left *sda3* for Windows. I will make double boot later.
 
-| #    | size      | FS type | name |
-|------+-----------+---------+------|
-| sda1 | 1g        |    EF00 | boot |
-| sda2 | 80g       |    8300 | root |
-| sda3 | else 38.2 |    0700 | -    |
+ *Note* I decided to make dual boot with Windows 10 only for games or other weired stuff like photoshop. And I don't rly want to use wine.
+ So if you want just clean arch install, ignore Windows steps.
 
-***** HHD
-I will use sdb(HDD) as a home for user files ( movies, music, pics, ect...).
-- *sdb2* depends on your RAM quantity. Usually you should take 1.5 of your RAM.
-- Notice that *sdb3* I set as 0700 and it will contain Windows files
-- *sdb4* you can use however you want
+ **** So lets start partitioning
+ #+BEGIN_SRC sh
+ gdisk /dev/sda
+ #+END_SRC
 
-| #    | size        | FS type | name  | Description                                                   |
-|------+-------------+---------+-------+---------------------------------------------------------------|
-| sdb1 | 400g        |    8300 | home  | linux filesystem                                              |
-| sdb2 | 24g         |    8200 | swap  | 1.5 of my RAM memory[16G]                                     |
-| sdb3 | 300g        |    0700 | whome | microsoft basic data                                          |
-| sbd4 | else 207.5g |    8300 | -     | Just in case I will mount /var or install another linux there |
+ Press =enter= first, then =x= for advanced config and =z= for zap.
+ *Note* this may destroy data on your disk.
+ ***** SSD
+ For my root I'd set 80G, you will be fine even with 30G. So if you may want to devide space for more 'roots', e.g. for other distros(ubuntu, fedora, etc..), 30G should be enough.
+ I had left *sda3* for Windows. I will make double boot later.
 
-*** Assigning file system to drives
-Boot need to be Fat32 as UEFI requirement.
+ | #    | size      | FS type | name |
+ |------+-----------+---------+------|
+ | sda1 | 1g        |    EF00 | boot |
+ | sda2 | 80g       |    8300 | root |
+ | sda3 | else 38.2 |    0700 | -    |
 
-- /boot
-#+BEGIN_SRC sh
-mkfs.fat -F32 /dev/sda1
-#+END_SRC
-- SWAP
-#+BEGIN_SRC sh
-mkswap /dev/sdb2
-#+END_SRC
-- Linux
-#+BEGIN_SRC sh
-mkfs.ext4 /dev/sda2
-mkfs.ext4 /dev/sdb1
-mkfs.ext4 /dev/sdb4
-#+END_SRC
+ ***** HHD
+ I will use sdb(HDD) as a home for user files ( movies, music, pics, ect...).
+ - *sdb2* depends on your RAM quantity. Usually you should take 1.5 of your RAM.
+ - Notice that *sdb3* I set as 0700 and it will contain Windows files
+ - *sdb4* you can use however you want
 
-If there is any warning like: ~/dev/sda2~ contains a ext4 file system, you should press =y=.
-*** Mounting partitions
-1) So first what we want to do is assign /mnt to our root partiton
+ | #    | size        | FS type | name  | Description                                                   |
+ |------+-------------+---------+-------+---------------------------------------------------------------|
+ | sdb1 | 400g        |    8300 | home  | linux filesystem                                              |
+ | sdb2 | 24g         |    8200 | swap  | 1.5 of my RAM memory[16G]                                     |
+ | sdb3 | 300g        |    0700 | whome | microsoft basic data                                          |
+ | sbd4 | else 207.5g |    8300 | -     | Just in case I will mount /var or install another linux there |
+
+ *** Assigning file system to drives
+ Boot need to be Fat32 as UEFI requirement.
+
+ - /boot
+ #+BEGIN_SRC sh
+ mkfs.fat -F32 /dev/sda1
+ #+END_SRC
+ - SWAP
+ #+BEGIN_SRC sh
+ mkswap /dev/sdb2
+ #+END_SRC
+ - Linux
+ #+BEGIN_SRC sh
+ mkfs.ext4 /dev/sda2
+ mkfs.ext4 /dev/sdb1
+ mkfs.ext4 /dev/sdb4
+ #+END_SRC
+
+ If there is any warning like: ~/dev/sda2~ contains a ext4 file system, you should press =y=.
+ *** Mounting partitions
+ 1) So first what we want to do is assign /mnt to our root partiton
+    #+BEGIN_SRC sh
+    mount /dev/sda2 /mnt
+    #+END_SRC
+ 2) Next we need to create some new folders in our /mnt
+    #+BEGIN_SRC sh
+    mkdir /mnt/boot
+    mkdir /mnt/home
+    #+END_SRC sh
+ 3) So lets mount this folders
+    #+BEGIN_SRC
+    mount /dev/sda1 /mnt/boot
+    mount /dev/sdb1 /mnt/home
+    #+END_SRC sh
+ 4) And enable swap
+    #+BEGIN_SRC sh
+    swapon /dev/sdb2
+    #+END_SRC
+ *** Mirrorlist
+ I prefer to download files fast, that why I want to use fastest mirrors.
+ For detailed commands explanation check [[https://wiki.archlinux.org/index.php/mirrors#List_by_speed][wiki]].
+ - Backup
    #+BEGIN_SRC sh
-   mount /dev/sda2 /mnt
+   cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
    #+END_SRC
-2) Next we need to create some new folders in our /mnt
+ - Uncommenting
    #+BEGIN_SRC sh
-   mkdir /mnt/boot
-   mkdir /mnt/home
+   sed -i 's/^#Server/Server/' /etc/pacman.d/mirrorlist.backup
+   #+END_SRC
+ - Ranking
+   #+BEGIN_SRC sh
+   rankmirrors -n 6 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
+   #+END_SRC
+ - Update
+ After mirrors ranked we should [[https://wiki.archlinux.org/index.php/mirrors#Force_pacman_to_refresh_the_package_lists][let arch to know about them]].
+ #+BEGIN_SRC sh
+ sudo pacman -Syyu
+ #+END_SRC
+
+ *Note* If ranking process was very fast(<1min), you should check if your internet connection is available.
+ The process may take up to 10 min.
+ *** Arch base files
+ Ok, now lets install base packages to our =/= root.
+ In this step you may want to install also some useful packages you will need while installing system like [[https://git-scm.com/doc][git]] or [[https://www.gnu.org/software/wget/][wget]].
+ #+BEGIN_SRC sh
+ pacstrap -i /mnt base base-devel git
+ #+END_SRC
+ Press =Enter= and agree with everything.
+ *** Generate and edit fstab file
+ - Generate
+   #+BEGIN_SRC sh
+   genfstab -U -p /mnt >> /mnt/etc/fstab
+   #+END_SRC
+ **** Enable [[https://ru.wikipedia.org/wiki/TRIM][TRIM]] (for SSD)
+ *Note* You may want to do this in case your swap is on SSD.
+ - Edit with nano.
+   #+BEGIN_SRC sh
+   nano /mnt/etc/fstab
    #+END_SRC sh
-3) So lets mount this folders
-   #+BEGIN_SRC
-   mount /dev/sda1 /mnt/boot
-   mount /dev/sdb1 /mnt/home
-   #+END_SRC sh
-4) And enable swap
-   #+BEGIN_SRC sh
-   swapon /dev/sdb2
+ - Change defaults to defaults,discard.
+   Where ~X~ your swap partition.
+   #+BEGIN_SRC org
+   /dev/sdX none swap defaults,discard 0 0
    #+END_SRC
-*** Mirrorlist
-I prefer to download files fast, that why I want to use fastest mirrors.
-For detailed commands explanation check [[https://wiki.archlinux.org/index.php/mirrors#List_by_speed][wiki]].
-- Backup
-  #+BEGIN_SRC sh
-  cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
-  #+END_SRC
-- Uncommenting
-  #+BEGIN_SRC sh
-  sed -i 's/^#Server/Server/' /etc/pacman.d/mirrorlist.backup
-  #+END_SRC
-- Ranking
-  #+BEGIN_SRC sh
-  rankmirrors -n 6 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
-  #+END_SRC
-- Update
-After mirrors ranked we should [[https://wiki.archlinux.org/index.php/mirrors#Force_pacman_to_refresh_the_package_lists][let arch to know about them]].
-#+BEGIN_SRC sh
-sudo pacman -Syyu
-#+END_SRC
-
-*Note* If ranking process was very fast(<1min), you should check if your internet connection is available.
-The process may take up to 10 min.
-*** Arch base files
-Ok, now lets install base packages to our =/= root.
-In this step you may want to install also some useful packages you will need while installing system like [[https://git-scm.com/doc][git]] or [[https://www.gnu.org/software/wget/][wget]].
-#+BEGIN_SRC sh
-pacstrap -i /mnt base base-devel git
-#+END_SRC
-Press =Enter= and agree with everything.
-*** Generate and edit fstab file
-- Generate
-  #+BEGIN_SRC sh
-  genfstab -U -p /mnt >> /mnt/etc/fstab
-  #+END_SRC
-**** Enable [[https://ru.wikipedia.org/wiki/TRIM][TRIM]] (for SSD)
-*Note* You may want to do this in case your swap is on SSD.
-- Edit with nano.
-  #+BEGIN_SRC sh
-  nano /mnt/etc/fstab
-  #+END_SRC sh
-- Change defaults to defaults,discard.
-  Where ~X~ your swap partition.
-  #+BEGIN_SRC org
-  /dev/sdX none swap defaults,discard 0 0
-  #+END_SRC
-- You can also write down your root UUID ~/~. It will be useful later in [[https://wiki.archlinux.org/index.php/systemd-boot#Standard_root_installations][bootloader]] step.
-*Nano Tips:*
-While this is first editing with [[https://wiki.archlinux.org/index.php/nano][nano]]. You should know at least how to exit it.
-So save and exit with:
-- ctrl+o (save)
-- ctrl+x (exit)
-*** Chroot into system
-Lets enter the system.
-#+BEGIN_SRC sh
-arch-chroot /mnt
-#+END_SRC
-*** Vim
-My next step will be installing [[https://wiki.archlinux.org/index.php/vim][vim]] text editor.
-If you'r not familiar with vim and you don't have time to learn this *great* console editor, just skip this step and continue using *nano*.
-#+BEGIN_SRC sh
-pacman -S vim
-#+END_SRC
-*Vim tips:*
-- Press =esc= to make sure you are in *command mode*.
-- For search press =/= and type:
-  #+BEGIN_SRC sh
-  en_US.UTF-8
-  #+END_SRC
-- Press =enter= and go into the *insert mode*
-  1) by pressing =i= you will enter to insert mode (you can type and edit now)
-  2) delete comments =#=
-- Save and exit:
-  1) type =:wq= (you will see this letters in a very bottom)
-*** Locale
-#+BEGIN_SRC sh
-vim /etc/locale.gen
-locale-gen
-echo LANG=en_US.UTF-8 > /etc/locale.conf
-export LANG=en_US.UTF-8
-#+END_SRC
-*** Localtime
-Replace *Israel* with the country you prefer. You may also want to =ls /usr/share/zoneinfo/= first, to explore folder.
-#+BEGIN_SRC sh
-ln -s /usr/share/zoneinfo/Israel > /etc/localtime
-#+END_SRC
-*** Hardware clock
-#+BEGIN_SRC sh
-hwclock --systohc -–utc
-#+END_SRC
-*** Hostname
-**** Basic method (*working in arch-chroot*)
-[[https://en.wikipedia.org/wiki/Hostname][Hostname]] is a unique name created to identify a machine on a network.
-Replace ~uniquename~ with anything you want:
-#+BEGIN_SRC sh
-echo uniquename > /etc/hostname
-#+END_SRC
-*Note* Later you will see something like ~user@uniquename~
-**** Generate with hostnamectl (*not working in arch-chroot!*)
-#+BEGIN_SRC sh
-hostnamectl set-hostname myhostname
-#+END_SRC
-*** Add repositories
-Enabling multilib and Arch AUR community repositories.
-If you are running a 64bit system then you need to enable the multilib repository.
-- To do this open the pacman.conf file:
-  #+BEGIN_SRC sh
-  vim /etc/pacman.conf
-  #+END_SRC
-- Uncomment
-  #+BEGIN_SRC org
-  #[multilib]
-  #Include = /etc/pacman.d/mirrorlist
-  #+END_SRC
-
-- *Tip*
-  While we are still inside ~pacman.conf~ file
-  Let’s also add the AUR repo so we can easily install packages from AUR.
-  Add these lines at the bottom of the file:
-  #+BEGIN_SRC org
-  [archlinuxfr]
-  Server = http://repo.archlinux.fr/$arch
-  SigLevel = Never
-  #+END_SRC
-  Also you may want to add [[https://wiki.archlinux.org/index.php/Infinality][infinality]] lib:
-  #+BEGIN_SRC org
-  [infinality-bundle-fonts]
-  Server = http://bohoomil.com/repo/fonts
-  SigLevel = Never
-  #+END_SRC
-- And update the system
-  #+BEGIN_SRC sh
-  sudo pacman -Syyu
-  #+END_SRC
-*** Deps
-Lets install some imortant dependecies:
-#+BEGIN_SRC sh
-sudo pacman -S yaourt zsh emacs rfkill unzip openssh
-yaourt -S htop powertop lm_sensors termite thefuck
-#+END_SRC
-*Note* This step is not completed yet.
-*** Passwords
-- Root
-  #+BEGIN_SRC sh
-passwd
-  #+END_SRC
-- User
-  1) First we need to add one:
-     Replace ~username~ with one preffered by you:
-     #+BEGIN_SRC sh
-     useradd -m -g users -G wheel,storage,power -s /bin/zsh username
-     #+END_SRC
-  2) Set password for a new user:
-     #+BEGIN_SRC sh
-     passwd username
-     #+END_SRC
-*** Sudoers
-#+BEGIN_SRC sh
-EDITOR=vim visudo
-#+END_SRC
-And we should uncomment this line
-#+BEGIN_SRC org
- %wheel ALL=(ALL) ALL
-#+END_SRC
-*Note* This system will be only for my own usage.
-If you are using server or someone else have access to the wheel group. You may want to require sudoers to type root password, instead of their own.
-In this case add this line:
-#+BEGIN_SRC org
-Defaults rootpw
-#+END_SRC
-*** Bootloader
-- checking EFI
-   #+BEGIN_QUOTE
-   @gloriouseggroll recommended to double check if our EFI variables had been mounted
-   #+END_QUOTE
+ - You can also write down your root UUID ~/~. It will be useful later in [[https://wiki.archlinux.org/index.php/systemd-boot#Standard_root_installations][bootloader]] step.
+ *Nano Tips:*
+ While this is first editing with [[https://wiki.archlinux.org/index.php/nano][nano]]. You should know at least how to exit it.
+ So save and exit with:
+ - ctrl+o (save)
+ - ctrl+x (exit)
+ *** Chroot into system
+ Lets enter the system.
+ #+BEGIN_SRC sh
+ arch-chroot /mnt
+ #+END_SRC
+ *** Vim
+ My next step will be installing [[https://wiki.archlinux.org/index.php/vim][vim]] text editor.
+ If you'r not familiar with vim and you don't have time to learn this *great* console editor, just skip this step and continue using *nano*.
+ #+BEGIN_SRC sh
+ pacman -S vim
+ #+END_SRC
+ *Vim tips:*
+ - Press =esc= to make sure you are in *command mode*.
+ - For search press =/= and type:
    #+BEGIN_SRC sh
-   mount -t efivarfs efivarfs /sys/firmware/efi/efivars
+   en_US.UTF-8
    #+END_SRC
-   You will see something like "efivarfs is already mounted", this means everything is fine.
-- Boot manager
-   So the [[https://wiki.archlinux.org/index.php/systemd-boot#Standard_root_installations][systemd-boot]] is a replacement for [[https://wiki.archlinux.org/index.php/GRUB][grub]].
+ - Press =enter= and go into the *insert mode*
+   1) by pressing =i= you will enter to insert mode (you can type and edit now)
+   2) delete comments =#=
+ - Save and exit:
+   1) type =:wq= (you will see this letters in a very bottom)
+ *** Locale
+ #+BEGIN_SRC sh
+ vim /etc/locale.gen
+ locale-gen
+ echo LANG=en_US.UTF-8 > /etc/locale.conf
+ export LANG=en_US.UTF-8
+ #+END_SRC
+ *** Localtime
+ Replace *Israel* with the country you prefer. You may also want to =ls /usr/share/zoneinfo/= first, to explore folder.
+ #+BEGIN_SRC sh
+ ln -s /usr/share/zoneinfo/Israel > /etc/localtime
+ #+END_SRC
+ *** Hardware clock
+ #+BEGIN_SRC sh
+ hwclock --systohc -–utc
+ #+END_SRC
+ *** Hostname
+ **** Basic method (*working in arch-chroot*)
+ [[https://en.wikipedia.org/wiki/Hostname][Hostname]] is a unique name created to identify a machine on a network.
+ Replace ~uniquename~ with anything you want:
+ #+BEGIN_SRC sh
+ echo uniquename > /etc/hostname
+ #+END_SRC
+ *Note* Later you will see something like ~user@uniquename~
+ **** Generate with hostnamectl (*not working in arch-chroot!*)
+ #+BEGIN_SRC sh
+ hostnamectl set-hostname myhostname
+ #+END_SRC
+ *** Add repositories
+ Enabling multilib and Arch AUR community repositories.
+ If you are running a 64bit system then you need to enable the multilib repository.
+ - To do this open the pacman.conf file:
+   #+BEGIN_SRC sh
+   vim /etc/pacman.conf
+   #+END_SRC
+ - Uncomment
+   #+BEGIN_SRC org
+   #[multilib]
+   #Include = /etc/pacman.d/mirrorlist
+   #+END_SRC
+
+ - *Tip*
+   While we are still inside ~pacman.conf~ file
+   Let’s also add the AUR repo so we can easily install packages from AUR.
+   Add these lines at the bottom of the file:
+   #+BEGIN_SRC org
+   [archlinuxfr]
+   Server = http://repo.archlinux.fr/$arch
+   SigLevel = Never
+   #+END_SRC
+   Also you may want to add [[https://wiki.archlinux.org/index.php/Infinality][infinality]] lib:
+   #+BEGIN_SRC org
+   [infinality-bundle-fonts]
+   Server = http://bohoomil.com/repo/fonts
+   SigLevel = Never
+   #+END_SRC
+ - And update the system
+   #+BEGIN_SRC sh
+   sudo pacman -Syyu
+   #+END_SRC
+ *** Deps
+ Lets install some imortant dependecies:
+ #+BEGIN_SRC sh
+ sudo pacman -S yaourt zsh emacs rfkill unzip openssh
+ yaourt -S htop powertop lm_sensors termite thefuck
+ #+END_SRC
+ *Note* This step is not completed yet.
+ *** Passwords
+ - Root
+   #+BEGIN_SRC sh
+ passwd
+   #+END_SRC
+ - User
+   1) First we need to add one:
+      Replace ~username~ with one preffered by you:
+      #+BEGIN_SRC sh
+      useradd -m -g users -G wheel,storage,power -s /bin/zsh username
+      #+END_SRC
+   2) Set password for a new user:
+      #+BEGIN_SRC sh
+      passwd username
+      #+END_SRC
+ *** Sudoers
+ #+BEGIN_SRC sh
+ EDITOR=vim visudo
+ #+END_SRC
+ And we should uncomment this line
+ #+BEGIN_SRC org
+  %wheel ALL=(ALL) ALL
+ #+END_SRC
+ *Note* This system will be only for my own usage.
+ If you are using server or someone else have access to the wheel group. You may want to require sudoers to type root password, instead of their own.
+ In this case add this line:
+ #+BEGIN_SRC org
+ Defaults rootpw
+ #+END_SRC
+ *** Bootloader
+ - checking EFI
+    #+BEGIN_QUOTE
+    @gloriouseggroll recommended to double check if our EFI variables had been mounted
+    #+END_QUOTE
+    #+BEGIN_SRC sh
+    mount -t efivarfs efivarfs /sys/firmware/efi/efivars
+    #+END_SRC
+    You will see something like "efivarfs is already mounted", this means everything is fine.
+ - Boot manager
+
+ So the [[https://wiki.archlinux.org/index.php/systemd-boot#Standard_root_installations][systemd-boot]] is a replacement for [[https://wiki.archlinux.org/index.php/GRUB][grub]].
    #+BEGIN_SRC sh
    bootctl install
    #+END_SRC
