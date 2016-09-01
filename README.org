@@ -220,14 +220,14 @@ ln -s /usr/share/zoneinfo/Israel > /etc/localtime
 hwclock --systohc -–utc
 #+END_SRC
 *** Hostname
-***** Basic method (*working in arch-chroot*)
+**** Basic method (*working in arch-chroot*)
 [[https://en.wikipedia.org/wiki/Hostname][Hostname]] is a unique name created to identify a machine on a network.
 Replace ~uniquename~ with anything you want:
 #+BEGIN_SRC sh
 echo uniquename > /etc/hostname
 #+END_SRC
 *Note* Later you will see something like ~user@uniquename~
-***** Generate with hostnamectl (*not working in arch-chroot!*)
+**** Generate with hostnamectl (*not working in arch-chroot!*)
 #+BEGIN_SRC sh
 hostnamectl set-hostname myhostname
 #+END_SRC
@@ -252,33 +252,39 @@ Add these lines at the bottom of the file:
 [archlinuxfr]
 Server = http://repo.archlinux.fr/$arch
 SigLevel = Never
-
-Also you may want to add infinality lib:
-
+#+END_SRC
+Also you may want to add [[https://wiki.archlinux.org/index.php/Infinality][infinality]] lib:
+#+BEGIN_SRC org
 [infinality-bundle-fonts]
 Server = http://bohoomil.com/repo/fonts
 SigLevel = Never
 #+END_SRC
-
 - And update the system
   #+BEGIN_SRC sh
-  pacman -Syyu
+  sudo pacman -Syyu
   #+END_SRC
 *** Deps
-Lets install some imortant dependecies
+Lets install some imortant dependecies:
 #+BEGIN_SRC sh
 sudo pacman -S yaourt zsh emacs rfkill unzip openssh
 yaourt -S htop powertop lm_sensors termite thefuck
 #+END_SRC
+*Note* This step is not completed yet.
 *** Passwords
-***** Root
-$ passwd
-***** User
-****** First we need to add one:
-Replace *username* with one preffered by you:
-$ useradd -m -g users -G wheel,storage,power -s /bin/zsh username
-****** and set password for new user
-$ passwd username
+- Root
+  #+BEGIN_SRC sh
+passwd
+  #+END_SRC
+- User
+  1)First we need to add one:
+    Replace ~username~ with one preffered by you:
+    #+BEGIN_SRC sh
+    useradd -m -g users -G wheel,storage,power -s /bin/zsh username
+    #+END_SRC
+  1) set password for new user
+     #+BEGIN_SRC sh
+     passwd username
+     #+END_SRC
 *** Sudoers
 $ EDITOR=vim visudo
 and we should uncomment this line - '%wheel ALL=(ALL) ALL'
