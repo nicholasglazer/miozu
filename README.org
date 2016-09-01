@@ -3,11 +3,11 @@
 #+EMAIL:  glazer.nicholas@gmail.com
 #+DATE:   2016-08-25
 
-  #+name: Arch
-  #+caption: Arch Linux image
-  #+attr_html: :align center
-  [[./arch-logo.png]]
-  
+#+name: Arch
+#+caption: Arch Linux image
+#+attr_html: :align center
+[[./arch-logo.png]]
+
 
 
 ** Installing Arch
@@ -15,13 +15,13 @@
 I assumed that you'r already have bootable flash drive.
 If not check [[https://wiki.archlinux.org/index.php/disk_cloning][dd]] and official website for arch [[https://www.archlinux.org/download/][downloading]].
 *** BIOS config
-So the first step will be to load the flash drive. 
+So the first step will be to load the flash drive.
 You will need to change the boot priority in BIOS. So just after reboot press =F2= or =del= to see the BIOS menu.
 *** Kernel boot options
 To avoid problems with tiny fonts or fan speed, we should run the new install with kernel option which will disable console frame buffer.
 When selection menu appears, press =E=, type =nomodeset= in the very beginning of the line and press =Enter=.
 *** Changing layout
-My keyboard layout is [[https://wiki.archlinux.org/index.php/Dvorak][dvorak]]. So my first step will be changing keyboard layout: 
+My keyboard layout is [[https://wiki.archlinux.org/index.php/Dvorak][dvorak]]. So my first step will be changing keyboard layout:
 #+BEGIN_SRC sh
 loadkeys dvorak
 #+END_SRC
@@ -47,14 +47,14 @@ In most cases you will see at least 2 drives. I have 3 drives:
 sda      8:0    0 119.2G  0 disk                              *SSD*
 ├─sda1   8:1    0     1G  0 part /boot
 ├─sda2   8:2    0    80G  0 part /
-└─sda3   8:3    0  38.2G  0 part 
+└─sda3   8:3    0  38.2G  0 part
 sdb      8:16   0 931.5G  0 disk                              *HDD*
 ├─sdb1   8:17   0   400G  0 part /home
 ├─sdb2   8:18   0    24G  0 part [SWAP]
-├─sdb3   8:19   0   300G  0 part 
-└─sdb4   8:20   0 207.5G  0 part 
+├─sdb3   8:19   0   300G  0 part
+└─sdb4   8:20   0 207.5G  0 part
 sdc      8:32   1   7.5G  0 disk                              *Flash Drive*
-└─sdc1   8:33   1   7.5G  0 part 
+└─sdc1   8:33   1   7.5G  0 part
 #+END_SRC
 
 
@@ -67,7 +67,7 @@ gdisk /dev/sda
 #+END_SRC
 
 Press =enter= first, then =x= for advanced config and =z= for zap.
-*Note* this may destroy data on your disk. 
+*Note* this may destroy data on your disk.
 ***** SSD
 For my root I'd set 80G, you will be fine even with 30G. So if you may want to devide space for more 'roots', e.g. for other distros(ubuntu, fedora, etc..), 30G should be enough.
 I had left *sda3* for Windows. I will make double boot later.
@@ -121,7 +121,7 @@ If there is any warning like: ~/dev/sda2~ contains a ext4 file system, you shoul
    mkdir /mnt/home
    #+END_SRC sh
 3) So lets mount this folders
-   #+BEGIN_SRC 
+   #+BEGIN_SRC
    mount /dev/sda1 /mnt/boot
    mount /dev/sdb1 /mnt/home
    #+END_SRC sh
@@ -164,7 +164,7 @@ Press =Enter= and agree with everything.
   #+BEGIN_SRC sh
   genfstab -U -p /mnt >> /mnt/etc/fstab
   #+END_SRC
-**** Enable [[https://ru.wikipedia.org/wiki/TRIM][TRIM]] (for SSD) 
+**** Enable [[https://ru.wikipedia.org/wiki/TRIM][TRIM]] (for SSD)
 *Note* You may want to do this in case your swap is on SSD.
 - Edit with nano.
   #+BEGIN_SRC sh
@@ -176,11 +176,11 @@ Press =Enter= and agree with everything.
   /dev/sdX none swap defaults,discard 0 0
   #+END_SRC
 - You can also write down your root UUID ~/~. It will be useful later in [[https://wiki.archlinux.org/index.php/systemd-boot#Standard_root_installations][bootloader]] step.
-*Nano Tips:* 
-  While this is first editing with [[https://wiki.archlinux.org/index.php/nano][nano]]. You should know at least how to exit it. 
-  So save and exit with: 
-  - ctrl+o (save) 
-  - ctrl+x (exit)
+*Nano Tips:*
+While this is first editing with [[https://wiki.archlinux.org/index.php/nano][nano]]. You should know at least how to exit it.
+So save and exit with:
+- ctrl+o (save)
+- ctrl+x (exit)
 *** Chroot into system
 Lets enter the system.
 #+BEGIN_SRC sh
@@ -233,7 +233,7 @@ hostnamectl set-hostname myhostname
 #+END_SRC
 *** Add repositories
 Enabling multilib and Arch AUR community repositories.
-If you are running a 64bit system then you need to enable the multilib repository. 
+If you are running a 64bit system then you need to enable the multilib repository.
 - To do this open the pacman.conf file:
   #+BEGIN_SRC sh
   vim /etc/pacman.conf
@@ -244,21 +244,21 @@ If you are running a 64bit system then you need to enable the multilib repositor
   #Include = /etc/pacman.d/mirrorlist
   #+END_SRC
 
-*Tip*
-While we are still inside ~pacman.conf~ file
-Let’s also add the AUR repo so we can easily install packages from AUR. 
-Add these lines at the bottom of the file:
-#+BEGIN_SRC org
-[archlinuxfr]
-Server = http://repo.archlinux.fr/$arch
-SigLevel = Never
-#+END_SRC
-Also you may want to add [[https://wiki.archlinux.org/index.php/Infinality][infinality]] lib:
-#+BEGIN_SRC org
-[infinality-bundle-fonts]
-Server = http://bohoomil.com/repo/fonts
-SigLevel = Never
-#+END_SRC
+- *Tip*
+  While we are still inside ~pacman.conf~ file
+  Let’s also add the AUR repo so we can easily install packages from AUR.
+  Add these lines at the bottom of the file:
+  #+BEGIN_SRC org
+  [archlinuxfr]
+  Server = http://repo.archlinux.fr/$arch
+  SigLevel = Never
+  #+END_SRC
+  Also you may want to add [[https://wiki.archlinux.org/index.php/Infinality][infinality]] lib:
+  #+BEGIN_SRC org
+  [infinality-bundle-fonts]
+  Server = http://bohoomil.com/repo/fonts
+  SigLevel = Never
+  #+END_SRC
 - And update the system
   #+BEGIN_SRC sh
   sudo pacman -Syyu
@@ -293,7 +293,7 @@ And we should uncomment this line
 #+BEGIN_SRC org
  %wheel ALL=(ALL) ALL
 #+END_SRC
-*Note* This system will be only for my own usage. 
+*Note* This system will be only for my own usage.
 If you are using server or someone else have access to the wheel group. You may want to require sudoers to type root password, instead of their own.
 In this case add this line:
 #+BEGIN_SRC org
@@ -301,8 +301,12 @@ Defaults rootpw
 #+END_SRC
 *** Bootloader
 ***** checking EFI
-@gloriouseggroll recommended to double check if our EFI variables have already been mounted
-$ mount -t efivarfs efivarfs /sys/firmware/efi/efivars
+#+BEGIN_QUOTE
+@gloriouseggroll recommended to double check if our EFI variables had been mounted
+#+END_QUOTE
+#+BEGIN_SRC sh
+mount -t efivarfs efivarfs /sys/firmware/efi/efivars
+#+END_SRC
 You will see something like "efivarfs is already mounted", this means everything is fine.
 ***** boot manager
 So the [[https://wiki.archlinux.org/index.php/systemd-boot#Standard_root_installations][systemd-boot]] is a replacement for [[https://wiki.archlinux.org/index.php/GRUB][grub]].
@@ -318,7 +322,7 @@ Where ‘x’ is the device letter and ‘Y’ is the partition number for the r
 $ pacman -S intel-ucode
 ****** lets create a conf file
 $ vim /boot/loader/entries/arch.conf
-****** and write down 
+****** and write down
 *ATTENTION* The root options are very delicate part, you should double check them for your laptop model. For [[https://wiki.archlinux.org/index.php/ASUS_Zenbook_Pro_UX501][Zenbook Pro UX501VM]] I have this options working properly.
 title Arch Linux
 linux /vmlinuz-linux
@@ -377,8 +381,8 @@ Change USER with your username
 $ gpasswd -a USER bumblebee
 ****** enable bumblebee
 $ systemctl enable bumblebeed.service
-**** Audio 
-[[https://wiki.archlinux.org/index.php/Advanced_Linux_Sound_Architecture#Installation][ALSA]] is a set of buit-in kernel modules,, but after install it may be muted. 
+**** Audio
+[[https://wiki.archlinux.org/index.php/Advanced_Linux_Sound_Architecture#Installation][ALSA]] is a set of buit-in kernel modules,, but after install it may be muted.
 ***** So lets install utils and manage it:
 $ sudo pacman -S alsa-lib alsa-utils [[https://wiki.archlinux.org/index.php/PulseAudio#Installation][pulseaudio]]
 ***** And now lets unmute
@@ -409,24 +413,24 @@ setxkbmap dvorak &&
 Depending on [[https://wiki.archlinux.org/index.php/window_manager][window manager]] you choose, we should 'exec' it:
 'exec awesome'
 ***** Recommendations
- 'exit 0' in the very end.
- To check if everything is working properly we can execute command 'startx'
+'exit 0' in the very end.
+To check if everything is working properly we can execute command 'startx'
 **** xkeybindings
 $ sudo pacman -S xbindkeys
 If not using *script* Create a default file using xbindkeys
 $ xbindkeys --defaults > $HOME/.xbindkeysrc
-Restart .xkeybindings 
+Restart .xkeybindings
 $ xbindkeys -p
 
 *** Login manager
-$ sudo pacman -S [[https://wiki.archlinux.org/index.php/SLiM#Configuration][slim]] 
+$ sudo pacman -S [[https://wiki.archlinux.org/index.php/SLiM#Configuration][slim]]
 $ sudo systemctl enable slim.service
 $ sudo git clone https://github.com/naglis/slim-minimal.git /usr/share/slim/themes/slim-minimal
 $ sudo vim /etc/slim.conf
 default_user        me
 current_theme       slim-minimal
 =Tip= To enter console, type 'console' instead of name
-*** Display manager 
+*** Display manager
 If you had never used tilling wm's before, read this [[https://awesomewm.org/wiki/My_first_awesome#Change_the_theme][beginners guide]]
 $ sudo pacman -S [[https://wiki.archlinux.org/index.php/awesome][awesome]] vicious shifty
 ***** Themes
@@ -441,14 +445,14 @@ So the [[https://wiki.archlinux.org/index.php/Termite][termite]] is kind of vim 
 We already have [[https://wiki.archlinux.org/index.php/Xterm][xterm]] - simple but stable.
 $ sudo pacman -S termite w3m
 *** Keboard
-$sudo pacman -S [[https://wiki.archlinux.org/index.php/ASUS_Zenbook_Prime_UX31A#Using_asus-kbd-backlight_from_AUR][asus-kbd-backlight]]  
+$sudo pacman -S [[https://wiki.archlinux.org/index.php/ASUS_Zenbook_Prime_UX31A#Using_asus-kbd-backlight_from_AUR][asus-kbd-backlight]]
 To allow users to change the brightness, write:
 $ asus-kbd-backlight allowusers
-Enable service 
+Enable service
 $ systemctl daemon-reload
 $ systemctl start asus-kbd-backlight.service
 $ systemctl enable asus-kbd-backlight.service
-*** Power management 
+*** Power management
 I will use [[https://wiki.archlinux.org/index.php/TLP][tlp]] tool for power management, also we already installed 'powertop'
 $ sudo pacman -S tlp acpi_call
 $ systemctl enable tlp.service
@@ -459,8 +463,8 @@ $ systemctl enable tlp-sleep.service
 The [[https://wiki.archlinux.org/index.php/Infinality][infinality]] patchset aims to greatly improve font rendering in freetype2 and friends. It adds multiple new capabilities.
 ***** adding keyring
 And if you skip the step with adding infinality lib into 'arch.conf', you should do this now.
-$ sudo pacman-key -r ID 962DDE58  
- 
+$ sudo pacman-key -r ID 962DDE58
+
 If you don't need fonts and you already know which fonts you want to set, you may want to install 'infinality-bundle' for all goods
 $ yaourt -S infinality-bundle
 $ yaourt -S freetype2-infinality fontconfig-infinality
@@ -472,12 +476,12 @@ $ cd && git clone https://github.com/powerline/fonts.git && cd _$ && ./install
 This will install powerline fonts into your system.
 
 USEFUL
-you can check your font path with 
+you can check your font path with
 $ xset q
 and update cache there
 $ fc-cache -vf ~/.local/share/fonts
 
-A huge collection of free fonts (including ubuntu, inconsolata, droid, etc.) 
+A huge collection of free fonts (including ubuntu, inconsolata, droid, etc.)
 $ yaourt -S ttf-google-fonts-git
 *NB* Your font dialog might get very long as >100 fonts will be added and 250mb will be downloaded.
 ***** picking preset
@@ -486,7 +490,7 @@ $ sudo fc-presets set
 
 pick combi preset
 ***** fontconfig parameters
-When you activate the combi preset, the content of 'custom' configuration files 
+When you activate the combi preset, the content of 'custom' configuration files
 (/etc/fonts/conf.avail.infinality/combi) can be changed.
 So I will change monospace and sans-serif to 'Roboto'
 When you are done, do not forget to create a backup copy of the 'combi' directory.
@@ -512,16 +516,16 @@ $ git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d
 $ git clone https://github.com/tarjoilija/zgen.git .zgen
 $ git clone https://github.com/unixorn/zsh-quickstart-kit.git
 
- [[https://github.com/sorin-ionescu/prezto][prezto]]  
+[[https://github.com/sorin-ionescu/prezto][prezto]]
 ***** So first we need to run zsh
 $ zsh
-***** clone prezto repo 
+***** clone prezto repo
 $ git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
 ***** Create a new Zsh configuration by copying the Zsh configuration files provided:
 $ setopt EXTENDED_GLOB
 $ for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
-    ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
-  done
+ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
+done
 ***** Set Zsh as your default shell:
 $ chsh -s /bin/zsh
 and open new window with zsh
@@ -544,7 +548,7 @@ $ sudo yaourt -S [[https://github.com/naelstrof/maim][maim]] slop
 **** Audio
 $ sudo pacman -S lollypop cmus
 **** CPU
-For more explanations check this [[https://forums.opensuse.org/showthread.php/499036-How-do-I-set-the-CPU-Frequency-Governor-In-Opensuse-13-1?p=2650573#post2650573][link]] 
+For more explanations check this [[https://forums.opensuse.org/showthread.php/499036-How-do-I-set-the-CPU-Frequency-Governor-In-Opensuse-13-1?p=2650573#post2650573][link]]
 $ sudo pacman -S cpupower
 $ sudo systemctl enable cpupower.service
 $ sudo systemctl start cpupower.service
@@ -554,6 +558,6 @@ $ yaourt -S rtorrent-vi-color
 You may want to install '$ yaourt -S rtorrent' if you want rtorrent without vim keybindings
 ** Notes for me
 *C* Dont forget to make infinality script for replacing combi folder
-** Resources 
+** Resources
 
 This may be handy for zenbook owners [[https://wiki.archlinux.org/index.php/ASUS_Zenbook_Pro_UX501][Zenbook Pro UX501VM]]
