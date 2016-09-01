@@ -433,49 +433,77 @@ reboot
 #+END_SRC
 ** Desktop
 *** X server
-$ sudo pacman -S xorg-server xorg-server-utils xorg-xbacklight xbindkeys xorg-xinit xorg-xinput xorg-twm xorg-xclock xterm xdotool
+#+BEGIN_SRC sh
+sudo pacman -S xorg-server xorg-server-utils xorg-xbacklight xbindkeys xorg-xinit xorg-xinput xorg-twm xorg-xclock xterm xdotool
+#+END_SRC
 **** xinit
-***** So first we need to check if we have [[https://wiki.archlinux.org/index.php/Xinit#xinitrc][xinitrc]] file in our user directory.
-$ cat ~/.xinitrc
-***** If not we should create or copy it:
-$ sudo touch ~/. Xinitrc
-***** Or we can just copy it from X11/xinit folder
-$ cp /etc/X11/xinit/xinitrc ~/.xinitrc
-***** don't forget to make it executable
-$ sudo chmod +x ~/.xinitrc
-***** I want to load dvorak layout each time my system is loading:
-setxkbmap dvorak &&
-***** And lets execute wm
-Depending on [[https://wiki.archlinux.org/index.php/window_manager][window manager]] you choose, we should 'exec' it:
-'exec awesome'
-***** Recommendations
-'exit 0' in the very end.
-To check if everything is working properly we can execute command 'startx'
+- So first we need to check if we have [[https://wiki.archlinux.org/index.php/Xinit#xinitrc][xinitrc]] file in our user directory.
+  #+BEGIN_SRC sh
+  cat ~/.xinitrc
+  #+END_SRC
+- If not we should create or copy it:
+  #+BEGIN_SRC sh
+  sudo touch ~/. Xinitrc
+  #+END_SRC
+- Or we can just copy it from X11/xinit folder
+  #+BEGIN_SRC sh
+cp /etc/X11/xinit/xinitrc ~/.xinitrc
+  #+END_SRC
+- Don't forget to make it executable
+  #+BEGIN_SRC sh
+sudo chmod +x ~/.xinitrc
+  #+END_SRC
+- I want to load dvorak layout each time my system is loading and depends on [[https://wiki.archlinux.org/index.php/window_manager][window manager]] you choose, we should 'exec' it: 
+  #+BEGIN_SRC sh
+  setxkbmap dvorak &&
+  exec awesome
+  exit 0
+  #+END_SRC
+  To check if everything is working properly we can execute command =startx=.
 **** xkeybindings
-$ sudo pacman -S xbindkeys
-If not using *script* Create a default file using xbindkeys
-$ xbindkeys --defaults > $HOME/.xbindkeysrc
+#+BEGIN_SRC sh
+sudo pacman -S xbindkeys
+#+END_SRC
+Create a default file using xbindkeys:
+#+BEGIN_SRC sh
+xbindkeys --defaults > $HOME/.xbindkeysrc
+#+END_SRC
 Restart .xkeybindings
-$ xbindkeys -p
+#+BEGIN_SRC sh
+xbindkeys -p
+#+END_SRC
 
 *** Login manager
-$ sudo pacman -S [[https://wiki.archlinux.org/index.php/SLiM#Configuration][slim]]
-$ sudo systemctl enable slim.service
-$ sudo git clone https://github.com/naglis/slim-minimal.git /usr/share/slim/themes/slim-minimal
-$ sudo vim /etc/slim.conf
+#+BEGIN_SRC sh
+sudo pacman -S [[https://wiki.archlinux.org/index.php/SLiM#Configuration][slim]]
+sudo systemctl enable slim.service
+sudo git clone https://github.com/naglis/slim-minimal.git /usr/share/slim/themes/slim-minimal
+#+END_SRC
+#+BEGIN_SRC sh
+sudo vim /etc/slim.conf
+#+END_SRC
+
+#+BEGIN_SRC org
 default_user        me
 current_theme       slim-minimal
-=Tip= To enter console, type 'console' instead of name
+#+END_SRC
+*Tip!* To enter console, type =console= instead of username.
 *** Display manager
-If you had never used tilling wm's before, read this [[https://awesomewm.org/wiki/My_first_awesome#Change_the_theme][beginners guide]]
-$ sudo pacman -S [[https://wiki.archlinux.org/index.php/awesome][awesome]] vicious shifty
-***** Themes
+If you had never used tilling wm's before, read this [[https://awesomewm.org/wiki/My_first_awesome#Change_the_theme][beginners guide]] for [[https://wiki.archlinux.org/index.php/awesome%0Ahttps://wiki.archlinux.org/index.php/awesome][awesome]].
+#+BEGIN_SRC org
+sudo pacman -S awesome vicious shifty
+#+END_SRC
+- Themes
 This one is pretty good, but seems too dark for me, maybe later I will use it.
-$ sudo git clone --recursive https://github.com/barwinco/pro /.config/awesome
+#+BEGIN_SRC sh
+sudo git clone --recursive https://github.com/barwinco/pro /.config/awesome
+#+END_SRC
 
 This is the current one I'm using now, basically its a bundle of themes, so you can switch them:
+#+BEGIN_SRC sh
 cd ~/.config/awesome
 git clone --recursive https://github.com/copycat-killer/awesome-copycats.git
+#+END_SRC
 *** Terminal *(more explanation needed)
 So the [[https://wiki.archlinux.org/index.php/Termite][termite]] is kind of vim based terminal, which you can control with a lot of useful vim keybindings.
 We already have [[https://wiki.archlinux.org/index.php/Xterm][xterm]] - simple but stable.
