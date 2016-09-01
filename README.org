@@ -111,16 +111,24 @@ mkfs.ext4 /dev/sdb4
 
 If there is any warning like: ~/dev/sda2~ contains a ext4 file system, you should press =y=.
 *** Mounting partitions
-***** So first what we want to do is assign /mnt to our root partiton
-mount /dev/sda2 /mnt
-***** Next we need to create some new folders in our /mnt
-mkdir /mnt/boot
-mkdir /mnt/home
-***** So lets mount this folders
-mount /dev/sda1 /mnt/boot
-mount /dev/sdb1 /mnt/home
-***** And enable swap
-swapon /dev/sdb2
+1) So first what we want to do is assign /mnt to our root partiton
+   #+BEGIN_SRC 
+   mount /dev/sda2 /mnt
+   #+END_SRC
+2) Next we need to create some new folders in our /mnt
+   #+BEGIN_SRC 
+   mkdir /mnt/boot
+   mkdir /mnt/home
+   #+END_SRC
+3) So lets mount this folders
+   #+BEGIN_SRC 
+   mount /dev/sda1 /mnt/boot
+   mount /dev/sdb1 /mnt/home
+   #+END_SRC
+4) And enable swap
+   #+BEGIN_SRC 
+   swapon /dev/sdb2
+   #+END_SRC
 *** Mirrorlist
 I prefer to download files fast, that why I want to use fastest mirrors.
 For detailed commands explanation check [[https://wiki.archlinux.org/index.php/mirrors#List_by_speed][wiki]].
