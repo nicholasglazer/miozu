@@ -341,7 +341,7 @@ Defaults rootpw
 **** General
 - Checking drivers
   Lets see our drivers, what we need is *Network controller*
-#+BEGIN_SRC sh
+  #+BEGIN_SRC sh
 lspci -k
 ip link
 #+END_SRC
