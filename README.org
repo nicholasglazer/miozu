@@ -66,11 +66,11 @@ Press =enter= first, then =x= for advanced config and =z= for zap.
 For my root I'd set 80G, you will be fine even with 30G. So if you may want to devide space for more 'roots', e.g. for other distros(ubuntu, fedora, etc..), 30G should be enough.
 I had left *sda3* for Windows. I will make double boot later.
 
-| #    | size      | FS type | name |
+| #    | size      | Fs type | name |
 |------+-----------+---------+------|
-  | sda1 | 1g        |    EF00 | boot |
-  | sda2 | 80g       |    8300 | root |
-  | sda3 | else 38.2 |    0700 | -    |
+| sda1 | 1g        |    EF00 | boot |
+| sda2 | 80g       |    8300 | root |
+| sda3 | else 38.2 |    0700 | -    |
 ***** HHD
   I will use sdb(HDD) as a home for user files ( movies, music, pics, ect...).
   - *sdb2* depends on your RAM quantity. Usually you should take 1.5 of your RAM.
@@ -179,7 +179,7 @@ arch-chroot /mnt
 My next step will be installing [[https://wiki.archlinux.org/index.php/vim][vim]] text editor.
 If you'r not familiar with vim and you don't have time to learn this *great* console editor, just skip this step and continue using *nano*.
 #+BEGIN_SRC sh
-pacman -S vim
+sudo pacman -S vim
 #+END_SRC
 *Vim tips:*
 - Press =esc= to make sure you are in *command mode*.
@@ -189,7 +189,7 @@ pacman -S vim
   #+END_SRC
 - Press =enter= and go into the *insert mode*
   1) by pressing =i= you will enter to insert mode (you can type and edit now)
-  2) delete comments =#=
+  2) remove comments =#=
 - Save and exit:
   1) type =:wq= (you will see this letters in a very bottom)
 *** Locale
@@ -200,7 +200,7 @@ echo LANG=en_US.UTF-8 > /etc/locale.conf
 export LANG=en_US.UTF-8
 #+END_SRC
 *** Localtime
-Replace *Israel* with the country you prefer. You may also want to =ls /usr/share/zoneinfo/= first, to explore folder.
+Replace *Israel* with the country you prefer. You may also want to do =ls /usr/share/zoneinfo/= first, to explore folder.
 #+BEGIN_SRC sh
 ln -s /usr/share/zoneinfo/Israel > /etc/localtime
 #+END_SRC
@@ -233,7 +233,8 @@ If you are running a 64bit system then you need to enable the multilib repositor
   #Include = /etc/pacman.d/mirrorlist
   #+END_SRC
 
-- *Tip*
+- *Tip!* 
+
   While we are still inside ~pacman.conf~ file
   Let’s also add the AUR repo so we can easily install packages from AUR.
   Add these lines at the bottom of the file:
@@ -254,23 +255,25 @@ If you are running a 64bit system then you need to enable the multilib repositor
   #+END_SRC
 *** Deps
 Lets install some imortant dependecies:
+*Note!* This step is not completed yet.
 #+BEGIN_SRC sh
 sudo pacman -S yaourt zsh emacs rfkill unzip openssh
+#+END_SRC
+#+BEGIN_SRC sh
 yaourt -S htop powertop lm_sensors termite thefuck
 #+END_SRC
-*Note* This step is not completed yet.
 *** Passwords
 - Root
   #+BEGIN_SRC sh
 passwd
   #+END_SRC
 - User
-  1) First we need to add one:
+  - First we need to add one:
      Replace ~username~ with one preffered by you:
      #+BEGIN_SRC sh
      useradd -m -g users -G wheel,storage,power -s /bin/zsh username
      #+END_SRC
-  2) Set password for a new user:
+  - Set password for a new user:
      #+BEGIN_SRC sh
      passwd username
      #+END_SRC
@@ -278,31 +281,34 @@ passwd
 #+BEGIN_SRC sh
 EDITOR=vim visudo
 #+END_SRC
-And we should uncomment this line
+And we should uncomment this line:
 #+BEGIN_SRC org
 %wheel ALL=(ALL) ALL
 #+END_SRC
-*Note* This system will be only for my own usage.
+*Note!* This system will be only for my own usage.
 If you are using server or someone else have access to the wheel group. You may want to require sudoers to type root password, instead of their own.
 In this case add this line:
 #+BEGIN_SRC org
 Defaults rootpw
 #+END_SRC
 *** Bootloader
-- checking EFI
+- Checking EFI
+
   #+BEGIN_QUOTE
   @gloriouseggroll recommended to double check if our EFI variables had been mounted
   #+END_QUOTE
   #+BEGIN_SRC sh
    mount -t efivarfs efivarfs /sys/firmware/efi/efivars
   #+END_SRC
-  You will see something like "efivarfs is already mounted", this means everything is fine.
+  You will see something like ~"efivarfs is already mounted"~, this means everything is fine.
 - Boot manager
+
   So the [[https://wiki.archlinux.org/index.php/systemd-boot#Standard_root_installations][systemd-boot]] is a replacement for [[https://wiki.archlinux.org/index.php/GRUB][grub]].
   #+BEGIN_SRC sh
    bootctl install
   #+END_SRC
 - Root UUID
+
   Do you remember I told you to write down your UUID of a root partition?
   If you didn't write it somewhere, type this:
   #+BEGIN_SRC sh
@@ -311,23 +317,23 @@ Defaults rootpw
   Where =x= is the device letter and =Y= is the partition number for the root partition.
   In my case I have root folder in sda2.
 - [[https://wiki.archlinux.org/index.php/systemd-boot#Standard_root_installations][Kernel]] config file (add more description about intel and nvidia)
-   1) Update [[https://wiki.archlinux.org/index.php/microcode#systemd-boot][microcode]] to avoid freezes
-    #+BEGIN_SRC sh
-    sudo pacman -S intel-ucode
-    #+END_SRC
-   2) Lets create a conf file
-      #+BEGIN_SRC sh
-      vim /boot/loader/entries/arch.conf
-      #+END_SRC
-   3) and write down
-      *ATTENTION* The root options are very delicate part, you should double check them for your laptop model. For [[https://wiki.archlinux.org/index.php/ASUS_Zenbook_Pro_UX501][Zenbook Pro UX501VM]] I have this options working properly.
-      #+BEGIN_SRC org
-      title Arch Linux
-      linux /vmlinuz-linux
-      initrd /intel-ucode.img
-      initrd /initramfs-linux.img
-      options root=PARTUUID=write_down_root_UUID_here rw i915.preliminary_hw_support=1 intel_idle.max_cstate=1 i915.enable_execlists=0 acpi_osi= acpi_backlight=native quiet
-      #+END_SRC
+  - Update [[https://wiki.archlinux.org/index.php/microcode#systemd-boot][microcode]] to avoid freezes
+   #+BEGIN_SRC sh
+   sudo pacman -S intel-ucode
+   #+END_SRC
+  - Lets create a conf file
+     #+BEGIN_SRC sh
+     vim /boot/loader/entries/arch.conf
+     #+END_SRC
+  - and write down
+     *Note!* The root options is very delicate part, you should double check them for your laptop model. For [[https://wiki.archlinux.org/index.php/ASUS_Zenbook_Pro_UX501][Zenbook Pro UX501VM]] I have this options working properly.
+     #+BEGIN_SRC org
+     title Arch Linux
+     linux /vmlinuz-linux
+     initrd /intel-ucode.img
+     initrd /initramfs-linux.img
+     options root=PARTUUID=write_down_root_UUID_here rw i915.preliminary_hw_support=1 intel_idle.max_cstate=1 i915.enable_execlists=0 acpi_osi= acpi_backlight=native quiet
+     #+END_SRC
 *** Network
 **** General
 ***** Checking drivers
