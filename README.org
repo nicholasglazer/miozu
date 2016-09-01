@@ -164,26 +164,23 @@ Press =Enter= and agree with everything.
   #+BEGIN_SRC sh
   genfstab -U -p /mnt >> /mnt/etc/fstab
   #+END_SRC
-****** Enable [[https://ru.wikipedia.org/wiki/TRIM][TRIM]] (for SSD) 
+**** Enable [[https://ru.wikipedia.org/wiki/TRIM][TRIM]] (for SSD) 
 *Note* You may want to do this in case your swap is on SSD.
 - Edit with nano.
   #+BEGIN_SRC sh
   nano /mnt/etc/fstab
-  #+END_SRC
-
-- *Nano Tip:* 
-  While this is first editing with [[https://wiki.archlinux.org/index.php/nano][nano]]. You should know at least how to exit it. 
-  So save and exit with: 
-  - ctrl+o (save) 
-  - ctrl+x (exit)
-
+  #+END_SRC sh
 - Change defaults to defaults,discard.
   Where ~X~ your swap partition.
   #+BEGIN_SRC org
   /dev/sdX none swap defaults,discard 0 0
   #+END_SRC
-
-You can also write down your root UUID ~/~. It will be useful later in [[https://wiki.archlinux.org/index.php/systemd-boot#Standard_root_installations][bootloader]] step.
+- You can also write down your root UUID ~/~. It will be useful later in [[https://wiki.archlinux.org/index.php/systemd-boot#Standard_root_installations][bootloader]] step.
+*Nano Tips:* 
+  While this is first editing with [[https://wiki.archlinux.org/index.php/nano][nano]]. You should know at least how to exit it. 
+  So save and exit with: 
+  - ctrl+o (save) 
+  - ctrl+x (exit)
 *** Chroot into system
 Lets enter the system.
 #+BEGIN_SRC sh
@@ -191,7 +188,7 @@ arch-chroot /mnt
 #+END_SRC
 *** Vim
 My next step will be installing [[https://wiki.archlinux.org/index.php/vim][vim]] text editor.
-If you'r not familiar with vim and you don't have time to learn this *great* console editor, just skip this step and continue using *nano*
+If you'r not familiar with vim and you don't have time to learn this *great* console editor, just skip this step and continue using *nano*.
 #+BEGIN_SRC sh
 pacman -S vim
 #+END_SRC
@@ -202,42 +199,56 @@ pacman -S vim
   en_US.UTF-8
   #+END_SRC
 - Press =enter= and go into the *insert mode*
-  1) by pressing ~i~ (so now you can type)
+  1) by pressing =i= you will enter to insert mode (you can type and edit now)
   2) delete comments =#=
-- Save and exit
-  type =:wq= (you will see this letters in a very bottom)
+- Save and exit:
+  1) type =:wq= (you will see this letters in a very bottom)
 *** Locale
-$ vim /etc/locale.gen
-$ locale-gen
-$ echo LANG=en_US.UTF-8 > /etc/locale.conf
-$ export LANG=en_US.UTF-8
+#+BEGIN_SRC sh
+vim /etc/locale.gen
+locale-gen
+echo LANG=en_US.UTF-8 > /etc/locale.conf
+export LANG=en_US.UTF-8
+#+END_SRC
 *** Localtime
-Replace *Israel* with your country. You may also want to 'ls /usr/share/zoneinfo/' first.
-$ ln -s /usr/share/zoneinfo/Israel > /etc/localtime
+Replace *Israel* with the country you prefer. You may also want to =ls /usr/share/zoneinfo/= first, to explore folder.
+#+BEGIN_SRC sh
+ln -s /usr/share/zoneinfo/Israel > /etc/localtime
+#+END_SRC
 *** Hardware clock
-$ hwclock --systohc -–utc
+#+BEGIN_SRC sh
+hwclock --systohc -–utc
+#+END_SRC
 *** Hostname
-***** Basic method (working in arch-chroot)
+***** Basic method (*working in arch-chroot*)
 [[https://en.wikipedia.org/wiki/Hostname][Hostname]] is a unique name created to identify a machine on a network.
-Replace uniquename with anything you want 
-$ echo uniquename > /etc/hostname
-
-*NB* Later you will see something like user@uniquename
+Replace ~uniquename~ with anything you want:
+#+BEGIN_SRC sh
+echo uniquename > /etc/hostname
+#+END_SRC
+*Note* Later you will see something like ~user@uniquename~
 ***** Generate with hostnamectl (*not working in arch-chroot!*)
-$ hostnamectl set-hostname myhostname
+#+BEGIN_SRC sh
+hostnamectl set-hostname myhostname
+#+END_SRC
 *** Add repositories
 Enabling multilib and Arch AUR community repositories.
 If you are running a 64bit system then you need to enable the multilib repository. 
-**** To do this open the pacman.conf file:
-$ vim /etc/pacman.conf
-**** Modifying
-***** Uncomment
-#[multilib]
-#Include = /etc/pacman.d/mirrorlist
-***** While we are still inside pacman.conf file
+- To do this open the pacman.conf file:
+  #+BEGIN_SRC sh
+  vim /etc/pacman.conf
+  #+END_SRC
+- Uncomment
+  #+BEGIN_SRC org
+  #[multilib]
+  #Include = /etc/pacman.d/mirrorlist
+  #+END_SRC
+
+*Tip*
+While we are still inside ~pacman.conf~ file
 Let’s also add the AUR repo so we can easily install packages from AUR. 
 Add these lines at the bottom of the file:
-
+#+BEGIN_SRC org
 [archlinuxfr]
 Server = http://repo.archlinux.fr/$arch
 SigLevel = Never
@@ -247,13 +258,18 @@ Also you may want to add infinality lib:
 [infinality-bundle-fonts]
 Server = http://bohoomil.com/repo/fonts
 SigLevel = Never
+#+END_SRC
 
-***** And update 
-$ pacman -Syyu
+- And update the system
+  #+BEGIN_SRC sh
+  pacman -Syyu
+  #+END_SRC
 *** Deps
 Lets install some imortant dependecies
-$ sudo pacman -S yaourt zsh emacs rfkill unzip openssh
-$ yaourt -S htop powertop lm_sensors termite thefuck
+#+BEGIN_SRC sh
+sudo pacman -S yaourt zsh emacs rfkill unzip openssh
+yaourt -S htop powertop lm_sensors termite thefuck
+#+END_SRC
 *** Passwords
 ***** Root
 $ passwd
