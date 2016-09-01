@@ -165,17 +165,24 @@ Press =Enter= and agree with everything.
   genfstab -U -p /mnt >> /mnt/etc/fstab
   #+END_SRC
 ****** Enable [[https://ru.wikipedia.org/wiki/TRIM][TRIM]] (for SSD) 
-$ nano /mnt/etc/fstab
-*Note* In case your swap is on SSD. Change defaults to defaults,discard.
-Where ~X~ your swap partition.
-#+BEGIN_SRC org
-/dev/sdX none swap defaults,discard 0 0
-#+END_SRC
+*Note* You may want to do this in case your swap is on SSD.
+- Edit with nano.
+  #+BEGIN_SRC sh
+  nano /mnt/etc/fstab
+  #+END_SRC
 
-While this is first editing with [[https://wiki.archlinux.org/index.php/nano][nano]]. You should know at least how to exit it. 
-So save and exit with: 
-- ctrl+o (save) 
-- ctrl+x (exit)
+- *Nano Tip:* 
+  While this is first editing with [[https://wiki.archlinux.org/index.php/nano][nano]]. You should know at least how to exit it. 
+  So save and exit with: 
+  - ctrl+o (save) 
+  - ctrl+x (exit)
+
+- Change defaults to defaults,discard.
+  Where ~X~ your swap partition.
+  #+BEGIN_SRC org
+  /dev/sdX none swap defaults,discard 0 0
+  #+END_SRC
+
 You can also write down your root UUID ~/~. It will be useful later in [[https://wiki.archlinux.org/index.php/systemd-boot#Standard_root_installations][bootloader]] step.
 *** Chroot into system
 Lets enter the system.
