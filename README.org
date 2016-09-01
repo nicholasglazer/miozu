@@ -286,11 +286,19 @@ passwd
      passwd username
      #+END_SRC
 *** Sudoers
-$ EDITOR=vim visudo
-and we should uncomment this line - '%wheel ALL=(ALL) ALL'
-*NB* This system will be only for my own usage. 
+#+BEGIN_SRC sh
+EDITOR=vim visudo
+#+END_SRC
+And we should uncomment this line
+#+BEGIN_SRC org
+ %wheel ALL=(ALL) ALL
+#+END_SRC
+*Note* This system will be only for my own usage. 
 If you are using server or someone else have access to the wheel group. You may want to require sudoers to type root password, instead of their own.
-In this case add this line 'Defaults rootpw'
+In this case add this line:
+#+BEGIN_SRC org
+Defaults rootpw
+#+END_SRC
 *** Bootloader
 ***** checking EFI
 @gloriouseggroll recommended to double check if our EFI variables have already been mounted
