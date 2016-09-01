@@ -342,9 +342,9 @@ Defaults rootpw
 - Checking drivers
   Lets see our drivers, what we need is *Network controller*
   #+BEGIN_SRC sh
-lspci -k
-ip link
-#+END_SRC
+  lspci -k
+  ip link
+  #+END_SRC
 - And lets bring the interface up:
   It usually starts with =w=, in my case I have ~wlp3s0~:
   #+BEGIN_SRC sh
@@ -368,11 +368,10 @@ sudo systemctl disable netctl.service / NetworkManager.service / dhcpcd.service
 I felt some pain with ntectl bugs, trying to configure everything to work properly takes too much time. But just in case you still need/want this one.
 - Installing drivers
 #+BEGIN_SRC sh
-  pacman -S wpa_actiond wpa_supplicant dhclient dialog
+ sudo pacman -S wpa_actiond wpa_supplicant dhclient dialog
 #+END_SRC
 - Default DHCP client
   I've had issues with connections, and 'dhclient' solved them.
-
   #+BEGIN_SRC sh
   sudo vim /etc/netctl/dhcp
   #+END_SRC
@@ -384,35 +383,54 @@ I felt some pain with ntectl bugs, trying to configure everything to work proper
   I had iwlwifi [[https://bbs.archlinux.org/viewtopic.php?id=213363][bug]] and [[https://wiki.archlinux.org/index.php/Wireless_network_configuration#iwlwifi][iwlwifi.conf]] just in case.
 *** Drivers
 **** Touchpad
-For touchpad *tapping* use [[https://wiki.archlinux.org/index.php/Libinput#Touchpad_tapping][t]]his X11/xorg.conf.d/30-touchpad.conf
-$ sudo pacman -S xf86-input-libinput
+For touchpad *tap-to-click* use [[https://wiki.archlinux.org/index.php/Libinput#Touchpad_tapping][t]]his ~X11/xorg.conf.d/30-touchpad.conf~
+#+BEGIN_SRC sh
+sudo pacman -S xf86-input-libinput
+#+END_SRC
 
-*$xmodmap -pke* will add more comments later
-**** Video *(more explanation later)
-*NB* Be careful, this part may cause problems if you don't know what you are doing. Read [[https://wiki.archlinux.org/index.php/bumblebee#Installing_Bumblebee_with_Intel.2FNVIDIA][bumblebee]] article first.
-****** install deps
-$ sudo pacman -S bumblebee mesa xf86-video-intel nvidia lib32-virtualgl lib32-nvidia-utils lib32-mesa-libgl
-pick mesa-libgl if conflict as in bumblebee installation guide
-pick xf86-input-libinput if conflict for [[https://wiki.archlinux.org/index.php/ASUS_Zenbook_Pro_UX501#Touch_Pad][touch pad]] working properly
-****** Add username to bumblebee group
+This option indicates that the current keymap table should be printed on the standard output in the form of expressions that can be fed back to xmodmap.
+#+BEGIN_SRC sh
+xmodmap -pke 
+#+END_SRC
+**** Video
+- *Note!* Be careful, this part may cause problems if you don't know what you are doing. *Read [[https://wiki.archlinux.org/index.php/bumblebee#Installing_Bumblebee_with_Intel.2FNVIDIA][bumblebee]] article first!*
+- Install deps
+  #+BEGIN_SRC sh
+sudo pacman -S bumblebee mesa xf86-video-intel nvidia lib32-virtualgl lib32-nvidia-utils lib32-mesa-libgl
+  #+END_SRC
+pick mesa-libgl if in conflict as in bumblebee installation guide
+pick xf86-input-libinput if in conflict for [[https://wiki.archlinux.org/index.php/ASUS_Zenbook_Pro_UX501#Touch_Pad][touchpad]] working properly
+- Add username to bumblebee group
 Change USER with your username
-$ gpasswd -a USER bumblebee
-****** enable bumblebee
-$ systemctl enable bumblebeed.service
+#+BEGIN_SRC sh
+gpasswd -a USER bumblebee
+#+END_SRC
+- Enable bumblebee
+  #+BEGIN_SRC sh
+sudo systemctl enable bumblebeed.service
+  #+END_SRC
 **** Audio
 [[https://wiki.archlinux.org/index.php/Advanced_Linux_Sound_Architecture#Installation][ALSA]] is a set of buit-in kernel modules,, but after install it may be muted.
-***** So lets install utils and manage it:
-$ sudo pacman -S alsa-lib alsa-utils [[https://wiki.archlinux.org/index.php/PulseAudio#Installation][pulseaudio]]
-***** And now lets unmute
-$ alsamixer
+- So lets install utils and manage it:
+  #+BEGIN_SRC sh
+  sudo pacman -S alsa-lib alsa-utils [[https://wiki.archlinux.org/index.php/PulseAudio#Installation][pulseaudio]]
+  #+END_SRC
+- And now lets unmute
+  #+BEGIN_SRC sh
+  alsamixer
+  #+END_SRC
 For more details see: [[https://wiki.archlinux.org/index.php/Advanced_Linux_Sound_Architecture#Unmute_with_alsamixer][#unmute with alsamixer]]
-***** We can test it
-$ speaker-test -c 2
+- We can test it
+  #+BEGIN_SRC sh
+  speaker-test -c 2
+  #+END_SRC
 *** Reboot
 So now we can reboot:
-$ exit
-$ umount -R /mnt
-$ reboot
+#+BEGIN_SRC sh
+exit
+umount -R /mnt
+reboot
+#+END_SRC
 ** Desktop
 *** X server
 $ sudo pacman -S xorg-server xorg-server-utils xorg-xbacklight xbindkeys xorg-xinit xorg-xinput xorg-twm xorg-xclock xterm xdotool
