@@ -112,21 +112,21 @@ mkfs.ext4 /dev/sdb4
 If there is any warning like: ~/dev/sda2~ contains a ext4 file system, you should press =y=.
 *** Mounting partitions
 1) So first what we want to do is assign /mnt to our root partiton
-   #+BEGIN_SRC 
+   #+BEGIN_SRC sh
    mount /dev/sda2 /mnt
    #+END_SRC
 2) Next we need to create some new folders in our /mnt
-   #+BEGIN_SRC 
+   #+BEGIN_SRC sh
    mkdir /mnt/boot
    mkdir /mnt/home
-   #+END_SRC
+   #+END_SRC sh
 3) So lets mount this folders
    #+BEGIN_SRC 
    mount /dev/sda1 /mnt/boot
    mount /dev/sdb1 /mnt/home
-   #+END_SRC
+   #+END_SRC sh
 4) And enable swap
-   #+BEGIN_SRC 
+   #+BEGIN_SRC sh
    swapon /dev/sdb2
    #+END_SRC
 *** Mirrorlist
@@ -166,23 +166,38 @@ genfstab -U -p /mnt >> /mnt/etc/fstab
 #+END_SRC
 **** Enable [[https://ru.wikipedia.org/wiki/TRIM][TRIM]] (for SSD) 
 $ nano /mnt/etc/fstab
-*NB* In case your swap is on SSD. Change defaults to defaults,discard:
+*Note* In case your swap is on SSD. Change defaults to defaults,discard.
+Where ~X~ your swap partition.
+#+BEGIN_SRC org
 /dev/sdX none swap defaults,discard 0 0
+#+END_SRC
 
-=P.S= While this is first editing with [[https://wiki.archlinux.org/index.php/nano][nano]]. You should know at least how to exit it. So save and exit with ctrl+o(save), ctrl+x(exit)
-=P.P.S= You can also write down your root UUID '/'. It will be useful later in [[https://wiki.archlinux.org/index.php/systemd-boot#Standard_root_installations][bootloader]] step.
+While this is first editing with [[https://wiki.archlinux.org/index.php/nano][nano]]. You should know at least how to exit it. 
+So save and exit with: 
+- ctrl+o (save) 
+- ctrl+x (exit)
+You can also write down your root UUID ~/~. It will be useful later in [[https://wiki.archlinux.org/index.php/systemd-boot#Standard_root_installations][bootloader]] step.
 *** Chroot into system
 Lets enter the system.
-$ arch-chroot /mnt
+#+BEGIN_SRC sh
+arch-chroot /mnt
+#+END_SRC
 *** Vim
 My next step will be installing [[https://wiki.archlinux.org/index.php/vim][vim]] text editor.
-If you'r not familiar with vim and you don't have time to learn this great console editor, just skip this step and continue using *nano*
-$ pacman -S vim
-=Vim tips=
-***** Press 'esc' to make sure you are in *command mode*
-***** For search press '/' and type 'en_US.UTF-8'
-***** Press 'enter' and go into the *insert mode* by pressing 'i' (now you can type), so delete comments '#'
-***** Save and exit; type ':qw' (you will see letters in a very bottom)
+If you'r not familiar with vim and you don't have time to learn this *great* console editor, just skip this step and continue using *nano*
+#+BEGIN_SRC sh
+pacman -S vim
+#+END_SRC
+Vim tips
+- Press =esc= to make sure you are in *command mode*.
+- For search press =/= and type:
+  #+BEGIN_SRC org
+  en_US.UTF-8
+  #+END_SRC
+- Press =enter= and go into the *insert mode*
+1) by pressing =i= (so now you can type)
+2) delete comments =#=
+- Save and exit; type =:qw= (you will see letters in a very bottom)
 *** Locale
 $ vim /etc/locale.gen
 $ locale-gen
