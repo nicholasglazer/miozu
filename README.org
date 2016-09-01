@@ -276,12 +276,12 @@ yaourt -S htop powertop lm_sensors termite thefuck
 passwd
   #+END_SRC
 - User
-  1)First we need to add one:
+  1) First we need to add one:
      Replace ~username~ with one preffered by you:
      #+BEGIN_SRC sh
      useradd -m -g users -G wheel,storage,power -s /bin/zsh username
      #+END_SRC
-  2)Set password for a new user:
+  2) Set password for a new user:
      #+BEGIN_SRC sh
      passwd username
      #+END_SRC
