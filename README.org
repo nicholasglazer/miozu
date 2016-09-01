@@ -341,10 +341,10 @@ Defaults rootpw
 **** General
 - Checking drivers
   Lets see our drivers, what we need is *Network controller*
-  #+BEGIN_SRC sh
-  lspci -k
-  ip link
-  #+END_SRC
+#+BEGIN_SRC sh
+lspci -k
+ip link
+#+END_SRC
 - And lets bring the interface up:
   It usually starts with =w=, in my case I have ~wlp3s0~:
   #+BEGIN_SRC sh
@@ -367,9 +367,9 @@ sudo systemctl disable netctl.service / NetworkManager.service / dhcpcd.service
 **** If Netctl
 I felt some pain with ntectl bugs, trying to configure everything to work properly takes too much time. But just in case you still need/want this one.
 - Installing drivers
-  #+BEGIN_SRC sh
+#+BEGIN_SRC sh
   pacman -S wpa_actiond wpa_supplicant dhclient dialog
-  #+END_SRC
+#+END_SRC
 - Default DHCP client
   I've had issues with connections, and 'dhclient' solved them.
 
