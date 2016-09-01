@@ -160,11 +160,11 @@ pacstrap -i /mnt base base-devel git
 #+END_SRC
 Press =Enter= and agree with everything.
 *** Generate and edit fstab file
-**** Generate
-#+BEGIN_SRC sh
-genfstab -U -p /mnt >> /mnt/etc/fstab
-#+END_SRC
-**** Enable [[https://ru.wikipedia.org/wiki/TRIM][TRIM]] (for SSD) 
+- Generate
+  #+BEGIN_SRC sh
+  genfstab -U -p /mnt >> /mnt/etc/fstab
+  #+END_SRC
+****** Enable [[https://ru.wikipedia.org/wiki/TRIM][TRIM]] (for SSD) 
 $ nano /mnt/etc/fstab
 *Note* In case your swap is on SSD. Change defaults to defaults,discard.
 Where ~X~ your swap partition.
