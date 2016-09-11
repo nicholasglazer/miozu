@@ -10,20 +10,20 @@
 
 ** Preparations
 *** Live usb
-I assumed that you'r already have bootable flash drive.
-If not check [[https://wiki.archlinux.org/index.php/disk_cloning][dd]] and official website for arch [[https://www.archlinux.org/download/][downloading]].
+I assumed that you already have a bootable flash drive.
+If not, check [[https://wiki.archlinux.org/index.php/disk_cloning][dd]] and the official website for arch [[https://www.archlinux.org/download/][downloading]].
 *** BIOS config
 So the first step will be to load the flash drive.
- You will need to change the boot priority in BIOS. So just after reboot press =F2= or =del= to see the BIOS menu.
+You will need to change the boot priority in BIOS. So just after reboot, press =F2= or =del= to see the BIOS menu.
 *** Kernel boot options
- To avoid problems with tiny fonts or fan speed, we should run new install with the kernel option which will disable console frame buffer.
+ To avoid problems with tiny fonts or fan speed, we should run the new install with the kernel option which will disable console frame buffer.
  When selection menu appears, press =E=, type =nomodeset= in the very beginning of the line and press =Enter=.
 *** Changing layout
-My keyboard layout is [[https://wiki.archlinux.org/index.php/Dvorak][dvorak]]. So my first step will be changing keyboard layout:
+I have [[https://wiki.archlinux.org/index.php/Dvorak][dvorak]] keyboard layout. So my first step will be changing keyboard layout:
 #+BEGIN_SRC sh
 loadkeys dvorak
 #+END_SRC
-If you'r using =querty= just skip this step.
+If you're using =querty=, skip this step.
 *** Network connection
 After archiso has booted we want to connect to the internet: 
 #+BEGIN_SRC sh
@@ -76,46 +76,45 @@ cgdisk /dev/sdX # where X is your partition name
 #+END_SRC
 ***** SSD
 I will use *sda* (SSD) as a place for system files, for which speed is critical: bootstraping system, sysetem programs, etc...
-- *sda1* Should be exactly ~EF00~. Will boot the system.
-- *sda2* For my ~root~ I'd set 60G, you will be fine with even less. So if you may want to divide space for other distros (e.g. gentoo, ubuntu, fedora, etc..), 30G should be enough.
-- *sda3* This one is for another distro.
-- I left *sda4* for Windows. I will make double boot later(separately from this guide).
 | #    | size      | Fs type | name |
 |------+-----------+---------+------|
 | sda1 | 1g        |    EF00 | boot |
 | sda2 | 60g       |    8300 | root |
 | sda3 | 30g       |    8300 | -    |
 | sda4 | else 28.2 |    0700 | -    |
+- *sda1* Should be exactly ~EF00~. Will boot the system.
+- *sda2* For my ~root~ I'd set 60G, you will be fine with even less. So if you may want to divide space for other distros (e.g. gentoo, ubuntu, fedora, etc..), 30G should be enough.
+- *sda3* This one is for another distro.
+- I left *sda4* for Windows. I will make double boot later(separately from this guide).
 ***** HHD
 I will use *sdb* (HDD) as a place for user files: configuration, music, projects, ect...
-~ *sdb1* ~/home~ place for your user files.
-- *sdb2* ~SWAP~ depends on your RAM quantity. Usually you should take 1.5 of your RAM.
-- Notice that I set *sdb3* as 0700 and it will contain Windows files.
-- *sdb4* You may use this space however you want. You can mount it to the ~/usr~ or to the other distro.
 | #    | size        | FS type | name  | Description                                                   |
 |------+-------------+---------+-------+---------------------------------------------------------------|
 | sdb1 | 400g        |    8300 | home  | linux filesystem                                              |
 | sdb2 | 24g         |    8200 | swap  | 1.5 of my RAM memory[16G]                                     |
 | sdb3 | 300g        |    0700 | whome | microsoft basic data                                          |
 | sbd4 | else 207.5g |    8300 | -     | Just in case I will mount /var or install another linux there |
-
+~ *sdb1* ~/home~ place for your user files.
+- *sdb2* ~SWAP~ depends on your RAM quantity. Usually you should take 1.5 of your RAM.
+- Notice that I set *sdb3* as 0700 and it will contain Windows files.
+- *sdb4* You may use this space however you want. You can mount it to the ~/usr~ or to the other distro.
 *** Assigning file system to drives
 Boot need to be Fat32 as UEFI requirement.
 - /boot
-#+BEGIN_SRC sh
- mkfs.fat -F32 /dev/sda1
-#+END_SRC
+  #+BEGIN_SRC sh
+  mkfs.fat -F32 /dev/sda1
+  #+END_SRC
 - SWAP
-#+BEGIN_SRC sh
-mkswap /dev/sdb2
-#+END_SRC
+  #+BEGIN_SRC sh
+  mkswap /dev/sdb2
+  #+END_SRC
 - Linux
   #+BEGIN_SRC sh
   mkfs.ext4 /dev/sda2
   mkfs.ext4 /dev/sdb1
   mkfs.ext4 /dev/sdb4
   #+END_SRC
-  *Tip* If there is any warnings like: '~/dev/sda2~ contains a ext4 file system', you should press =y=.
+  *Tip* If there are any warnings like: '~/dev/sda2~ contains a ext4 file system', you should press =y=.
 
 - And it's better to reboot now.
   #+BEGIN_SRC sh
@@ -266,6 +265,14 @@ If you are running a 64bit system then you need to enable the multilib repositor
   #+END_SRC
   Also you may want to add [[https://wiki.archlinux.org/index.php/Infinality][infinality]] fonts lib:
   #+BEGIN_SRC sh
+  #[infinality-bundle] # Add this if you have i686 architecture.
+  #Server = http://bohoomil.com/repo/$arch
+  #SigLevel = Never
+
+  [infinality-bundle-multilib]
+  Server = http://bohoomil.com/repo/multilib/$arch
+  SigLevel = Never
+
   [infinality-bundle-fonts]
   Server = http://bohoomil.com/repo/fonts
   SigLevel = Never
@@ -708,7 +715,7 @@ yaourt -S --noconfirm scrot
 [[https://wiki.archlinux.org/index.php/Cmus][Cmus]] command line music player.
 [[https://github.com/karlstav/cava][Cava]] audio visualizer.
 #+BEGIN_SRC sh
-yaourt -S cmus cava
+yaourt -S cmus cava-git
 #+END_SRC
 **** Torrent tracker
 You may want to install ~yaourt -S rtorrent~ if you want rtorrent without vim keybindings
