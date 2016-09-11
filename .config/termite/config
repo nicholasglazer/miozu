@@ -1,0 +1,91 @@
+[options]
+resize_grip =false
+scroll_on_output =false
+scroll_on_keystroke =true
+audible_bell =false
+visible_bell =false
+mouse_autohide =false
+allow_bold =true
+dynamic_title =true
+urgent_on_bell =true
+clickable_url =true
+
+
+scrollback_lines =1000
+search_wrap =true
+#icon_name =terminal
+#geometry =640x480
+
+# 0.0=opaque, 1.0= transparent
+transparency =0.5
+pseudo_transparency =false
+
+# "system", "on" or "off"
+cursor_blink =on
+
+# "block", "underline" or "ibeam"
+cursor_shape =block
+padding=10
+
+font = Hack 12
+#font = FiraMono 12
+#font = Source Code Pro 12
+#font = tewi 12
+
+#foreground =#dcdccc
+#background =#3f3f3f
+#border=#3181512
+border_width=5
+#roundness =2.0
+
+# vim=ft=dosini
+# $BROWSER is used by default
+browser=chromium
+
+# word characters used for word selection
+# (default if unset=all graphic non-punctuation/space characters)
+#word_chars =-A-Za-z0-9,./?%&#=_=+@~
+
+# set size hints for the window
+#size_hints =false
+
+[colors]
+
+# special
+foreground      = #bbbbbb
+foreground_bold = #bbbbbb
+cursor          = #bbbbbb
+# background      = #1b1b1b
+
+# black
+color0  = #3b3b3b
+color8  = #3b3b3b
+
+# red
+color1  = #D8334A
+color9  = #D8334A
+
+# green
+color2  = #2ABA66
+color10 = #2ABA66
+
+# yellow
+color3  = #FB1
+color11 = #FB1
+
+# blue (ls)
+color4  = #5D9CEC
+color12 = #5D9CEC
+
+# magenta
+color5  = #577444
+color13 = #577444
+
+# cyan
+color6  = #a88444
+color14 = #a88444
+
+# white
+color7  = #ffffff
+color15 = #ffffff
+

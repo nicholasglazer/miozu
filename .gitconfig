@@ -1,0 +1,81 @@
+[user]
+    name = Nicholas Glazer
+    email = nicholai.borisovich@gmail.com
+[github]
+    user = NicholasGlazer
+[alias]
+    # list all aliases
+    la = "!git config -l | grep alias | cut -c 7-"
+    delete-merged-branches = "!f() { git checkout --quiet master && git branch --merged | grep --invert-match '\\*' | xargs -n 1 git branch --delete; git checkout --quiet @{-1}; }; f"
+    diff = diff --ignore-space-at-eol -b -w --ignore-blank-lines
+    cnv = commit --no-verify
+    co = checkout
+    cob = checkout -b
+    s = status --short
+    ss  = status
+    br = branch -v
+
+    l = log --graph --pretty=format:'%Cred%h%Creset %an: %s - %Creset %C(yellow)%d%Creset %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
+    # show a pretty log graph
+    lg = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)'
+
+    # current branch
+    cbr = rev-parse --abbrev-ref HEAD
+
+    # show number of commits per contributer, sorted
+    count = shortlog -sn
+
+    undo = reset --soft HEAD~1
+    amend = commit -a --amend
+
+    # rebase the current branch with changes from upstream remote
+    update = !git fetch upstream && git rebase upstream/`git rev-parse --abbrev-ref HEAD`
+
+    # show the last tag
+    lt = describe --tags --abbrev=0
+
+    # assume aliases
+    assume = update-index --assume-unchanged
+    unassume = update-index --no-assume-unchanged
+    assumed = "!git ls-files -v | grep ^h | cut -c 3-"
+    unassumeall = "!git assumed | xargs git update-index --no-assume-unchanged"
+[color]
+    diff = auto
+    status = auto
+    branch = auto
+    interactive = auto
+    ui = auto
+[color "branch"]
+    current = green bold
+    local = green
+    remote = red bold
+[color "diff"]
+    meta = yellow bold
+    frag = magenta bold
+    old = red bold
+    new = green bold
+[color "status"]
+    added = green bold
+    changed = yellow bold
+    untracked = red
+[color "sh"]
+    branch = yellow
+[push]
+    # push will only do the current branch, not all branches
+    default = current
+[branch]
+    # set up 'git pull' to rebase instead of merge
+    autosetuprebase = always
+[difftool]
+    prompt = false
+[apply]
+    # do not warn about missing whitespace at EOF
+    whitespace = nowarn
+[core]
+    excludesfile = ~/.gitignore_global
+    pager = less -FXRS -x2
+    editor = emacs
+[credential]
+	helper = osxkeychain
+[rebase]
+	instructionFormat = "[%an - %ar] %s"
