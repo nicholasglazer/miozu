@@ -94,7 +94,7 @@ I will use *sdb* (HDD) as a place for user files: configuration, music, projects
 | sdb2 | 24g         |    8200 | swap  | 1.5 of my RAM memory[16G]                                     |
 | sdb3 | 300g        |    0700 | whome | microsoft basic data                                          |
 | sbd4 | else 207.5g |    8300 | -     | Just in case I will mount /var or install another linux there |
-~ *sdb1* ~/home~ place for your user files.
+- *sdb1* ~/home~ place for your user files.
 - *sdb2* ~SWAP~ depends on your RAM quantity. Usually you should take 1.5 of your RAM.
 - Notice that I set *sdb3* as 0700 and it will contain Windows files.
 - *sdb4* You may use this space however you want. You can mount it to the ~/usr~ or to the other distro.
@@ -454,10 +454,6 @@ For touchpad *tap-to-click* use [[https://wiki.archlinux.org/index.php/Libinput#
 sudo pacman -S xf86-input-libinput
 #+END_SRC
 
-Next option indicates that the current keymap table should be printed on the standard output in the form of expressions that can be fed back to xmodmap.
-#+BEGIN_SRC sh
-xmodmap -pke 
-#+END_SRC
 **** Audio
 [[https://wiki.archlinux.org/index.php/Advanced_Linux_Sound_Architecture#Installation][ALSA]] is a set of buit-in kernel modules, but after install it may be muted.
 - So lets install [[https://wiki.archlinux.org/index.php/PulseAudio#Installation][pulseaudio]] and utils, and manage it:
@@ -479,13 +475,18 @@ yaourt -S asus-kbd-backlight
 #+END_SRC
 To allow users to change the brightness, write:
 #+BEGIN_SRC sh
-asus-kbd-backlight allowusers
+sudo asus-kbd-backlight allowusers
 #+END_SRC
 And enable services:
 #+BEGIN_SRC sh
 sudo systemctl daemon-reload
 sudo systemctl start asus-kbd-backlight.service
 sudo systemctl enable asus-kbd-backlight.service
+#+END_SRC
+
+Next option indicates that the current keymap table should be printed on the standard output in the form of expressions that can be fed back to xmodmap.
+#+BEGIN_SRC sh
+xmodmap -pke 
 #+END_SRC
 *** X server and friends
 #+BEGIN_SRC sh
@@ -536,7 +537,7 @@ yaourt -S --noconfirm awesome vicious shifty
 This is my current WM I'm spending most of time with. You can use my ~.xmonad~ configs. Config basically the ~Haskell~ file. So you should know Haskell a bit to configure it without problems.
 For better understanding you may want to read [[http://beginners-guide-to-xmonad.readthedocs.io/index.html][this beginners tutorial]].
 #+BEGIN_SRC sh
-yaourt -S --noconfirm xmonad xmonad-contrib xmobar dmenu2 dzen2 stalonetray conky
+yaourt -S --noconfirm xmonad xmonad-contrib xmobar dmenu2 dzen2 stalonetray conky compton
 #+END_SRC
 *** Display Manager
 - Slim (abandoned)
@@ -728,4 +729,22 @@ yaourt -S --noconfirm rtorrent-vi-color
 sudo pacman -S nodejs npm
 #+END_SRC
 - Npm sudoers
-  To solve [[https://docs.npmjs.com/getting-started/fixing-npm-permissions][EACCES error]]. *WARNING!* Option 1 may be dangerous, use wisely.
+  To solve [[https://docs.npmjs.com/getting-started/fixing-npm-permissions][EACCES error]]. 
+  *WARNING!* Option 1 can be dangerous and definitely a bad practice, use [[https://docs.npmjs.com/getting-started/fixing-npm-permissions#option-2-change-npms-default-directory-to-another-directory][second]] instead:
+  1) Make a directory for global installations:
+  #+BEGIN_SRC sh
+  mkdir ~/.npm-global
+  #+END_SRC
+  2) Configure npm to use the new directory path:
+  #+BEGIN_SRC sh
+  npm config set prefix '~/.npm-global'
+  #+END_SRC
+  3) Open or create a =~/.zprofile= and add this line:
+  #+BEGIN_SRC sh
+  export PATH=~/.npm-global/bin:$PATH
+  #+END_SRC
+  4) Update your system variables:
+  #+BEGIN_SRC sh
+  source ~/.zprofile
+  #+END_SRC
+  Now you can use ~npm -g~ without sudo, test it with any package.

@@ -17,11 +17,11 @@ fi
 #Use not "X" for the cursor
 xsetroot -cursor_name left_ptr &
 
-# Load xbindkeys
-xbindkeys &
+# Load compton
+compton -b &
 
 # Keyboard layout
-setxkbmap -layout "dvorak,ru" &
+setxkbmap -layout "dvorak,ru" -option "grp:alt_shift_toggle,caps:escape" &
 
 #Wallpaper
 feh  --bg-scale '/home/me/images/cosmos-paint.png' &

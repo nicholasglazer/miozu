@@ -4,14 +4,14 @@ scroll_on_output =false
 scroll_on_keystroke =true
 audible_bell =false
 visible_bell =false
-mouse_autohide =false
+mouse_autohide =true
 allow_bold =true
 dynamic_title =true
 urgent_on_bell =true
 clickable_url =true
 
 
-scrollback_lines =1000
+scrollback_lines =100000
 search_wrap =true
 #icon_name =terminal
 #geometry =640x480
@@ -55,7 +55,7 @@ browser=chromium
 foreground      = #bbbbbb
 foreground_bold = #bbbbbb
 cursor          = #bbbbbb
-# background      = #1b1b1b
+background      = rgba(63,63,63,0.4)
 
 # black
 color0  = #3b3b3b
