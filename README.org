@@ -297,6 +297,7 @@ If you are running a 64bit system then you need to enable the multilib repositor
   passwd username
   #+END_SRC
 *** Sudoers
+[[https://wiki.archlinux.org/index.php/Sudo#Using_visudo][Impontant to know]]
 #+BEGIN_SRC sh
 EDITOR=vim visudo
 #+END_SRC
@@ -427,7 +428,7 @@ Lets install some imortant dependecies:
 sudo pacman -S yaourt zsh openssh termite rfkill unzip tree
 #+END_SRC
 #+BEGIN_SRC sh
-yaourt -S --noconfirm feh emacs htop lm_sensors thefuck connman_dmenu-git
+yaourt -S --noconfirm feh emacs htop lm_sensors thefuck connman_dmenu-git xclip
 #+END_SRC
 *Note!* I'm using ~--noconfirm~ flag here. I trust this packages, but you may want to check buld scripts by yourself.
 *Note!* This step is not completed yet, more packages will be added.
@@ -533,7 +534,7 @@ yaourt -S --noconfirm awesome vicious shifty
   cd ~/.config/awesome
   git clone --recursive https://github.com/copycat-killer/awesome-copycats.git
   #+END_SRC
-**** Xmodnad
+**** Xmonad
 This is my current WM I'm spending most of time with. You can use my ~.xmonad~ configs. Config basically the ~Haskell~ file. So you should know Haskell a bit to configure it without problems.
 For better understanding you may want to read [[http://beginners-guide-to-xmonad.readthedocs.io/index.html][this beginners tutorial]].
 #+BEGIN_SRC sh
@@ -690,6 +691,11 @@ fc-match --verbose sans # To query current setting, also shows you a lot of info
 #+BEGIN_SRC sh
 yaourt -S --noconfirm chromium chromium-pepper-flash
 #+END_SRC
+- Network
+  (add more info and test)
+  #+BEGIN_SRC sh
+yaourt -S tor zeronet
+  #+END_SRC
 **** Notifications
 #+BEGIN_SRC sh
 sudo pacman -S dunst
@@ -723,11 +729,23 @@ You may want to install ~yaourt -S rtorrent~ if you want rtorrent without vim ke
 #+BEGIN_SRC sh
 yaourt -S --noconfirm rtorrent-vi-color
 #+END_SRC
+**** Media transfer protocol
+#+BEGIN_SRC sh
+yaourt -S libmpt simple-mtpfs
+#+END_SRC
+**** Virtualbox
+#+BEGIN_SRC sh
+sudo pacman -S virtualbox 
+sudo enasystemd-modules-load.service
+sudo vboxreload
+#+END_SRC
+  *Tip* Choose virtualbox-host-modules-arch for [[https://wiki.archlinux.org/index.php/VirtualBox][virtualbox]]
 *** Programming Environment
 **** Nodejs
 #+BEGIN_SRC sh
 sudo pacman -S nodejs npm
 #+END_SRC
+***** npm
 - Npm sudoers
   To solve [[https://docs.npmjs.com/getting-started/fixing-npm-permissions][EACCES error]]. 
   *WARNING!* Option 1 can be dangerous and definitely a bad practice, use [[https://docs.npmjs.com/getting-started/fixing-npm-permissions#option-2-change-npms-default-directory-to-another-directory][second]] instead:
@@ -735,16 +753,65 @@ sudo pacman -S nodejs npm
   #+BEGIN_SRC sh
   mkdir ~/.npm-global
   #+END_SRC
-  2) Configure npm to use the new directory path:
+  1) Configure npm to use the new directory path:
   #+BEGIN_SRC sh
   npm config set prefix '~/.npm-global'
   #+END_SRC
-  3) Open or create a =~/.zprofile= and add this line:
+  1) Open or create a =~/.zprofile= and add this line:
   #+BEGIN_SRC sh
   export PATH=~/.npm-global/bin:$PATH
   #+END_SRC
-  4) Update your system variables:
+  1) Update your system variables:
   #+BEGIN_SRC sh
   source ~/.zprofile
   #+END_SRC
-  Now you can use ~npm -g~ without sudo, test it with any package.
+  Now you can use ~npm -g~ without sudo, test it with any package:
+  #+BEGIN_SRC sh
+  npm i -g gulp react react-native tern eslint babel-eslint eslint-plugin-react js-beautify
+  #+END_SRC
+**** Java
+[[https://wiki.archlinux.org/index.php/Java][Archwiki]]
+#+BEGIN_SRC sh
+sudo pacman -S jre8-openjdk-headless # install only java environment without GUI
+#+END_SRC
+Now you need to source from the command line or by logging out/in.
+#+BEGIN_SRC sh
+source /etc/profile
+#+END_SRC
+**** Android development
+There are 3 steps that need to be performed before you can develop Android applications on your Arch Linux box:
+- Install the Android SDK core component,
+  #+BEGIN_SRC sh
+  yaourt -S --noconfirm android-sdk android-sdk-platform-tools android-sdk-build-tools
+  #+END_SRC
+  Android sdk users group:
+  #+BEGIN_SRC sh
+  groupadd sdkusers
+  #+END_SRC
+  Add your user into this group:
+  #+BEGIN_SRC sh
+  gpasswd -a <user> sdkusers
+  #+END_SRC
+  Change folder's group:
+  #+BEGIN_SRC sh
+  chown -R :sdkusers /opt/android-sdk/
+  #+END_SRC
+  #+BEGIN_SRC sh
+  chmod -R g+w /opt/android-sdk/ # Change permissions of the folder so the user that was just added to the group will be able to write in it:
+  #+END_SRC
+
+- Install one or [[https://wiki.archlinux.org/index.php/Android#Android_SDK_platform_API][several]] Android SDK PLatform packages: 
+  #+BEGIN_SRC sh
+  yaourt -S --noconfirm android-platform
+  #+END_SRC
+
+- Install ndk
+  #+BEGIN_SRC sh
+  gpg --keyserver pgp.mit.edu --recv-keys F7E48EDB # add keyring first for ncurses5-compat-libs
+  yaourt -S android-ndk
+  #+END_SRC
+
+- Install one of the IDEs compatible with the Android SDK.
+  #+BEGIN_SRC sh
+  yaourt -S android-studio genymotion 
+  #+END_SRC
