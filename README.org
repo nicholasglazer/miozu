@@ -1,22 +1,22 @@
 * Repository about
-  This is simply my dotfiles repository of configured software for archlinux. It's inspired by the great community, whith I very grateful. It's not completed yet. I will add more dotfiles and scripts to it.
+  This is simply my dotfiles repository of configured software for archlinux. It's inspired by the great community, which I very grateful. It's not completed yet. I will add more dotfiles and scripts to it.
 * What is inside?
  | Name                   | Description                     |
  |------------------------+---------------------------------|
  | .xinitrc, .Xresources  | Misc Linux                      |
- | .spacemacs             | Emacs configuration file        |
+ | [[https://github.com/syl20bnr/spacemacs][.spacemacs]]             | Emacs configuration file        |
  | .gitconfig             | Git configurations              |
  | .jsbeautifyrc, .eslint | Javascript linting and beautify |
- | cmus                   | Audio Player                    |
- | cava                   | Audio Visualizer                |
- | rtorrent               | Command line torrent tracker    |
- | slim                   | Simple login manager            |
- | dunst                  | System notifications            |
- | termite                | Vim based terminal emulator     |
- | zathura                | Text reader                     |
- | fontconfig             | Font configuration file         |
+ | [[https://github.com/cmus/cmus][cmus]]                   | Audio Player                    |
+ | [[https://github.com/cmus/cmus][cava]]                   | Audio Visualizer                |
+ | [[https://github.com/rakshasa/rtorrent][rtorrent]]               | Command line torrent tracker    |
+ | [[https://wiki.archlinux.org/index.php/SLiM][slim]]                   | Simple login manager            |
+ | [[http://www.knopwob.org/dunst/][dunst]]                  | System notifications            |
+ | [[https://wiki.archlinux.org/index.php/Termite][termite]]                | Vim based terminal emulator     |
+ | [[https://wiki.archlinux.org/index.php/Zathura][zathura]]                | Document viwer                  |
+ | [[https://wiki.archlinux.org/index.php/Font_configuration][fontconfig]]             | Font configuration file         |
  | tmux                   | coming soon...                  |
  | xmonad                 | coming soon...                  |
 * Arch install guide
-  Also if you're wondering about arch linux installation. I have this [[https://github.com/NicholasGlazer/arch-cheat-sheet][arch sheat sheet]] repository, hope it will be helpful for you.
+  Also if you're wondering about archlinux installation and don't know where to start. I have this [[https://github.com/NicholasGlazer/arch-cheat-sheet][arch sheat sheet]] repository, hope it will be helpful for you.
   
