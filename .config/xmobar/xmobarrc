@@ -1,0 +1,97 @@
+Config {
+   -- appearance
+     font             = "xft:Noto:size=9:antialias=true:hinting=true:bold,xft:Hack:size=9:bold:antialias=true"
+   , additionalFonts  = ["xft:FontAwesome5Free:style=Solid:pixelsize=14:antialias=true"
+                        , "xft:FontAwesome5Free:pixelsize=13:antialias=true"
+                        , "xft:FontAwesome5Brands:pixelsize=14:antialias=false"
+                        , "xft:FontAwesome5Free:style=Solid:pixelsize=18:antialias=true"]
+   , bgColor          = "#272822"
+   , alpha            = 255                            -- 0 is transparent, 255 is opaque. 255 -> xmobar bgcolor, xmonad.hs xmobarPP bgcolor on
+   , fgColor          = "#797979"
+   , position         = TopSize C 100 24
+   , border           = BottomB                       -- TopB, TopBM, BottomB, BottomBM, FullB, FullBM or NoBorder (default). TopBM=TopBorderMargin
+   , borderColor      = "#595959"
+
+   -- layout
+   , sepChar          =  "%"   -- delineator between plugin names and straight text
+   , alignSep         = "}{"  -- separator between left-right alignment
+   , template         = " %StdinReader% }  <action=`mpc toggle`>%mpd%</action> { <action=`networkmanager_dmenu`>%dynnetwork%</action>  <action=`urxvt -e htop`>%memory%</action>  <action=`setxkbmap -layout 'dvorak, us, ru' -option 'grp:alt_shift_toggle,caps:escape'`>%kbd%</action>  %battery%  %date%"
+   -- general behavior
+   , lowerOnStart     = True    -- send to bottom of window stack on start
+   , hideOnStart      = False   -- start with window unmapped (hidden)
+   , allDesktops      = True    -- show on all desktops
+   , overrideRedirect = True    -- If you're running xmobar in a tiling window manager, you might need to set this option to False so that it behaves as a docked application. In my conf works with True.
+   , pickBroadest     = False   -- choose widest display (multi-monitor)
+   , persistent       = True    -- enable/disable hiding (True = disabled)
+
+   -- plugins
+   --   Numbers can be automatically colored according to their value. xmobar
+   --   decides color based on a three-tier/two-cutoff system, controlled by
+   --   command options:
+   --     --Low sets the low cutoff
+   --     --High sets the high cutoff
+   --
+   --     --low sets the color below --Low cutoff
+   --     --normal sets the color between --Low and --High cutoffs
+   --     --High sets the color above --High cutoff
+   --
+   --   The --template option controls how the plugin is displayed. Text
+   --   color can be set by enclosing in <fc></fc> tags. For more details
+   --   see http://projects.haskell.org/xmobar/#system-monitor-plugins.
+   , commands =
+        -- music monitor
+        [Run MPD            [ "--template", "<fn=1>\xf58f</fn> <fc=#f92672><title></fc> - <fc=#66d9ef><artist></fc> |<flags>| <fc=#A6E22E> <remaining> </fc><statei>"
+                             , "--" , "-P", "<fn=1>\xf04b</fn>"
+                             , "-Z" ,       "<fn=1>\xf04c</fn>"
+                             , "-S" ,       "<fn=1>\xf04d</fn>"
+                             ] 10
+        -- network activity monitor (dynamic interface resolution)
+        , Run DynNetwork     [ "--template" , "<fn=1>\xf1eb</fn> <fc=#3ae03a>↓</fc><rx> <fc=#ff0000>↑</fc><tx>"
+                             , "--Low"      , "50000"       -- units: B/s
+                             , "--High"     , "1000000"       -- units: B/s
+                             , "--low"      , "#797979"
+                             , "--normal"   , "#fd971f"
+                             , "--high"     , "#A6E22E"
+                             ] 10
+        --memory usage monitor
+        , Run Memory         [ "--template" ,"<fn=1>\xf538</fn> <usedratio>%"
+                             , "--Low"      , "19"        -- units: %
+                             , "--High"     , "65"        -- units: %
+                             , "--low"      , "#A6E22E"
+                             , "--normal"   , "#fd971f"
+                             , "--high"     , "#e03a3a"
+                             ] 10
+          -- battery monitor
+        , Run Battery
+          [ "-t", "|| <acstatus>"
+          , "-L", "20"
+          , "-H", "85"
+          , "-l", "#ff0000"
+          , "-n", "#fd971f"
+          , "-h", "#3ae03a"
+          , "--" -- battery specific options
+            -- discharging status
+          , "-o"  , " <left>% (<timeleft>) <watts>W"
+            -- AC "on" status
+          , "-O"  , "<fn=1>\xf1e6</fn> <left>%"
+            -- charged status
+          , "-i"  , "<fc=#3ae03a><fn=1>\xf0e7</fn></fc>"
+          , "--off-icon-pattern", "<fn=1>\xf1e6</fn>"
+          , "--on-icon-pattern", "<fn=1>\xf1e6</fn>"
+          , "-H"   , "16"
+          , "-L"   , "10"
+          , "-p"	, "#3ae03a" -- positive power (battery charging)
+          , "-h"	, "#e03a3a" -- power higher than the -H threshold
+          , "-m"	, "#fd971f" -- power lower than the -H threshold
+          , "-l"	, "#a6e22e" -- power lower than the -L threshold
+          ] 10
+          -- time and date indicator
+        , Run Date           "<fn=1>\xf073</fn> %a<fc=#fd971f> %H:%M</fc> " "date" 10
+          -- keyboard layout indicator
+        , Run Kbd            [ ("us(dvorak)" , "<fn=1>\xf11c</fn><fc=#f92672> Dv</fc>")
+                             , ("ru"         , "<fn=1>\xf11c</fn><fc=#8B82f0> Ru</fc>")
+                             , ("us"         , "<fn=1>\xf11c</fn><fc=#797979> Us</fc>")
+                             ]
+         , Run StdinReader   -- xmonad workspace : layout : title
+        ]
+   }

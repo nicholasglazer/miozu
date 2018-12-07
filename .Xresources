@@ -8,9 +8,81 @@ Xft.dpi:        96
 Xft.hinting:    true
 Xft.hintstyle:  hintfull
 Xft.lcdfilter:  lcddefault
-Xft.rgba:       rgb
+Xft.rgba:       none
+
+! --- base16 colors ---
+! -- monokai polette --
+!-----------------------
+#define bgColor  #272822
+#define grayD    #3e3d31
+#define red      #f92672
+#define green    #a6e22e
+#define greenD   #3ae03a
+#define blue     #1e90ff
+#define blueL    #63b8ff
+#define orange   #fd971f   
+#define yellow   #e6db74   
+#define magenta  #fd5ff0
+#define violet   #ae81ff    
+#define cyan     #a1efe4
+#define cyanD    #3ae0e0
+#define gray     #64645e
+#define fgColor  #ffface
+#define fgColorA #ffdead
+
+! black & gray
+*color0: bgColor
+*color8: gray
+! maroon & red
+*color1: red
+*color9: fgColorA
+! lightGreen & green
+*color2: green
+*color10: greenD
+! blue & lightBlue
+*color4: blue
+*color12: blueL
+! yellow & lightYellow
+*color3: orange
+*color11: yellow
+! magenta & violet
+*color5: magenta
+*color13: violet
+! cyan & lightCyan
+*color6: cyan
+*color14: cyanD
+! white & cream
+*color7: fgColorA
+*color15: fgColor
 
 ! Xcursor config
 !-----------------------
 Xcursor.theme: whiteglass
 Xcursor.size: 16
+
+! URxvt settings 
+!-----------------------
+URxvt*font: xft:hack:size=10
+URxvt*letterSpace: -1
+URxvt*scrollBar: false
+URxvt*transparent: true
+URxvt*internalBorder: 12
+URxvt*shading: 10
+URxvt*fading: 30
+URxvt*inheritPixmap: False
+URxvt*cursorBlink: true
+URxvt*pointerBlank: true
+URxvt*background: bgColor
+URxvt*foreground: fgColor
+URxvt*highlightColor: fgColor
+URxvt*cursorColor: orange
+URxvt*cursorColor2: fgColorA
+URxvt*colorUL: blueL
+URxvt*underlineColor: cyan
+URxvt*keysym.Shift-Control-V: eval:paste_clipboard
+URxvt*keysym.Shift-Control-C: eval:selection_to_clipboard
+URxvt*urgentOnBell: true
+URxvt*visualBell: false
+
+! all other xresources
+*internalBorder: 8

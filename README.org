@@ -1,22 +1,35 @@
-* Repository about
-  This is simply my dotfiles repository of configured software for archlinux. It's inspired by the great community, which I very grateful. It's not completed yet. I will add more dotfiles and scripts to it.
-* What is inside?
- | Name                   | Description                     |
- |------------------------+---------------------------------|
- | .xinitrc, .Xresources  | Misc Linux                      |
- | [[https://github.com/syl20bnr/spacemacs][.spacemacs]]             | Emacs configuration file        |
- | .gitconfig             | Git configurations              |
- | .jsbeautifyrc, .eslint | Javascript linting and beautify |
- | [[https://github.com/cmus/cmus][cmus]]                   | Audio Player                    |
- | [[https://github.com/cmus/cmus][cava]]                   | Audio Visualizer                |
- | [[https://github.com/rakshasa/rtorrent][rtorrent]]               | Command line torrent tracker    |
- | [[https://wiki.archlinux.org/index.php/SLiM][slim]]                   | Simple login manager            |
- | [[http://www.knopwob.org/dunst/][dunst]]                  | System notifications            |
- | [[https://wiki.archlinux.org/index.php/Termite][termite]]                | Vim based terminal emulator     |
- | [[https://wiki.archlinux.org/index.php/Zathura][zathura]]                | Document viwer                  |
- | [[https://wiki.archlinux.org/index.php/Font_configuration][fontconfig]]             | Font configuration file         |
- | tmux                   | coming soon...                  |
- | xmonad                 | coming soon...                  |
-* Arch install guide
-  Also if you're wondering about archlinux installation and don't know where to start. I have this [[https://github.com/NicholasGlazer/arch-cheat-sheet][arch sheat sheet]] repository, hope it will be helpful for you.
-  
+* About
+  This is simply my environment/configurations for Arch Linux. It's inspired by the great community, which I very grateful.
+  -----
+  It is also a part of [[https://github.com/nicholasglazer/arch-cheat-sheet][arch-sheat-sheet]] repository.
+** What is inside?
+ | Name                             | Description                     |
+ |----------------------------------+---------------------------------|
+ | .xinitrc, .Xresources, .xprofile | X11 Misc Linux files            |
+ | [[https://github.com/syl20bnr/spacemacs][.spacemacs]]                       | Emacs configuration file        |
+ | .gitconfig                       | Git configurations              |
+ | .jsbeautifyrc, .eslint           | Javascript linting and beautify |
+ | [[https://github.com/ambientsound/pms][pms]], mpd                         | Audio Player, Audio daemon      |
+ | ranger                           | File manager                    |
+ | rofi "onemon.rasi" theme         | Launch manager                  |
+ | [[https://github.com/cmus/cmus][cava]]                             | Audio Visualizer                |
+ | [[https://github.com/rakshasa/rtorrent][rtorrent]]                         | Command line torrent tracker    |
+ | [[http://www.knopwob.org/dunst/][dunst]]                            | Notification manager            |
+ | [[https://wiki.archlinux.org/index.php/Termite][termite]], urxvt                   | Vim based terminal emulator     |
+ | [[https://wiki.archlinux.org/index.php/Zathura][zathura]]                          | Document viwer                  |
+ | [[https://wiki.archlinux.org/index.php/Font_configuration][fontconfig]]                       | Font configuration file         |
+ | xmonad                           | Window manager                  |
+ | xmobar                           | Status bar                      |
+ | and more                         | ...                             |
+
+** How it's look?
+   Status bar (XMobar):
+   [[https://raw.githubusercontent.com/nicholasglazer/arch-cheat-sheet/master/img/xmobar.gif]]
+   -----
+   Rofi onemon theme:
+   [[https://nicholasglazer.github.io/arch-cheat-sheet/img/rofi.gif]]
+   -----
+   Layouts:
+   [[https://raw.githubusercontent.com/nicholasglazer/arch-cheat-sheet/master/img/layouts.gif]]
+   -----
+   You can find more GIFs [[https://github.com/nicholasglazer/arch-cheat-sheet][here]].

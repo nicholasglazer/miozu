@@ -5,18 +5,31 @@ map - zoom out
 map + zoom best-fit
 map f zoom width
 
-set adjust-open width
-# set font terminus 8
+set adjust-open             width
 
-# set default-bg "#000000"
-# set default-fg "#FFFFFF"
+set font                    "Hack 12"
 
-# set statusbar-bg "#000000"
-# set statusbar-fg "#FFFFFF"
+set default-bg              "#272822"
+set default-fg              "#f9f9f2"
 
-# set inputbar-bg "#000000"
-# set inputbar-fg "#FFFFFF"
+set statusbar-bg            "#272822"
+set statusbar-fg            "#fffacd"
 
-# set recolor-darkcolor "#FFFFFF"
-# set recolor-lightcolor "#000000"
-# set recolor true
+set inputbar-bg             "#272822"
+set inputbar-fg             "#f9f9f2"
+
+set completion-bg           "#272822"
+set completion-fg           "#fffacd"
+
+set notification-bg         "#272822"
+set notification-fg         "#f92672"
+
+set highlight-color         "#a1efe4"
+set highlight-active-color  "#fd971f"
+
+set completion-highlight-bg "#3e3d31"
+set completion-highlight-fg "#3ae0e0"
+
+set recolor-darkcolor       "#282822"
+set recolor-lightcolor      "#f9f9f2"
+set recolor                 true

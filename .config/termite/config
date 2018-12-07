@@ -17,7 +17,7 @@ search_wrap =true
 #geometry =640x480
 
 # 0.0=opaque, 1.0= transparent
-transparency =0.5
+transparency =0.3
 pseudo_transparency =false
 
 # "system", "on" or "off"
@@ -27,20 +27,16 @@ cursor_blink =on
 cursor_shape =block
 padding=10
 
-font = Hack 12
+font = Hack 11
 #font = FiraMono 12
 #font = Source Code Pro 12
-#font = tewi 12
 
-#foreground =#dcdccc
-#background =#3f3f3f
-#border=#3181512
-border_width=5
+border_width=0
 #roundness =2.0
 
 # vim=ft=dosini
 # $BROWSER is used by default
-browser=chromium
+browser=vivaldi
 
 # word characters used for word selection
 # (default if unset=all graphic non-punctuation/space characters)
@@ -51,41 +47,59 @@ browser=chromium
 
 [colors]
 
+# --- base16 colors ---
+# -- monokai polette --
+#-----------------------
+#define red      #f92672
+#define green    #a6e22e
+#define greenD   #3ae03a
+#define blue     #1e90ff
+#define blueL    #63b8ff
+#define orange   #fd971f   
+#define yellow   #e6db74   
+#define magenta  #fd5ff0
+#define violet   #ae81ff    
+#define cyan     #a1efe4
+#define cyanD    #3ae0e0
+#define gray     #64645e
+#define fgColor  #ffface
+#define fgColorA #ffdead
+
 # special
-foreground      = #bbbbbb
-foreground_bold = #bbbbbb
-cursor          = #bbbbbb
-background      = rgba(63,63,63,0.6)
+foreground      = #ffface
+foreground_bold = #ffdead
+cursor          = #fd971f
+background      = #272822
 
 # black
-color0  = #3b3b3b
-color8  = #3b3b3b
+color0  = #272822
+color8  = #3e3d31
 
 # red
-color1  = #D8334A
-color9  = #D8334A
+color1  = #f92672
+color9  = #e03a3a
 
 # green
-color2  = #2ABA66
-color10 = #2ABA66
+color2  = #a6e22e
+color10 = #3ae03a
 
 # yellow
-color3  = #FB1
-color11 = #FB1
+color3  = #fd971f
+color11 = #e6db74
 
-# blue (ls)
-color4  = #5D9CEC
-color12 = #5D9CEC
+# blue
+color4  = #63b8ff
+color12 = #1e90ff
 
 # magenta
-color5  = #577444
-color13 = #577444
+color5  = #fd5ff0
+color13 = #ae81ff
 
 # cyan
-color6  = #a88444
-color14 = #a88444
+color6  = #a1efe4
+color14 = #3ae0e0
 
 # white
-color7  = #ffffff
-color15 = #ffffff
+color7  = #fffacd
+color15 = #ffdead
 

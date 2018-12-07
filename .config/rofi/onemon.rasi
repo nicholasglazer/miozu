@@ -1,0 +1,110 @@
+/*
+ * ROFI onemon
+ *
+ * Inspired by onedark theme
+ *
+ *
+ * Author: Nicholas Glazer
+ */
+
+
+* {
+  black      : #272822;
+  darkGray   : #595959;
+  red        : #e03a3a;
+  maroon     : #f92672;
+  green      : #3ae03a;
+  lightGreen : #a6e22e;
+  blue       : #63b8ff;
+  darkBlue   : #1e90ff;
+  orange     : #fd971f;
+  yellow     : #cd9b1d;
+  magenta    : #e03ae0;
+  violet     : #8B82f0;
+  cyan       : #66d9ef;
+  darkCyan   : #3ae0e0;
+  gray       : #787273;
+  darkGray   : #3C3D37;
+  white      : #fffacd;
+  text       : #ffdead;
+
+  spacing: 0;
+  background-color: transparent;
+
+  font: "Hack 12";
+  text-color: @white;
+}
+
+window {
+  transparency: "real";
+  fullscreen: true;
+  background-color: #27282277;
+
+}
+
+mainbox {
+  padding: 30%;
+}
+
+inputbar {
+  margin: 0px 0px 20px 0px;
+  children: [prompt, textbox-prompt-colon, entry, case-indicator];
+}
+
+prompt {
+  text-color: @maroon;
+}
+
+textbox-prompt-colon {
+  expand: false;
+  str: ":";
+  text-color: @text;
+}
+
+entry {
+  margin: 0px 10px;
+}
+
+listview {
+  dynamic: true;
+  scrollbar: false;
+  background-color: @black;
+  border: 4px;
+  border-color: @orange;
+}
+
+element {
+  padding: 15px;
+  border: 1px 0px 0px ;
+  border-color: @darkGray;
+  text-color: @text;
+  highlight: bold #a6e22e;
+  border-radius: 0px;
+}
+
+element selected {
+  background-color: @darkGray;
+  text-color: @text;
+}
+
+element urgent, element selected urgent {
+  text-color: @red;
+}
+
+element active, element selected active {
+  text-color: @purple;
+}
+
+message {
+  padding: 5px;
+  border-radius: 3px;
+  background-color: @gray;
+  border: 4px;
+  border-color: @orange;
+}
+
+button selected {
+  padding: 5px;
+  border-radius: 3px;
+  background-color: @gray;
+}
