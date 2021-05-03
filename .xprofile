@@ -12,11 +12,6 @@ fi
 # Launch compositor
 compton -b --backend glx --vsync opengl-swc &
 
-# Start Network Manager applet
-if [ -x /usr/bin/nm-applet ] ; then
-   nm-applet --sm-disable &
-fi
-
 # Start polkit agent
 /usr/lib/polkit-kde-authentication-agent-1 &
 
