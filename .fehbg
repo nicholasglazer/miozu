@@ -1,2 +1,2 @@
 #!/bin/sh
-feh --bg-scale '/home/zeroxone/images/wallpapers/cosmic.png' 
+feh --no-fehbg --bg-scale '/home/nicholas/.config/wallpaper/252835.png'
