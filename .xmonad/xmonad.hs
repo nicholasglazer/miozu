@@ -61,43 +61,57 @@ import XMonad.Util.Run              (spawnPipe, hPutStrLn, safeSpawn)           
 
 
 -------------------------------------------------------------------------------
--- Colors - monokai like palette
+-- TODO make a code refactoring / modular code sepration
 -------------------------------------------------------------------------------
 --
-black      = "#272822"
-grayD      = "#3e3d31"
-red        = "#e03a3a"
-maroon     = "#f92672"
-green      = "#3ae03a"
-greenL     = "#a6e22e"
-blue       = "#63b8ff"
-blueD      = "#1e90ff"
-orange     = "#fd971f"
-yellow     = "#e6db74"
-magenta    = "#fd5ff0"
-violet     = "#ae81ff"
-cyan       = "#a1efe4"
-cyanD      = "#3ae0e0"
-gray       = "#64645e"
-white      = "#f9f9f2"
-textColor  = "#fffacd"
-textColorA = "#ffdead"
+anarchy00 :: [Char]
+anarchy00 = "#1d1d23"
+anarchy01 :: [Char]
+anarchy01 = "#242835"
+anarchy02 :: [Char]
+anarchy02 = "#38384c"
+anarchy03 :: [Char]
+anarchy03 = "#4c4c62"
+anarchy04 :: [Char]
+anarchy04 = "#9999c2"
+anarchy05 :: [Char]
+anarchy05 = "#c6bad8"
+anarchy06 :: [Char]
+anarchy06 = "#efe6ee"
+anarchy07 :: [Char]
+anarchy07 = "#faf8fb"
+anarchy08 :: [Char]
+anarchy08 = "#8683ff"
+anarchy09 :: [Char]
+anarchy09 = "#4385e7"
+anarchy0A :: [Char]
+anarchy0A = "#ff9922"
+anarchy0B :: [Char]
+anarchy0B = "#7db359"
+anarchy0C :: [Char]
+anarchy0C = "#2dd9f0"
+anarchy0D :: [Char]
+anarchy0D = "#cf8dff"
+anarchy0E :: [Char]
+anarchy0E = "#f4517d"
+anarchy0F :: [Char]
+anarchy0F = "#c43444"
 
 ------------------------------------------------------------------------
 -- Variables
 ------------------------------------------------------------------------
 myFont :: String
-myFont = "xft:Hack:pixelsize=15"
+myFont = "xft:Hack:pixelsize=12"
 
 myBorderWidth :: Dimension
-myBorderWidth = 4
+myBorderWidth = 0
 
 myModMask :: KeyMask
 myModMask = mod4Mask
 
 myFocusedBorderColor, myNormalBorderColor :: String
-myFocusedBorderColor = orange
-myNormalBorderColor = grayD
+myFocusedBorderColor = anarchy08
+myNormalBorderColor = anarchy01
 
 -- Whether focus follows the mouse pointer.
 myFocusFollowsMouse :: Bool
@@ -127,11 +141,15 @@ myBar = "/usr/bin/xmobar ~/.config/xmobar/xmobarrc"
 myLaunchManager :: String
 myLaunchManager = "rofi -combi-modi drun,ssh -theme onemon -font 'hack 12' -show combi" -- SelectGrid settings
 
+-- TODO test if folder exist
 myScrot :: String
-myScrot = "scrot ~/images/screenshots/%Y-%m-%d-%T-screenshot.png && notify-send 'Screenshot DONE'"
+myScrot = "scrot ~/Pictures/screenshots/%Y-%m-%d-%T-screenshot.png && notify-send 'Screenshot DONE'"
+
+myScrotSelected :: String
+myScrotSelected = "scrot -s ~/Pictures/screenshots/%Y-%m-%d-%T-screenshot.png"
 
 myByzanz :: IO String
-myByzanz = ("notify-send -t 2000 'Screen recording in:' '5 seconds' && sleep 5;notify-send -t 1500 Recording && byzanz-record -v -d 5 -w 1920 -h 1080 ~/images/gif/screen_" ++)
+myByzanz = ("notify-send -t 2000 'Screen recording in:' '5 seconds' && sleep 5;notify-send -t 1500 Recording && byzanz-record -v -c --duration=15 -w 1920 -h 1080 ~/Pictures/gifs/screen_" ++)
      <$> fmap (formatTime defaultTimeLocale "%Y-%m-%d-%T_rec.gif  && notify-send 'Recorded and saved as:' 'screen_%Y-%m-%d-%T.gif'") getCurrentTime
 
 -------------------------------------------------------------------------------
@@ -156,15 +174,15 @@ myGSConfig1 colorizer = (buildDefaultGSConfig colorizer)
     { gs_cellheight   = 80
     , gs_cellwidth    = 200
     , gs_cellpadding  = 8
-    , gs_bordercolor = orange
+    , gs_bordercolor = anarchy09
     }
 
 myGSConfig2 = def
     { gs_cellheight   = 80
     , gs_cellwidth    = 200
     , gs_cellpadding  = 8
-    , gs_bordercolor  = orange
-    , gs_font         = myFont
+    , gs_bordercolor  = anarchy0A
+    , gs_font   = myFont
     }
 ------------------------------------------------------------------------
 -- Workspaces
@@ -301,22 +319,22 @@ myScratchPads =  [ NS "terminalS" spawnTermS  findTermS  manageTermS    -- Small
 ------------------------------------------------------------------------
 projects :: [Project]
 projects =
-  [ Project { projectName      = "scratch"
+  [ Project { projectName = "scratch"
             , projectDirectory = "~/"
             , projectStartHook = Nothing
             }
 
-  , Project { projectName      = emacsWS
+  , Project { projectName = emacsWS
             , projectDirectory = "~/code"
             , projectStartHook = Just $ do spawn myTextEditor
             }
 
-  , Project { projectName      = termWS
+  , Project { projectName = termWS
             , projectDirectory = "~/"
             , projectStartHook = Just $ do spawn myTerminal
             }
 
-  , Project { projectName      = privateWS
+  , Project { projectName = privateWS
             , projectDirectory = "~/tor"
             , projectStartHook = Just $ do spawnOnce "~/tor/start-tor-browser.desktop"
             }
@@ -358,7 +376,7 @@ myManageHook = (composeAll . concat $
      <+> manageHook def
 
   where
-    myClassWebShifts      = ["Vivaldi-stable", "Chromium"]
+    myClassWebShifts = ["Vivaldi-stable", "Chromium"]
     myClassEmacsShifts    = ["Emacs"]
     myClassTermShifts     = ["Termite","Konsole","uxterm","xterm"]
     myClassWorkShifts     = ["Firefox Developer Edition"]
@@ -367,7 +385,7 @@ myManageHook = (composeAll . concat $
     myClassToolsShifts    = ["GParted", "transmission"]
     myClassMagicShifts    = ["Wine"]
     myClassPrivateShifts  = ["Tor Browser"]
-    myClassFloats         = ["Peek", "mpv"]
+    myClassFloats   = ["Peek", "mpv"]
     myClassFullFloats     = ["deepin-image-viewer"]
 
 ------------------------------------------------------------------------
@@ -445,15 +463,15 @@ instance UrgencyHook LibNotifyUrgencyHook where
 ------------------------------------------------------------------------
 myLogHook xmprocs =  dynamicLogWithPP . namedScratchpadFilterOutWorkspacePP
   $ xmobarPP {
-      ppOutput          = hPutStrLn xmprocs
-    , ppCurrent         = xmobarColor greenL ""
-    , ppHidden          = xmobarColor orange ""
-    , ppTitle           = xmobarColor gray "" . shorten 80
-    , ppUrgent          = xmobarColor maroon ""
-    , ppLayout          = xmobarColor blue ""
-    , ppOrder           = \(ws:l:t:_) -> [ws,l,t]                  -- workspace, layout, title
-    , ppSep             = "  |  "                                  -- separator to use between different log sections
-    , ppWsSep           = " "
+      ppOutput    = hPutStrLn xmprocs
+    , ppCurrent   = xmobarColor anarchy09 ""
+    , ppHidden    = xmobarColor anarchy02 ""
+    , ppTitle     = xmobarColor anarchy03 "" . shorten 80
+    , ppUrgent    = xmobarColor anarchy0E ""
+    , ppLayout    = xmobarColor anarchy02 ""
+    , ppOrder     = \(ws:_:t:_) -> [ws,t]                  -- workspace, layout, title
+    , ppSep       = "    "                        -- separator to use between different log sections
+    , ppWsSep     = " "
     -- , ppHiddenNoWindows = showWsNames                           -- To show all hidden workspaces
     -- , ppVisibleNoWindows = Nothing                              -- To define how should look visible workspaces without windows
 }
@@ -506,7 +524,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((0, xF86XK_AudioLowerVolume         ), spawn "pactl set-sink-mute 0 false;pactl set-sink-volume 0 -5%") -- F11 Lower volume
     , ((0, xF86XK_AudioRaiseVolume         ), spawn "pactl set-sink-mute 0 false;pactl set-sink-volume 0 +5%") -- F12 Raise volume
     , ((0, xK_Print                        ), spawn myScrot                                                  ) -- Print screen using scrot with nametag: year-month-day-time-screenshot.png
-    , ((modm, xK_Print                     ), liftIO myByzanz >>= spawn                                      ) -- Print screen using scrot with nametag: year-month-day-time-screenshot.png
+    , ((modm, xK_Print                     ), spawn myScrotSelected                                          ) -- Print screen using scrot with nametag: year-month-day-time-screenshot.png
+    , ((modm .|. shiftMask, xK_Print       ), liftIO myByzanz >>= spawn                                      ) -- Print screen using scrot with nametag: year-month-day-time-screenshot.png
     ]
     ++
     [-- Audio control keybindings
@@ -588,19 +607,19 @@ main = do
 -- No need to modify defaults.
 defaults = def {
   -- simple stuff
-  terminal           = myTerminal,
+  terminal      = myTerminal,
   focusFollowsMouse  = myFocusFollowsMouse,
   clickJustFocuses   = myClickJustFocuses,
-  borderWidth        = myBorderWidth,
-  modMask            = myModMask,
-  workspaces         = myWorkspaces,
+  borderWidth   = myBorderWidth,
+  modMask       = myModMask,
+  workspaces    = myWorkspaces,
   -- key bindings
-  keys               = myKeys,
+  keys          = myKeys,
   -- hooks, layouts
-  layoutHook         = myLayout,
-  manageHook         = myManageHook,
+  layoutHook    = myLayout,
+  manageHook    = myManageHook,
   handleEventHook    = myEventHook,
-  startupHook        = myStartupHook
+  startupHook   = myStartupHook
   }
 
 
