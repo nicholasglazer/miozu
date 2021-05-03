@@ -1,26 +1,26 @@
 Config {
    -- appearance
-     font             = "xft:Noto:size=9:antialias=true:hinting=true:bold,xft:Hack:size=9:bold:antialias=true"
+     font             = "xft:Hack:size=9:antialias=true:hinting=true:bold,xft:Inconsolata:size=9:bold:antialias=true"
    , additionalFonts  = ["xft:FontAwesome5Free:style=Solid:pixelsize=14:antialias=true"
-                        , "xft:FontAwesome5Free:pixelsize=13:antialias=true"
-                        , "xft:FontAwesome5Brands:pixelsize=14:antialias=false"
-                        , "xft:FontAwesome5Free:style=Solid:pixelsize=18:antialias=true"]
-   , bgColor          = "#272822"
+                        , "xft:FontAwesome5Free:pixelsize=12:antialias=true"
+                        , "xft:FontAwesome5Brands:pixelsize=13:antialias=false"
+                        , "xft:FontAwesome5Free:style=Solid:pixelsize=17:antialias=true"]
+   , bgColor          = "#252736"
    , alpha            = 255                            -- 0 is transparent, 255 is opaque. 255 -> xmobar bgcolor, xmonad.hs xmobarPP bgcolor on
-   , fgColor          = "#797979"
+   , fgColor          = "#4C4C62"
    , position         = TopSize C 100 24
-   , border           = BottomB                       -- TopB, TopBM, BottomB, BottomBM, FullB, FullBM or NoBorder (default). TopBM=TopBorderMargin
-   , borderColor      = "#595959"
+   , border           = NoBorder                       -- TopB, TopBM, BottomB, BottomBM, FullB, FullBM or NoBorder (default). TopBM=TopBorderMargin
+   , borderColor      = "#252736"
 
    -- layout
    , sepChar          =  "%"   -- delineator between plugin names and straight text
    , alignSep         = "}{"  -- separator between left-right alignment
-   , template         = " %StdinReader% }  <action=`mpc toggle`>%mpd%</action> { <action=`networkmanager_dmenu`>%dynnetwork%</action>  <action=`urxvt -e htop`>%memory%</action>  <action=`setxkbmap -layout 'dvorak, us, ru' -option 'grp:alt_shift_toggle,caps:escape'`>%kbd%</action>  %battery%  %date%"
+   , template         = " <action=`mpc toggle`>%mpd%</action> } %StdinReader% { <action=`setxkbmap -layout 'dvorak, us, ru' -option 'grp:alt_shift_toggle,caps:escape'`>%kbd%</action>  %date%"
    -- general behavior
    , lowerOnStart     = True    -- send to bottom of window stack on start
    , hideOnStart      = False   -- start with window unmapped (hidden)
    , allDesktops      = True    -- show on all desktops
-   , overrideRedirect = True    -- If you're running xmobar in a tiling window manager, you might need to set this option to False so that it behaves as a docked application. In my conf works with True.
+   , overrideRedirect = True    -- in some situations you might need to set this option to False.
    , pickBroadest     = False   -- choose widest display (multi-monitor)
    , persistent       = True    -- enable/disable hiding (True = disabled)
 
@@ -46,52 +46,46 @@ Config {
                              , "-S" ,       "<fn=1>\xf04d</fn>"
                              ] 10
         -- network activity monitor (dynamic interface resolution)
-        , Run DynNetwork     [ "--template" , "<fn=1>\xf1eb</fn> <fc=#3ae03a>↓</fc><rx> <fc=#ff0000>↑</fc><tx>"
-                             , "--Low"      , "50000"       -- units: B/s
-                             , "--High"     , "1000000"       -- units: B/s
-                             , "--low"      , "#797979"
-                             , "--normal"   , "#fd971f"
-                             , "--high"     , "#A6E22E"
-                             ] 10
-        --memory usage monitor
-        , Run Memory         [ "--template" ,"<fn=1>\xf538</fn> <usedratio>%"
-                             , "--Low"      , "19"        -- units: %
-                             , "--High"     , "65"        -- units: %
-                             , "--low"      , "#A6E22E"
-                             , "--normal"   , "#fd971f"
-                             , "--high"     , "#e03a3a"
-                             ] 10
-          -- battery monitor
-        , Run Battery
-          [ "-t", "|| <acstatus>"
-          , "-L", "20"
-          , "-H", "85"
-          , "-l", "#ff0000"
-          , "-n", "#fd971f"
-          , "-h", "#3ae03a"
-          , "--" -- battery specific options
-            -- discharging status
-          , "-o"  , " <left>% (<timeleft>) <watts>W"
-            -- AC "on" status
-          , "-O"  , "<fn=1>\xf1e6</fn> <left>%"
-            -- charged status
-          , "-i"  , "<fc=#3ae03a><fn=1>\xf0e7</fn></fc>"
-          , "--off-icon-pattern", "<fn=1>\xf1e6</fn>"
-          , "--on-icon-pattern", "<fn=1>\xf1e6</fn>"
-          , "-H"   , "16"
-          , "-L"   , "10"
-          , "-p"	, "#3ae03a" -- positive power (battery charging)
-          , "-h"	, "#e03a3a" -- power higher than the -H threshold
-          , "-m"	, "#fd971f" -- power lower than the -H threshold
-          , "-l"	, "#a6e22e" -- power lower than the -L threshold
-          ] 10
+        --  <action=`urxvt -e iwctl`>%dynnetwork%</action> add this line to the template
+        --, Run DynNetwork     [ "--template" , "<fc=#3ae03a><rx></fc> <fc=#ff0000><tx></fc>"
+          --                   , "--Low"      , "10000"       -- units: B/s
+          --                   , "--High"     , "1000000"       -- units: B/s
+          --                   , "--low"      , "#797979"
+          --                   , "--normal"   , "#fd971f"
+          --                   , "--high"     , "#A6E22E"
+          --                   ] 10
+    -- uncomment and add this to the template '... %battery% ...' if you are using a laptop
+    -- battery monitor
+       -- , Run Battery
+       --   [ "-t", "<acstatus>"
+       --   , "-L", "20"
+       --   , "-H", "85"
+       --   , "-l", "#ff0000"
+       --   , "-n", "#fd971f"
+       --   , "-h", "#3ae03a"
+       --   , "--" -- battery specific options
+       --     -- discharging status
+       --   , "-o"  , " <left>% (<timeleft>) <watts>W"
+       --     -- AC "on" status
+       --   , "-O"  , "<left>%<fc=#3ae03a><watts>W</fc>"
+       --     -- charged status
+       --   , "-i"  , "<fc=#3ae03a><watts></fc>"
+       --   , "--off-icon-pattern", "<fn=1>\xf1e6</fn>"
+       --   , "--on-icon-pattern", "<fn=1>\xf1e6</fn>"
+       --   , "-H"   , "16"
+       --   , "-L"   , "10"
+       --   , "-p"	, "#3ae03a" -- positive power (battery charging)
+       --   , "-h"	, "#e03a3a" -- power higher than the -H threshold
+       --   , "-m"	, "#fd971f" -- power lower than the -H threshold
+       --   , "-l"	, "#a6e22e" -- power lower than the -L threshold
+       --   ] 10
           -- time and date indicator
-        , Run Date           "<fn=1>\xf073</fn> %a<fc=#fd971f> %H:%M</fc> " "date" 10
+        , Run Date           "%a<fc=#4385E7> %H:%M</fc> " "date" 10
           -- keyboard layout indicator
-        , Run Kbd            [ ("us(dvorak)" , "<fn=1>\xf11c</fn><fc=#f92672> Dv</fc>")
-                             , ("ru"         , "<fn=1>\xf11c</fn><fc=#8B82f0> Ru</fc>")
-                             , ("us"         , "<fn=1>\xf11c</fn><fc=#797979> Us</fc>")
+        , Run Kbd            [ ("us(dvorak)" , "<fc=#c43444> Dv</fc>")
+                             , ("ru"         , "<fc=#8683ff> Ru</fc>")
+                             , ("us"         , "<fc=#ff9922> Us</fc>")
                              ]
-         , Run StdinReader   -- xmonad workspace : layout : title
+         , Run StdinReader   -- xmonad workspace : title
         ]
    }

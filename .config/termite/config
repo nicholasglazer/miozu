@@ -1,105 +1,76 @@
-[options]
-resize_grip =false
-scroll_on_output =false
-scroll_on_keystroke =true
-audible_bell =false
-visible_bell =false
-mouse_autohide =true
-allow_bold =true
-dynamic_title =true
-urgent_on_bell =true
-clickable_url =true
-
-
-scrollback_lines =100000
-search_wrap =true
-#icon_name =terminal
-#geometry =640x480
-
-# 0.0=opaque, 1.0= transparent
-transparency =0.3
-pseudo_transparency =false
-
-# "system", "on" or "off"
-cursor_blink =on
-
-# "block", "underline" or "ibeam"
-cursor_shape =block
-padding=10
-
-font = Hack 11
-#font = FiraMono 12
-#font = Source Code Pro 12
-
-border_width=0
-#roundness =2.0
-
-# vim=ft=dosini
-# $BROWSER is used by default
-browser=vivaldi
-
-# word characters used for word selection
-# (default if unset=all graphic non-punctuation/space characters)
-#word_chars =-A-Za-z0-9,./?%&#=_=+@~
-
-# set size hints for the window
-#size_hints =false
+# -- config by Nicholas Glazer <glazer.nicholas@gmail.com>
+# -- say hi - nicholasglazer.com
+# -- anarchy palette --
+# anarchy00 #1D1D23
+# anarchy01 #242733
+# anarchy02 #38384C
+# anarchy03 #64647e
+# anarchy04 #A1A1B7
+# anarchy05 #C9CBD7
+# anarchy06 #E0E0E8
+# anarchy07 #FAF8FB
+# anarchy08 #8683FF
+# anarchy09 #4385E7
+# anarchy0A #FF9922
+# anarchy0B #7DB359
+# anarchy0C #2DD9F0
+# anarchy0D #CF8DFF
+# anarchy0E #F4517D
+# anarchy0F #C43444
+#TODO figure out if variables can be defined
 
 [colors]
-
-# --- base16 colors ---
-# -- monokai polette --
-#-----------------------
-#define red      #f92672
-#define green    #a6e22e
-#define greenD   #3ae03a
-#define blue     #1e90ff
-#define blueL    #63b8ff
-#define orange   #fd971f   
-#define yellow   #e6db74   
-#define magenta  #fd5ff0
-#define violet   #ae81ff    
-#define cyan     #a1efe4
-#define cyanD    #3ae0e0
-#define gray     #64645e
-#define fgColor  #ffface
-#define fgColorA #ffdead
-
 # special
-foreground      = #ffface
-foreground_bold = #ffdead
-cursor          = #fd971f
-background      = #272822
+foreground      = #c9cbd7
+foreground_bold = #faf8fb
+cursor          = #f4517d
+background      = #242733
 
-# black
-color0  = #272822
-color8  = #3e3d31
+# black           01 & 02
+color0  = #242733
+color8  = #38384c
+# red             0E & 0F
+color1  = #f4517d
+color9  = #c43444
+# green           0B & 0B
+color2  = #7db359
+color10 = #7db359
+# yellow          0A & 09
+color3  = #ff9922
+color11 = #4385e7
+# blue            0D & 09
+color4  = #cf8dff
+color12 = #4385e7
+# magenta         08 & 0B
+color5  = #8683ff
+color13 = #7db359
+# cyan            0C & 03
+color6  = #2DD9F0
+color14 = #64647e
+# white           05 & 06
+color7  = #c9cb87
+color15 = #e0e0e8
 
-# red
-color1  = #f92672
-color9  = #e03a3a
+[options]
+font                = Hack 9
+#font               = IBM Plex Mono 10
+#font               = FiraMono 10
+#font               = Source Code Pro 10
+resize_grip         = false
+scroll_on_output    = false
+scroll_on_keystroke = true
+audible_bell        = false
+visible_bell        = false
+mouse_autohide      = true # hide mouse when you start typing
+allow_bold          = true
+dynamic_title       = true # allows terminal and shell to update terminal's title
+urgent_on_bell      = true
+clickable_url       = true
+scrollback_lines    = 100000 # history of the current session
+search_wrap         = true
+transparency        = 0.3 # NB 0.0=opaque, 1.0= transparent
+pseudo_transparency = false
+cursor_blink        = on # "system", "on" or "off"
+cursor_shape        = block # "block", "underline" or "ibeam"
 
-# green
-color2  = #a6e22e
-color10 = #3ae03a
-
-# yellow
-color3  = #fd971f
-color11 = #e6db74
-
-# blue
-color4  = #63b8ff
-color12 = #1e90ff
-
-# magenta
-color5  = #fd5ff0
-color13 = #ae81ff
-
-# cyan
-color6  = #a1efe4
-color14 = #3ae0e0
-
-# white
-color7  = #fffacd
-color15 = #ffdead
-
+browser=firefox-developer-edititon # $BROWSER is used by default
