@@ -15,7 +15,7 @@ Config {
    -- layout
    , sepChar          =  "%"   -- delineator between plugin names and straight text
    , alignSep         = "}{"  -- separator between left-right alignment
-   , template         = " <action=`mpc toggle`>%mpd%</action> } %StdinReader% { <action=`setxkbmap -layout 'dvorak, us, ru' -option 'grp:alt_shift_toggle,caps:escape'`>%kbd%</action>  %date%"
+   , template         = " <action=`mpc toggle`>%mpd%</action> } %StdinReader% { <action=`setxkbmap -layout 'dvorak, us, ru' -option 'grp:alt_shift_toggle,caps:escape'`>%kbd%</action> %date% "
    -- general behavior
    , lowerOnStart     = True    -- send to bottom of window stack on start
    , hideOnStart      = False   -- start with window unmapped (hidden)
@@ -54,15 +54,14 @@ Config {
           --                   , "--normal"   , "#fd971f"
           --                   , "--high"     , "#A6E22E"
           --                   ] 10
-    -- uncomment and add this to the template '... %battery% ...' if you are using a laptop
-    -- battery monitor
-       -- , Run Battery
-       --   [ "-t", "<acstatus>"
-       --   , "-L", "20"
-       --   , "-H", "85"
-       --   , "-l", "#ff0000"
-       --   , "-n", "#fd971f"
-       --   , "-h", "#3ae03a"
+     -- uncomment and add this to the template '... %battery% ...' if you are using a laptop
+     -- battery monitor
+       --, Run Battery
+       --, "-L", "20"
+       --, "-H", "85"
+       --, "-l", "#ff0000"
+       -- , "-n", "#fd971f"
+       --  , "-h", "#3ae03a"
        --   , "--" -- battery specific options
        --     -- discharging status
        --   , "-o"  , " <left>% (<timeleft>) <watts>W"
@@ -70,7 +69,7 @@ Config {
        --   , "-O"  , "<left>%<fc=#3ae03a><watts>W</fc>"
        --     -- charged status
        --   , "-i"  , "<fc=#3ae03a><watts></fc>"
-       --   , "--off-icon-pattern", "<fn=1>\xf1e6</fn>"
+       -- , "--off-icon-pattern", "<fn=1>\xf1e6</fn>"
        --   , "--on-icon-pattern", "<fn=1>\xf1e6</fn>"
        --   , "-H"   , "16"
        --   , "-L"   , "10"

@@ -170,8 +170,6 @@
 	excludesfile = ~/.gitignore_global
 
 [credential]
-	helper = osxkeychain
-	pager = less -FXRS -x2
 	editor = emacs
 
 [grep]
