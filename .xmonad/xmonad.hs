@@ -1,13 +1,13 @@
 --   INFO
 --  ------
 -- information = { Author   = Nicholas Glazer
---               , Version  = xmonad 0.15 <+> ghc 8.6.1
---               , Updated  = November 23 2018
+--               , Version  = xmonad 0.17.2 <+> ghc 9.0.2
+--               , Updated  = Apr 27 2023
 --               }
 --
 -- This config based on xmonad example config file and hackage.haskell.org documentation - https://github.com/xmonad/xmonad/blob/master/man/xmonad.hs
 --
--- You also can find some useful constructions here: https://www.nepherte.be/blog/step-by-step-configuration-of-xmonad.html
+-- You also can find some useful constructions here: https://github.com/nicholasglazer/archcheatsheet/blob/master/docs/environment/xmonad.md
 --
 
 {-# LANGUAGE NoMonomorphismRestriction #-}
@@ -22,8 +22,8 @@ import Data.Time.Format             (defaultTimeLocale)
 
 -- ManageHooks
 import qualified XMonad.StackSet as W
-import XMonad.Hooks.ManageDocks     (ToggleStruts(ToggleStruts), docks, avoidStruts, manageDocks, docksEventHook) -- This module provides tools to automatically manage dock type programs, such as gnome-panel, kicker, dzen, and xmobar.
-import XMonad.Hooks.EwmhDesktops    (ewmh, ewmhDesktopsEventHook, ewmhDesktopsLogHook)         -- Tell panel applications about its workspaces and the windows therein.
+import XMonad.Hooks.ManageDocks     (ToggleStruts(ToggleStruts), docks, avoidStruts, manageDocks) -- This module provides tools to automatically manage dock type programs, such as gnome-panel, kicker, dzen, and xmobar.
+import XMonad.Hooks.EwmhDesktops    (ewmh)                                                     -- Tell panel applications about its workspaces and the windows therein.
 import XMonad.Hooks.ManageHelpers   (isDialog, isFullscreen, doCenterFloat, doFullFloat)       -- http://xmonad.org/xmonad-docs/xmonad-contrib/XMonad-Hooks-ManageHelpers.html
 import XMonad.Util.NamedScratchpad                                                             -- https://hackage.haskell.org/package/xmonad-contrib-0.15/docs/XMonad-Util-NamedScratchpad.html
 import XMonad.Util.NamedWindows     (getName)                                                  -- This module allows you to associate the X titles of windows with them.
@@ -48,7 +48,7 @@ import XMonad.Layout.PerWorkspace   (onWorkspace)                               
 -- Key bindings
 import qualified Data.Map as M
 import Graphics.X11.ExtraTypes.XF86                                                            -- XF86 Extra keys http://xmonad.org/xmonad-docs/X11/Graphics-X11-ExtraTypes-XF86.html
-import XMonad.Actions.CycleWS       (moveTo, toggleWS', Direction1D(Next), WSType(WSIs, NonEmptyWS)) -- Provides bindings to cycle forward or backward through the list of workspaces, to move windows between workspaces, and to cycle between screens.
+import XMonad.Actions.CycleWS       (moveTo, toggleWS', emptyWS, Direction1D(Next), WSType(Not), WSType(WSIs)) -- Provides bindings to cycle forward or backward through the list of workspaces, to move windows between workspaces, and to cycle between screens.
 import XMonad.Actions.DynamicProjects                                                          -- Imbues workspaces with additional features so they can be treated as individual project areas.
 import XMonad.Actions.GridSelect                                                               -- Displays items(e.g. the opened windows) in a 2D grid and lets the user select from it with the cursor/hjkl keys or the mouse.
 import XMonad.Actions.RotSlaves     (rotSlavesDown, rotSlavesUp)                               -- Rotate all windows except the master window and keep the focus in place.
@@ -139,7 +139,7 @@ myBar = "/usr/bin/xmobar ~/.config/xmobar/xmobarrc"
 -- "windows key" is usually mod4Mask.
 --
 myLaunchManager :: String
-myLaunchManager = "rofi -combi-modi drun,ssh -theme onemon -font 'hack 12' -show combi" -- SelectGrid settings
+myLaunchManager = "rofi -combi-modi run,drun,ssh -theme lambda -show combi" -- Rofi settings
 
 -- TODO test if folder exist
 myScrot :: String
@@ -197,18 +197,18 @@ myGSConfig2 = def
 -- > workspaces = ["web", "irc", "code" ] ++ map show [4..9]
 -- Sending Font Awesome gliphs to xmobar.
 ------------------------------------------------------------------------
-webWS     = " <fn=4>\xf55f</fn> "
-emacsWS   = " <fn=4>\xf679</fn> "
-termWS    = " <fn=4>\xf120</fn> "
-workWS    = " <fn=4>\xf54c</fn> "
-mediaWS   = " <fn=4>\xf630</fn> "
-socialWS  = " <fn=4>\xf075</fn> "
-toolsWS   = " <fn=4>\xf568</fn> "
-magicWS   = " <fn=4>\xf6e8</fn> "
-privateWS = " <fn=4>\xf6fa</fn> "
+webWS     = " <fn=1>一</fn> "
+emacsWS   = " <fn=1>二</fn> "
+workWS    = " <fn=1>三</fn> "
+termWS    = " <fn=1>四</fn> "
+mediaWS   = " <fn=1>五</fn> "
+socialWS  = " <fn=1>六</fn> "
+toolsWS   = " <fn=1>七</fn> "
+magicWS   = " <fn=1>八</fn> "
+privateWS = " <fn=1>九</fn> "
 
 myWorkspaces :: [String]
-myWorkspaces =  [webWS, emacsWS, termWS, workWS, mediaWS, socialWS, toolsWS, magicWS, privateWS]
+myWorkspaces =  [webWS, emacsWS, workWS, termWS, mediaWS, socialWS, toolsWS, magicWS, privateWS]
 ------------------------------------------------------------------------
 -- Layouts:
 --
@@ -376,17 +376,17 @@ myManageHook = (composeAll . concat $
      <+> manageHook def
 
   where
-    myClassWebShifts = ["Vivaldi-stable", "Chromium"]
+    myClassWebShifts = ["Vivaldi-stable", "Firefox", "Firefox Developer Edition"]
     myClassEmacsShifts    = ["Emacs"]
+    myClassWorkShifts     = ["Chromium"]
     myClassTermShifts     = ["Termite","Konsole","uxterm","xterm"]
-    myClassWorkShifts     = ["Firefox Developer Edition"]
     myClassMediaShifts    = ["mpv", "vlc"]
     myClassSocialShifts   = ["TelegramDesktop"]
-    myClassToolsShifts    = ["GParted", "transmission"]
-    myClassMagicShifts    = ["Wine"]
+    myClassToolsShifts    = [""]
+    myClassMagicShifts    = ["Wine", "Lutris"]
     myClassPrivateShifts  = ["Tor Browser"]
     myClassFloats   = ["Peek", "mpv"]
-    myClassFullFloats     = ["deepin-image-viewer"]
+    myClassFullFloats     = [""]
 
 ------------------------------------------------------------------------
 -- Fade Windows:
@@ -407,11 +407,7 @@ myFadeHook = composeAll [  opaque
 -- return (All True) if the default handler is to be run afterwards. To
 -- combine event hooks use mappend or mconcat from Data.Monoid.
 ------------------------------------------------------------------------
-myEventHook = mconcat [
-    docksEventHook
-  , fadeWindowsEventHook
-  , ewmhDesktopsEventHook
-  ]
+myEventHook = fadeWindowsEventHook
 
 ------------------------------------------------------------------------
 -- Startup hook:
@@ -423,9 +419,11 @@ myEventHook = mconcat [
 myStartupHook :: X()
 myStartupHook = do
     -- xsetroot -cursor_name left_ptr &
-    spawnOnce "xrdb -merge ~/.Xresources"                                                   -- Read .Xresources
-    spawnOnce "setxkbmap -layout 'dvorak, ru' -option 'grp:alt_shift_toggle, caps: escape'" -- Set dv keyboard layout, Caps Lock serve as an ESC
+    --spawnOnce "xrdb -merge ~/.Xresources"                                                   -- Read .Xresources
+    --spawnOnce "setxkbmap -layout 'dvorak, ru' -option 'grp:alt_shift_toggle, caps: escape'" -- Set dv keyboard layout, Caps Lock serve as an ESC
     spawnOnce "$HOME/.fehbg"                                                                -- Read feh config for background
+    --spawnOnce "feh --no-fehbg --bg-scale '$HOME/.config/wallpapers/252835.png'"
+    spawnOnce "picom -b" --config ~/.config/picom/picom.conf"
     spawnOnce "sleep 1;mpd"                                                                 -- Launch mpd
     spawnOnce "sleep 2;setWMName 'LG3D'"                                                    -- For same programs to work properly
     spawnOnce "sleep 3;dex /etc/xdg/autostart/polkit-kde-authentication-agent-1.desktop"    -- Run polkit agent
@@ -461,7 +459,7 @@ instance UrgencyHook LibNotifyUrgencyHook where
 --
 -- Pretty printer for xmobar:
 ------------------------------------------------------------------------
-myLogHook xmprocs =  dynamicLogWithPP . namedScratchpadFilterOutWorkspacePP
+myLogHook xmprocs =  dynamicLogWithPP
   $ xmobarPP {
       ppOutput    = hPutStrLn xmprocs
     , ppCurrent   = xmobarColor anarchy09 ""
@@ -507,7 +505,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,                 xK_comma     ), sendMessage (IncMasterN 1)                                     ) -- Increment the number of windows in the master area
     , ((modm,                 xK_period    ), sendMessage (IncMasterN (-1))                                  ) -- Deincrement the number of windows in the master area
     , ((modm,                 xK_grave     ), toggleWS' ["NSP"]                                              ) -- Use tilde to toogle between workspaces with XMonad.CycleWS -- Ignore the scratchpad workspace while toggling
-    , ((modm .|. controlMask, xK_grave     ), moveTo Next NonEmptyWS                                         ) -- Move to the next non-empty workspace
+    , ((modm .|. controlMask, xK_grave     ), moveTo Next (Not emptyWS)                                         ) -- Move to the next non-empty workspace
     , ((modm .|. shiftMask,   xK_grave     ), moveTo Next (WSIs $ return (("NSP" /=) . W.tag))               ) -- Move to the next workspace which is not NSP
     , ((modm .|. shiftMask,   xK_apostrophe), io (exitWith ExitSuccess)                                      ) -- Quit xmonad
     , ((modm,                 xK_apostrophe), spawn "xmonad --recompile && xmonad --restart"                 ) -- Restart xmonad
@@ -597,7 +595,6 @@ main = do
     $ ewmh defaults {
     logHook = composeAll [
         fadeWindowsLogHook myFadeHook
-        , ewmhDesktopsLogHook
         , myLogHook xmprocs
         ]
     , focusedBorderColor = myFocusedBorderColor
@@ -607,19 +604,19 @@ main = do
 -- No need to modify defaults.
 defaults = def {
   -- simple stuff
-  terminal      = myTerminal,
-  focusFollowsMouse  = myFocusFollowsMouse,
-  clickJustFocuses   = myClickJustFocuses,
-  borderWidth   = myBorderWidth,
-  modMask       = myModMask,
-  workspaces    = myWorkspaces,
+  terminal            = myTerminal,
+  focusFollowsMouse   = myFocusFollowsMouse,
+  clickJustFocuses    = myClickJustFocuses,
+  borderWidth         = myBorderWidth,
+  modMask             = myModMask,
+  workspaces          = myWorkspaces,
   -- key bindings
-  keys          = myKeys,
+  keys                = myKeys,
   -- hooks, layouts
-  layoutHook    = myLayout,
-  manageHook    = myManageHook,
-  handleEventHook    = myEventHook,
-  startupHook   = myStartupHook
+  layoutHook          = myLayout,
+  manageHook          = myManageHook,
+  handleEventHook     = myEventHook,
+  startupHook         = myStartupHook
   }
 
 
