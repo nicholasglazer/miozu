@@ -3,7 +3,7 @@
 """ Before this file I had a monter config of neovim and things got out of control, but now i decided to be minimalistic.
 """ Especially config files. Or I might create a file with vim instead of touch sometimes.
 """ So i have this simple vimrc file to use vim occasionally
-""" TODO take advantage of Anarchy theme
+""" TODO take advantage of miozu theme
 
 
 
@@ -13,7 +13,7 @@ set autowrite             "" write before : commands
 set ruler                 "" show cursor constantly
 set number                "" lines numbering
 set numberwidth=4         "" offset starting from the left
-set wildmenu              "" command autocomplete on
+set wildmenu              ""mcommand autocomplete on
 set showmatch             "" match brackets
 set lazyredraw            "" redraw only tree change
 set incsearch             "" search while typing
