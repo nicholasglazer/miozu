@@ -22,13 +22,14 @@ fi
 
 # Make correct cursor and make background solid with hex color
 xsetroot -cursor_name left_ptr &
-xsetroot -solid '#252835' &
+hsetroot -solid '#252835' &
 
 # Uncomment to use image instaed of solid hex background color
 feh --bg-fill $HOME/Pictures/wallpapers/miozu_keybindings.png &
 
 # Start compositor
 DISPLAY=":0" picom -b
+
 
 # Keyboard layout
 setxkbmap -layout "dvorak,us" -option "grp:alt_shift_toggle,caps:escape" &
