@@ -19,158 +19,98 @@
 	rb = rebase
 
 	la = "!git config -l | grep alias | cut -c 7-"
-
 	# show what I did today
 	day = "!sh -c 'git log --reverse --no-merges --branches=* --date=local --after=\"yesterday 11:59PM\" --author=\"`git config --get user.name`\"'"
-
 	# Remove changes from index
 	unstage = reset HEAD --
-
 	# Revert changes
 	restore = checkout --
-
 	# Colored history view
 	hist = log --color --pretty=format:\"%C(yellow)%h%C(reset) %s%C(bold red)%d%C(reset) %C(green)%ad%C(reset) %C(blue)[%an]%C(reset)\" --relative-date --decorate
-
 	# show a pretty log graph
 	lg = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)'
-
 	# show number of commits per contributer, sorted
-	count = shortlog -sn
-
-
+	count = shortlog -sn --all
 	# current branch
 	cbr = rev-parse --abbrev-ref HEAD
-
 	undo = reset --soft HEAD~1
 	amend = commit -a --amend
 
 	# OPENTHE GITHUB PAGE FOR THE...
-	
 	# ...repo homepage (included for consistency)
 	open = !hub browse -- 
-	
 	# ...repo commits
 	opencommits = !hub browse -- commits
-	
 	# ...commit page for HEAD
 	openhead = !hub browse -- commit/$(git rev-parse HEAD)
-
 	# ...commit page for a passed SHA (defaults to HEAD)
 	opencommit = "!f() { sha=$(git rev-parse ${1:-HEAD}); hub browse -- commit/$sha; }; f"
-
 	# ...blame page for the passed file (a line number/range can be passed in too)
 	openblame = "!f() { sha=$(git log --format='%h' -1 $1); hub browse -- blame/$sha/$1#L$2; }; f"
-
 	# ...commit history page for the passed file
 	openhistory = "!f() { sha=$(git log --format='%h' -1 $1); hub browse -- commits/$sha/$1; }; f"
-
 	# ...pull request page for current branch (if one exists)
 	openpr = "!f() { url=$(github_pr_url); open $url; }; f"
-
 	# ...repo issues
 	issues = !hub browse -- issues
-
 	# ...repo pull requests
 	pulls = !hub browse -- pulls
-
 	# ...repo wiki
 	wiki = !hub browse -- wiki
-
 	# ...repo settings
 	settings = !hub browse -- settings
-
 	# ...repo branches
 	branches = !hub browse -- branches
-
 	# ...repo branches
 	releases = !hub browse -- releases
 
-
 	# GET THE URL FOR...
-
 	# ...HEAD
 	headurl = "!hub browse -u -- commit/$(git rev-parse HEAD)"
-
 	# ...HEAD (into clipboard)
 	copyheadurl = "!git headurl | pbcopy"
-
 	# ...A given commit
 	url = "!f() { sha=$(git rev-parse ${1:-HEAD}); hub browse -u -- commit/$sha; }; f"
-
 	# ...A given commit (into clipboard)
 	copyurl = "!git url $1 | pbcopy"
 
-
 	# PRINT OUT THE...
-	
 	# ...SHA of HEAD
 	headsha = rev-parse HEAD
-
 	# ...the current branchname
 	branchname = !git rev-parse --abbrev-ref HEAD
-
 	# ...incoming commits
 	incoming = !git hist ..origin/$(git branchname)
-
 	# ...outgoing commits
 	outgoing = !git hist origin/$(git branchname)..
 
-
 	# UTILITIES TO...
-
 	# ...delete merged branches
 	cleanup = "!git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
-
 	# ...open GUI
 	visualise = !gitk
-
 	# ...push current branch to origin and set as a tracking branch
 	publish = !git push -u origin $(git branchname)
-
 	# ...delete remote branch
 	unpublish = !git push -u origin :$(git branchname)
-
 	# ...push a branch and create a pull request
 	pr = !git publish && hub pull-request
-
 	# ...commit everything as a WIP commit
 	wip = commit -am wip
-
 	# ...reset last commit (used after 'git wip')
 	pop = reset head^
 
+[init]
+  defaultBranch = main
 
 [apply]
 	whitespace = nowarn
-
-[color]
-	diff = auto
-	status = auto
-	branch = auto
-	interactive = auto
-	ui = auto
-[color "branch"]
-	current = green bold
-	local = green
-	remote = red bold
-[color "diff"]
-	meta = yellow bold
-	frag = magenta bold
-	old = red bold
-	new = green bold
-[color "status"]
-	added = green bold
-	changed = yellow bold
-	untracked = red
-[color "sh"]
-	branch = yellow
 
 [core]
 	excludesfile = ~/.gitignore_global
 
 [credential]
-	editor = emacs
+	editor = nvim
 
 [grep]
 	extendRegexp = true
