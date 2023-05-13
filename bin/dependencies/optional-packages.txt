@@ -1,0 +1,26 @@
+# IDE
+emacs-nativecomp
+cabal-install
+ripgrep
+fd
+haskell-language-server
+hoogle
+marked
+rust-analyzer
+shellcheck
+shfmt
+
+# Browser
+firefox-developer-edition
+chromium
+
+# Web development
+nvm
+npm
+
+# Misc
+tree
+
+# Social
+telegram-desktop
+discord
