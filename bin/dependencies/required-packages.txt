@@ -31,11 +31,13 @@ pipewire
 pipewire-alsa
 pipewire-audio
 pipewire-pulse
+playerctl
 youtube-dl
 
 # Video | FFmpeg including libavcodec
 ffmpeg
 vlc
+brightnessctl
 
 # Bluetooth
 bluez
