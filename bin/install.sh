@@ -3,7 +3,7 @@
 # Author: Nicholas Glazer <glazer.nicholas@gmail.com>
 #
 # Miozu dotfiles package varibales
-MIOZU_DIR="$HOME/code/github/miozu"
+MIOZU_DIR="$HOME/.miozu"
 #MIOZU_REPO_URL="https://github.com/nicholasglazer/miozu.git"
 
 # Set password once
@@ -12,26 +12,27 @@ read -r -s -p "Hey, you're about to install miozu environment. Enter your passwo
 
 # Create all necessary directories in a loop
 dirs=(
+	"$HOME/.miozu"
 	"$HOME/.ssh"
 	"$HOME/.config/aria2"
 	"$HOME/.config/doom/themes"
 	"$HOME/.config/dunst"
 	"$HOME/.config/fish"
 	"$HOME/.config/fontconfig"
-	"$HOME/.config/nnn"
 	"$HOME/.config/nvim"
 	"$HOME/.config/rofi/colors"
 	"$HOME/.config/wezterm/colors"
 	"$HOME/.config/xmonad/xmobar"
-	"$HOME/.config/xmonad/lib/Themes"
+	"$HOME/.config/xmonad/lib"
 	"$HOME/.config/zathura"
+	"$HOME/.tmp/configs_backup"
 	"$HOME/code/github"
+	"$HOME/code/sandbox"
 	"$HOME/Documents"
 	"$HOME/Downloads"
 	"$HOME/Music"
 	"$HOME/Pictures/gifs"
 	"$HOME/Pictures/screenshots"
-	"$HOME/tmp/configs_backup"
 	"$HOME/Videos"
 )
 
@@ -67,7 +68,7 @@ if [[ $choice =~ ^[yY] ]]; then
 	# install optional packages with paru
 	paru -S --noconfirm --needed $(grep -v '^#' $MIOZU_DIR/bin/dependencies/optional-packages.txt)
 	# install doom-emacs
-	mv $HOME/.emacs.d $HOME/tmp/.emacs.d.bak
+	mv $HOME/.emacs.d $HOME/.tmp/.emacs.d.bak
 	git clone https://github.com/hlissner/doom-emacs ~/.emacs.d
 	~/.emacs.d/bin/doom install
 	# install miozu theme for doom-emacs
@@ -87,6 +88,7 @@ declare -A dotfiles=(
 	[".config/rofi"]="$HOME/.config/rofi"
 	[".config/wezterm"]="$HOME/.config/wezterm"
 	[".config/xmonad/xmobar"]="$HOME/.config/xmonad/xmobar"
+	[".config/xmonad/lib"]="$HOME/.config/xmonad/lib"
 	[".config/xmonad"]="$HOME/.config/xmonad"
 	[".config/zathura"]="$HOME/.config/zathura"
 	[".xinitrc"]="$HOME/.xinitrc"
@@ -97,7 +99,7 @@ declare -A dotfiles=(
 )
 
 # Create a backup dir for already existing configs
-backup_dir="$HOME/tmp/configs_backup"
+backup_dir="$HOME/.tmp/configs_backup"
 
 for file in "${!dotfiles[@]}"; do
 	dest="${dotfiles[$file]}"
@@ -132,6 +134,10 @@ git clone https://github.com/miozutheme/xmonad.git $HOME/.config/xmonad/lib/Them
 # Find the location of the Fish shell executable with 'which'. 'chsh' to use Fish as a default shell
 chsh -s $(which fish)
 echo "Fish is now your default shell!"
+# Write path for miozu dir into fish config to make a global variable
+sed -i 's|# INSERT MIOZU_DIR HERE|set -x MIOZU_DIR '"$MIOZU_DIR"'|' $MIOZU_DIR/.config/fish/config.fish
+# TODO For later usage to update repo | so you can write something like "miozu update"
+#sed -i 's|# INSERT MIOZU GLOBAL|set -x MIOZU_DIR '"$MIOZU_DIR"'|' $MIOZU_DIR/.config/fish/config.fish
 
 # Enable & start services/daemons
 # Bluetooth
@@ -145,5 +151,5 @@ sudo sed -i 's/#ReconnectIntervals=.*/ReconnectIntervals=3/' /etc/bluetooth/main
 #systemctl --user enable greenclip.service
 #systemctl --user start greenclip.service
 
-# Recompile xmonad
-xmonad --recompile
+# Recompile and restart xmonad
+xmonad --recompile && xmonad --restart
