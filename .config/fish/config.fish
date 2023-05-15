@@ -5,6 +5,9 @@ set -x PATH /usr/local/bin $PATH
 set -x PATH $HOME/.emacs.d/bin $PATH
 # Set an editor
 set -x EDITOR "nvim"
+# Comments below will be substituted with miozu variables automatically after you run ./install.sh
+# INSERT MIOZU_DIR HERE
+# INSERT MIOZU GLOBAL
 
 # --- Internal settings
 # Set fish-specific variables
