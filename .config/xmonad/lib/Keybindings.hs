@@ -6,12 +6,14 @@
 module Keybindings (myKeys) where
 
 import XMonad
+import System.Process
 import System.Exit (exitWith, ExitCode(ExitSuccess))
 -- Import /lib modules
-import Scratchpads (scratchTermS, scratchTermB, scratchFM)
-
+import Scratchpads (scratchTermSL, scratchTermBL, scratchTermSR, scratchTermBR, scratchFM, scratchWebA, scratchWebB)
+import ScreenRecorder (myGifRecorder, runRecorder)
 import GridSelect (myColorizer, myGSConfig1) -- Gridselect module
-import Variables (myScrot, myScrotSelected, myByzanz, myTerminal, myAltTerminal, myLaunchManager, myTextEditor)
+import Variables (myTerminal, myAltTerminal, myLaunchManager, myTextEditor, myScreenshot, myScreenshotSelected)
+
 -- ManageHooks
 import qualified XMonad.StackSet as W
 import XMonad.Hooks.ManageDocks (ToggleStruts(ToggleStruts)) -- This module provides tools to automatically manage dock type programs, such as gnome-panel, kicker, dzen, and xmobar.
@@ -22,9 +24,11 @@ import XMonad.Actions.CycleWS (moveTo, toggleWS', emptyWS, Direction1D(Next), WS
 import XMonad.Actions.GridSelect (goToSelected)
 import XMonad.Actions.RotSlaves (rotSlavesDown, rotSlavesUp)                               -- Rotate all windows except the master window and keep the focus in place.
 import XMonad.Actions.SinkAll (sinkAll)                                                  -- http://xmonad.org/xmonad-docs/xmonad-contrib/XMonad-Actions-SinkAll.html
+import XMonad.Actions.OnScreen
 
 -- Utils
 import XMonad.Util.Run              (safeSpawn)                          --  https://hackage.haskell.org/package/xmonad-contrib-0.15/docs/XMonad-Hooks-DynamicLog.htm
+
 
 myKeys :: XConfig Layout -> M.Map (KeyMask, KeySym) (X ())
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
@@ -59,9 +63,10 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     ]
     ++
     [
-      ((0, xK_Print                        ), spawn myScrot                                                  ) -- Print screen using scrot with nametag: year-month-day-time-screenshot.png
-    , ((modm, xK_Print                     ), spawn myScrotSelected                                          ) -- Print screen using scrot with nametag: year-month-day-time-screenshot.png
-    , ((modm .|. shiftMask, xK_Print       ), liftIO myByzanz >>= spawn                                      ) -- Print screen using scrot with nametag: year-month-day-time-screenshot.png
+      ((0, xK_Print                        ), spawn myScreenshot                                             ) -- Print current display using maim with nametag: year-month-day-time-screenshot.png
+    , ((modm, xK_Print                     ), spawn myScreenshotSelected                                     ) -- Xclip selected screen using maim
+    , ((modm .|. shiftMask, xK_Print       ), runRecorder                                                    )
+    , ((modm,                 xK_y         ), runRecorder                                                    ) -- Toggle bar
     , ((0, xF86XK_KbdBrightnessDown        ), spawn "brightnessctl set 20-"                                  ) -- F5 Monitor brightness down
     , ((0, xF86XK_KbdBrightnessUp          ), spawn "brightnessctl set +20"                                  ) -- F6 Monitor brightness up
     , ((0, xF86XK_KbdLightOnOff            ), spawn "~/.miozu/bin/backlight-toggle.sh"                       ) -- TODO F7 fix toggle monitor backlight
@@ -75,27 +80,39 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
       ((modm,                 xK_Return    ), spawn $ myTerminal                                             ) -- Launch a def terminal
     , ((modm .|. shiftMask,   xK_Return    ), spawn $ myAltTerminal                                          ) -- Launch a second terminal
     , ((modm,                 xK_m         ), spawn myLaunchManager                                          ) -- Launch rofii app launcher
+    , ((modm .|. shiftMask,   xK_a         ), spawn "autorandr --change"                                     ) -- Launch Emacs TODO(add mods)
     , ((modm,                 xK_e         ), spawn myTextEditor                                             ) -- Launch Emacs TODO(add mods)
     , ((modm .|. shiftMask,   xK_d         ), spawn "dunstctl close-all"                                     ) -- Close all dunst notifications
     ]
     ++
     [-- ScratchPads keybindings
-      ((modm,                 xK_t         ), scratchTermS                                                   ) -- small terminal SP
-    , ((modm .|. shiftMask,   xK_t         ), scratchTermB                                                   ) -- big terminal SP
+      ((modm,                 xK_r         ), scratchTermBR                                                  ) -- bir right terminal SP
+    , ((modm .|. shiftMask,   xK_r         ), scratchTermSR                                                  ) -- small right terminal SP
+    , ((modm,                 xK_t         ), scratchTermBL                                                  ) -- big left terminal SP
+    , ((modm .|. shiftMask,   xK_t         ), scratchTermSL                                                  ) -- small right terminal SP
     , ((modm,                 xK_f         ), scratchFM                                                      ) -- file manager SP
-    -- , ((modm,                 xK_g         ), scratchMusic                                                   ) -- music player pms SP
-    -- , ((modm .|. shiftMask,   xK_g         ), scratchMixer                                                   ) -- pulsemixer SP
+    , ((modm .|. shiftMask,   xK_w         ), scratchWebA                                                    ) -- run chromium big SP
+    , ((modm,                 xK_w         ), scratchWebB                                                    ) -- run chromium small SP
     ]
     ++
-    [ -- SelectGrid
-      ((modm,                 xK_w         ), goToSelected $ myGSConfig1 myColorizer                         ) -- select workspace from grid
-    ]
-    ++
-    -- mod-[1..9], Switch to workspace N
-    -- mod-shift-[1..9], Move client to workspace N
-    [((m .|. modm, k), windows $ f i)
-        | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9]
-        , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
+    -- [ -- SelectGrid
+    -- TODO FIX BUG cause screen hang
+    --   ((modm,                 xK_g         ), goToSelected $ myGSConfig1 myColorizer                         ) -- select workspace from grid
+    -- ]
+    -- ++
+    -- mod-[1..9] [0], Switch to workspace N screen 0
+    -- mod-shift-[1..9] [0], Move client to workspace N
+    -- mod-ctl-[1..9] [0], screen 1
+    -- mod-ctrl-shift-[1..9] [0], Move client to workspace N geedyView
+    [ ((m .|. modm, k), windows (f i))
+       | (i, k) <- zip (workspaces conf) ([xK_1 .. xK_9] ++ [xK_0])
+       , (f, m) <-
+         [ (viewOnScreen 0, 0)
+         , (viewOnScreen 1, controlMask)
+         , (W.shift, shiftMask)
+         , (W.greedyView  , controlMask .|. shiftMask)
+         ]
+       ]
     ++
     -- changed default mod-{w,e,r} for dvorak mod-{comma,period,p}
     -- mod-{comma,period,p}, Switch to physical/Xinerama screens 1, 2, or 3
