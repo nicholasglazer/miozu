@@ -1,7 +1,7 @@
 --   INFO
 --  ------
 -- meta = {
---          Updated = May 13 2023
+--          Updated = June 1 2023
 --        , Version = xmonad 0.17.1 <+> ghc 9.0.2
 --        , Author  = Nicholas Glazer
 --        }
@@ -11,21 +11,20 @@
 --
 --- General Imports
 import XMonad
-import XMonad.Hooks.EwmhDesktops (ewmh)
+import XMonad.Hooks.EwmhDesktops (ewmh, ewmhFullscreen)
 import XMonad.Hooks.ManageDocks (docks)
-import XMonad.Hooks.UrgencyHook (withUrgencyHook)
-import XMonad.Util.Run (spawnPipe)
 import XMonad.Actions.DynamicProjects (dynamicProjects)
-import XMonad.Layout.Fullscreen (fullscreenSupport)
-import XMonad.Hooks.FadeWindows (fadeWindowsLogHook)
+import XMonad.Hooks.StatusBar (withEasySB, defToggleStrutsKey)
 -- Import /lib modules
-import Hooks (myFadeHook, myEventHook, myStartupHook, LibNotifyUrgencyHook (..), myLogHook)
+import XMonad.Hooks.UrgencyHook (withUrgencyHook)
+import Hooks (myEventHook, myStartupHook, LibNotifyUrgencyHook (..))
+import Bar (mySB)
 import Keybindings (myKeys)
 import Layouts (myLayout)
 import Projects (myProjects)
 import Scratchpads (myScratchpads)
-import Variables (myBar, myFocusedBorderColor, myNormalBorderColor, myTerminal, myFocusFollowsMouse, myClickJustFocuses, myBorderWidth, myModMask)
-import Workspaces (webWS, emacsWS, workWS, termWS, mediaWS, socialWS, toolsWS, magicWS, privateWS, myWorkspaces)
+import Variables (myFocusedBorderColor, myNormalBorderColor, myTerminal, myFocusFollowsMouse, myClickJustFocuses, myBorderWidth, myModMask)
+import Workspaces (webWS, emacsWS, workWS, termWS, mediaWS, socialWS, toolsWS, magicWS, dualWS, myWorkspaces)
 import WorkspaceRules (myManageHook)
 
 ------------------------------------------------------------------------
@@ -33,21 +32,16 @@ import WorkspaceRules (myManageHook)
 --
 -- Run xmonad with all specified settings.
 ------------------------------------------------------------------------
-main = do
-  xmprocs <- spawnPipe myBar
-  xmonad
+
+main :: IO()
+main = xmonad
     $ withUrgencyHook LibNotifyUrgencyHook
     $ dynamicProjects myProjects
-    $ fullscreenSupport
     $ docks
-    $ ewmh defaults {
-    logHook = composeAll [
-        fadeWindowsLogHook myFadeHook
-        , myLogHook xmprocs
-        ]
-    , focusedBorderColor = myFocusedBorderColor
-    , normalBorderColor  = myNormalBorderColor
-    }
+    . ewmhFullscreen
+    . ewmh
+    . withEasySB mySB defToggleStrutsKey
+    $ defaults
 
 defaults = def {
   terminal            = myTerminal,
@@ -61,5 +55,5 @@ defaults = def {
   manageHook          = myManageHook,
   handleEventHook     = myEventHook,
   startupHook         = myStartupHook
-  }
-
+--  logHook             = myLogHook
+}
