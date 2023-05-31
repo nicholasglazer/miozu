@@ -2,36 +2,41 @@
 
 # Check if playerctl is available
 if ! command -v playerctl >/dev/null; then
-    echo "Playerctl is not installed"
+    echo "playerctl is not installed"
     exit 1
 fi
 
-# Set the name of the file to store the previous track name and status
-previous_track_file="$HOME/.tmp/previous_track.txt"
+# Get the current track metadata
+artist="$(playerctl metadata artist 2>/dev/null)"
+title="$(playerctl metadata title 2>/dev/null)"
+current_status="$(playerctl status 2>/dev/null)"
 
-# Get the current track name and status
-current_track="$(playerctl metadata artist) - $(playerctl metadata title)"
-current_status="$(playerctl status)"
-
-# Check if the metadata is available
-if [ -z "$current_track" ]; then
-    echo "No track is currently playing"
-    exit 1
+# Check if the metadata is available and the status is "Playing"
+if [ -z "$artist" ] || [ -z "$title" ] || [ "$current_status" != "Playing" ]; then
+    if [ "$current_status" == "Playing" ]; then
+        echo "No track is currently playing"
+    else
+        echo "Waiting for next track..."
+    fi
+    exit 0 # Exit with 0 instead of 1 to indicate success but no output
 fi
 
-# Get the name and status of the previous track if it's different from the current track
-IFS=$'\n' read -d '' -r -a previous_track <<<"$(cat "$previous_track_file")"
-previous_track_name="${previous_track[0]}"
-previous_track_status="${previous_track[1]}"
-if [ "$current_track" != "$previous_track_name" ]; then
-    previous_track_name="$current_track"
-    previous_track_status="$current_status"
-    echo "$previous_track_name"$'\n'"$previous_track_status" >"$previous_track_file"
+# Define the maximum number of characters for artist and title
+max_chars=28
+
+# Check if the artist or title exceed the maximum number of characters
+if [ ${#artist} -gt $max_chars ]; then
+    artist="${artist:0:$((max_chars))}..." # Add ellipsis at the end of artist
 fi
 
-# Display the current or previous track's title based on its status
-if [ "$current_status" = "Paused" ]; then
-    echo "Paused: $previous_track_name"
-else
-    echo "$current_track"
+if [ ${#title} -gt $max_chars ]; then
+    title="...${title: -$((max_chars + 22))}" # Add ellipsis at the beginning of title
 fi
+
+# Display the current track metadata with ellipsis if needed
+output=""
+if [ -n "$artist" ] && [ -n "$title" ]; then
+    output="${artist} - ${title}"
+fi
+
+echo "$output"
