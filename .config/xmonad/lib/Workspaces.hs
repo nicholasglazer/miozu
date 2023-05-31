@@ -10,9 +10,9 @@
 -- A tagging example:
 -- > workspaces = ["ws1", "ws2", "ws3" ] ++ map show [4..9]
 --
--- This particular gliphs are japanese symbols that are represents numbers
 ------------------------------------------------------------------------
 -- Export all workspaces to increase readability and avoid call by index
+-- This particular gliphs are japanese symbols, each represents numbers [1..9]
 module Workspaces
   ( webWS
   , emacsWS
@@ -22,7 +22,7 @@ module Workspaces
   , socialWS
   , toolsWS
   , magicWS
-  , privateWS
+  , dualWS
   , myWorkspaces
   ) where
 
@@ -50,8 +50,8 @@ toolsWS = " <fn=1>七</fn> "
 magicWS :: String
 magicWS = " <fn=1>八</fn> "
 
-privateWS :: String
-privateWS = " <fn=1>九</fn> "
+dualWS :: String
+dualWS = " <fn=1>九</fn> "
 
 myWorkspaces :: [String]
 myWorkspaces =
@@ -63,5 +63,5 @@ myWorkspaces =
   , socialWS
   , toolsWS
   , magicWS
-  , privateWS
+  , dualWS
   ]
