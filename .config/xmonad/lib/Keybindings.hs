@@ -52,7 +52,6 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,                 xK_l         ), sendMessage Expand                                             ) -- Expand the master area
     , ((modm,                 xK_s         ), withFocused $ windows . W.sink                                 ) -- Push window back into tiling
     , ((modm .|. controlMask, xK_s         ), sinkAll                                                        ) -- Bring all float windows back to tile
-    , ((modm,                 xK_b         ), sendMessage ToggleStruts                                       ) -- Toggle bar
     , ((modm,                 xK_comma     ), sendMessage (IncMasterN 1)                                     ) -- Increment the number of windows in the master area
     , ((modm,                 xK_period    ), sendMessage (IncMasterN (-1))                                  ) -- Deincrement the number of windows in the master area
     , ((modm,                 xK_Escape    ), toggleWS' ["NSP"]                                              ) -- Use Esc to toogle between workspaces with XMonad.CycleWS -- Ignore the scratchpad workspace while toggling
@@ -105,7 +104,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- mod-ctl-[1..9] [0], screen 1
     -- mod-ctrl-shift-[1..9] [0], Move client to workspace N geedyView
     [ ((m .|. modm, k), windows (f i))
-       | (i, k) <- zip (workspaces conf) ([xK_1 .. xK_9] ++ [xK_0])
+       | (i, k) <- zip (workspaces conf) ([xK_1 .. xK_9])
        , (f, m) <-
          [ (viewOnScreen 0, 0)
          , (viewOnScreen 1, controlMask)
