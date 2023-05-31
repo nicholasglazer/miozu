@@ -33,6 +33,9 @@ import XMonad.Layout.Spacing (Border (Border), Spacing, spacingRaw)
 import XMonad.Layout.ThreeColumns (ThreeCol (ThreeColMid))
 import XMonad.Layout.ToggleLayouts
 import XMonad.Layout.WindowArranger (windowArrange)
+-- TODO https://hackage.haskell.org/package/xmonad-contrib-0.17.1/docs/XMonad-Layout-Magnifier.html
+-- Magnifier layout seems nice.
+-- import XMonad.Layout.Magnifier
 
 -- Fullscreen layout without borders, and circle layout.
 mediaLayout :: ModifiedLayout WithBorder (Choose (ModifiedLayout FullscreenFull Full) Circle) Window
