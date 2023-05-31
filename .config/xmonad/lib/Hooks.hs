@@ -1,45 +1,18 @@
 module Hooks
-  ( myFadeHook,
-    myEventHook,
-    myStartupHook,
-    LibNotifyUrgencyHook (..),
-    myLogHook,
+  ( myEventHook
+  , myStartupHook
+  , LibNotifyUrgencyHook (..),
   )
 where
 
-import Miozu (miozu02, miozu03, peach, red)
 import XMonad
-import XMonad.Hooks.DynamicLog (PP (ppCurrent, ppHidden, ppLayout, ppOrder, ppOutput, ppSep, ppTitle, ppUrgent, ppWsSep), dynamicLogWithPP, shorten, xmobarColor, xmobarPP)
 import XMonad.Hooks.FadeWindows (fadeWindowsEventHook, isUnfocused, opacity, opaque)
 import XMonad.Hooks.UrgencyHook (UrgencyHook (..))
-import XMonad.ManageHook (className)
 import qualified XMonad.StackSet as W
 import XMonad.Util.NamedWindows (getName)
 import XMonad.Util.Run (safeSpawn, hPutStrLn)
 import XMonad.Util.SpawnOnce (spawnOnce)
-
-------------------------------------------------------------------------
--- Fade Windows:
---
--- You will need compton to be installed to use this
--- you can add [ transparency 0.1 ] to all windows where 1 is fully transparent (use with caution)
--- TODO test this, since compton was replaced by steamos-compositor-plus
-------------------------------------------------------------------------
-myFadeHook =
-  composeAll
-    [ opaque,
-      isUnfocused --> opacity 1,
-      (className =? "wezterm") <&&> (isUnfocused) --> opacity 0.55
-    ]
-
-------------------------------------------------------------------------
--- Event handling:
---
--- Defines a custom handler function for X Events. The function should
--- return (All True) if the default handler is to be run afterwards. To
--- combine event hooks use mappend or mconcat from Data.Monoid.
-------------------------------------------------------------------------
-myEventHook = fadeWindowsEventHook
+--import XMonad.Hooks.FadeWindows (fadeWindowsLogHook)
 
 ------------------------------------------------------------------------
 -- Startup hook:
@@ -51,8 +24,18 @@ myEventHook = fadeWindowsEventHook
 myStartupHook :: X ()
 myStartupHook = do
   -- spawnOnce "feh --no-fehbg --bg-scale '$HOME/.config/wallpapers/miozu.png'"
-
+  -- spawnOnce "autorandr -c"
   spawnOnce "emacsclient -nc --eval '(doom/quickload-session)'"
+
+
+------------------------------------------------------------------------
+-- Event handling:
+--
+-- Defines a custom handler function for X Events. The function should
+-- return (All True) if the default handler is to be run afterwards. To
+-- combine event hooks use mappend or mconcat from Data.Monoid.
+------------------------------------------------------------------------
+myEventHook = fadeWindowsEventHook
 
 ---------------------------------------------------------------------------
 -- Urgency Hook:
@@ -68,25 +51,27 @@ instance UrgencyHook LibNotifyUrgencyHook where
     Just idx <- fmap (W.findTag w) $ gets windowset
     safeSpawn "notify-send" [show name, "workspace " ++ idx]
 
+
 ------------------------------------------------------------------------
--- Status bar:
+-- Fade Windows:
 --
--- Perform an arbitrary action on each internal state change or X event.
--- See the 'XMonad.Hooks.DynamicLog' extension for examples.
--- https://hackage.haskell.org/package/xmonad-contrib-0.17.1/docs/XMonad-Hooks-DynamicLog.html
+-- You will need picom to be installed to use this
+-- you can add [ transparency 0.1 ] to all windows where 1 is fully transparent (use with caution)
+-- TODO test this, since compton was replaced by steamos-compositor-plus
 ------------------------------------------------------------------------
-myLogHook xmprocs =
-  dynamicLogWithPP $
-    xmobarPP
-      { ppOutput = hPutStrLn xmprocs,
-        ppCurrent = xmobarColor peach "",
-        ppHidden = xmobarColor miozu02 "",
-        ppTitle = xmobarColor miozu03 "" . shorten 80,
-        ppUrgent = xmobarColor red "",
-        ppLayout = xmobarColor miozu02 "",
-        ppOrder = \(ws : _ : t : _) -> [ws, t], -- workspace, layout, title
-        ppSep = "    ", -- separator to use between different log sections
-        ppWsSep = " "
-        -- , ppHiddenNoWindows = showWsNames                           -- To show all hidden workspaces
-        -- , ppVisibleNoWindows = Nothing                              -- To define how should look visible workspaces without windows
-      }
+-- myFadeHook =
+--   composeAll
+--     [ opaque,
+--       isUnfocused --> opacity 1,
+--       (className =? "wezterm") <&&> (isUnfocused) --> opacity 0.55
+--     ]
+
+---------------------------------------------------------------------------
+-- Log Hook:
+--
+-- TODO write a log hook
+---------------------------------------------------------------------------
+-- logHook = composeAll [ fadeWindowsLogHook myFadeHook ]
+-- , focusedBorderColor = myFocusedBorderColor
+-- , normalBorderColor  = myNormalBorderColor
+-- }
