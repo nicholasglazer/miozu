@@ -63,8 +63,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     ++
     [
       ((0, xK_Print                        ), spawn myScreenshot                                             ) -- Print current display using maim with nametag: year-month-day-time-screenshot.png
-    , ((modm, xK_Print                     ), spawn myScreenshotSelected                                     ) -- Xclip selected screen using maim
-    , ((modm .|. shiftMask, xK_Print       ), runRecorder                                                    )
+    , ((modm,                 xK_Print     ), spawn myScreenshotSelected                                     ) -- Xclip selected screen using maim
+    , ((modm .|. shiftMask,   xK_Print     ), runRecorder                                                    )
     , ((modm,                 xK_y         ), runRecorder                                                    ) -- Toggle bar
     , ((0, xF86XK_KbdBrightnessDown        ), spawn "brightnessctl set 20-"                                  ) -- F5 Monitor brightness down
     , ((0, xF86XK_KbdBrightnessUp          ), spawn "brightnessctl set +20"                                  ) -- F6 Monitor brightness up
@@ -99,29 +99,39 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     --   ((modm,                 xK_g         ), goToSelected $ myGSConfig1 myColorizer                         ) -- select workspace from grid
     -- ]
     -- ++
-    -- mod-[1..9] [0], Switch to workspace N screen 0
-    -- mod-shift-[1..9] [0], Move client to workspace N
-    -- mod-ctl-[1..9] [0], screen 1
-    -- mod-ctrl-shift-[1..9] [0], Move client to workspace N geedyView
+    -- TODO cover cases with more than 2 screens
     [ ((m .|. modm, k), windows (f i))
-       | (i, k) <- zip (workspaces conf) ([xK_1 .. xK_9])
-       , (f, m) <-
-         [ (viewOnScreen 0, 0)
-         , (viewOnScreen 1, controlMask)
-         , (W.shift, shiftMask)
-         , (W.greedyView  , controlMask .|. shiftMask)
-         ]
-       ]
-    ++
+       | (i, k) <- zip (workspaces conf) ([xK_1 .. xK_9] ++ [xK_0])
+       , (f, m) <- keyFunctions i
+    ]
+    where
+      keyFunctions i
+        | i `elem` take 7 (workspaces conf) = [ (viewOnScreen 0, 0)  -- modkey + 1-7: Switch to workspace 1-7 on screen 0
+                                             , (W.shift, shiftMask) -- modkey + shift + 1-7: Shift the workspace n to n
+                                             , (W.greedyView, controlMask .|. shiftMask) -- modkey + control + shift + 1-7: Default greedyView behavior
+                                             ]
+        | i `elem` drop 7 (workspaces conf) = [ (viewOnScreen 1, 0) -- modkey + 8-0: Switch to workspace 8-0 on screen 1 TODO make a variable to receive screen num
+                                             , (W.shift, shiftMask) -- modkey + shift + 8-0: Shift the workspace n to n
+                                             , (W.greedyView, controlMask .|. shiftMask) -- modkey + control + shift + 8-0: Default greedyView behavior
+                                             ]
+        | i == "NSP" = [ (viewOnScreen 1, 0) -- modkey + n: Switch to NSP on screen 0
+                      , (W.shift, shiftMask .|. modm) -- modkey + shift + n: Shift the current window to NSP
+                      , (W.greedyView, controlMask .|. shiftMask) -- modkey + control + shift + n: Default greedyView behavior
+                      ]
+        | otherwise = []  -- Exclude other workspaces from keybindings
+
+
+
+
     -- changed default mod-{w,e,r} for dvorak mod-{comma,period,p}
     -- mod-{comma,period,p}, Switch to physical/Xinerama screens 1, 2, or 3
     -- mod-shift-{comma,period,p}, Move client to screen 1, 2, or 3
-    [((m .|. modm, key), screenWorkspace sc >>= flip whenJust (windows . f))
-        | (key, sc) <- zip [xK_comma, xK_period, xK_p] [0..]
-        , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
+    -- [((m .|. modm, key), screenWorkspace sc >>= flip whenJust (windows . f))
+    --     | (key, sc) <- zip [xK_comma, xK_period, xK_p] [0..]
+    --     , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
 
 
--- TODO
+-- TODO help section as keybindng
 --spawn $ "wezterm -e sh -c 'echo \"" ++ help ++ "\" | less'"
 
     -- [
