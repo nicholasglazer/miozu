@@ -23,6 +23,7 @@ module Workspaces
   , toolsWS
   , magicWS
   , dualWS
+  , zeroWS
   , myWorkspaces
   ) where
 
@@ -53,6 +54,9 @@ magicWS = " <fn=1>八</fn> "
 dualWS :: String
 dualWS = " <fn=1>九</fn> "
 
+zeroWS :: String
+zeroWS = " <fn=1>〇</fn> "
+
 myWorkspaces :: [String]
 myWorkspaces =
   [ webWS
@@ -64,4 +68,5 @@ myWorkspaces =
   , toolsWS
   , magicWS
   , dualWS
+  , zeroWS
   ]
