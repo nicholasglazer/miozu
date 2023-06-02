@@ -23,11 +23,14 @@ feh --bg-fill $HOME/Pictures/wallpapers/miozu_keybindings.png &
 # Start notification manager
 dunst &
 
+# Run autorandr
+autorandr -c
+
 # Start compositor
 DISPLAY=":0" picom -b
 
 # Keyboard layout
-setxkbmap -layout "dvorak,us,ua" -option "grp:alt_shift_toggle,caps:escape" &
+setxkbmap -layout "dvorak,ua,ru,us" -option "grp:alt_shift_toggle,caps:escape" &
 
 # Start WM
 exec xmonad

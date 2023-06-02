@@ -1,6 +1,6 @@
 -- Path .config/xmonad/xmobar/xmobar.hs
 ----------------------------------------------------------------------
--- Last modified 15 May 2023
+-- Last modified 1 June 2023
 -- Author Nicholas Glazer <glazer.nicholas@gmail.com>
 -- Repo https://github.com/nicholasglazer/miozu
 ----------------------------------------------------------------------
@@ -14,7 +14,7 @@
 ----------------------------------------------------------------------
 Config {
   -- appearance
-  font               = "xft:IBM Plex Sans:size=10:antialias=true:hinting=true:bold,xft:Inconsolata:size=9:bold:antialias=true"
+    font             = "xft:IBM Plex Sans:size=10:antialias=true:hinting=true:bold,xft:Inconsolata:size=9:bold:antialias=trueI"
   , additionalFonts  = ["xft:Inter:pixelsize=12" , "xft:Roboto:pixelsize=12"]
   , bgColor          = "#000000"
   , alpha            = 0        -- 0 is transparent, 255 is opaque. 255 -> xmobar bgcolor, xmonad.hs xmobarPP bgcolor on
@@ -25,22 +25,21 @@ Config {
   -- layout
   , sepChar          = "%"     -- delineator between plugin names and straight text
   , alignSep         = "}{"    -- separator between left-right alignment
-  -- TODO limit nowplaying char length
-  , template         = " %nowplaying% } %StdinReader% { <action=`setxkbmap -layout 'dvorak, us, ua' -option 'grp:alt_shift_toggle,caps:escape'`>%kbd%</action> %date% "
+  , template         = " %nowplaying% } %XMonadLog% { <action=`setxkbmap -layout 'dvorak, us, ua' -option 'grp:alt_shift_toggle,caps:escape'`>%kbd%</action> %date% "
   -- general behavior
-  , lowerOnStart     = True    -- send to bottom of window stack on start
-  , hideOnStart      = False   -- start with window unmapped (hidden)
-  , allDesktops      = False   -- show on all desktops
-  , overrideRedirect = True    -- in some situations you might need to set this option to False.
-  , pickBroadest     = True    -- choose widest display (multi-monitor)
-  , persistent       = True    -- enable/disable hiding (True = disabled)
+  , lowerOnStart     = True  -- send to bottom of window stack on start
+  , hideOnStart      = False -- start with window unmapped (hidden)
+  , allDesktops      = False -- show on all desktops
+  , overrideRedirect = True  -- set this option to True
+  , pickBroadest     = True  -- choose widest display (multi-monitor)
+  , persistent       = False -- enable/disable hiding (True = disabled)
 
-  , commands = [ Run Com "$HOME/.config/xmonad/xmobar/now-playing-bt.sh" [] "nowplaying" 10  -- Display current playing track using playctl
-               , Run Date "%a<fc=#83D2FC> %H:%M</fc> " "date" 10                             -- time and date indicator
+  , commands = [ Run Com "/home/n/.config/xmonad/xmobar/now-playing-bt.sh" [] "nowplaying" 10  -- Display current playing track using playctl
+               , Run Date "%a<fc=#83D2FC> %H:%M</fc> " "date" 10                               -- time and date indicator
                , Run Kbd [ ("us(dvorak)" , "<fc=#FF9982> Dv</fc>")
                          , ("ua"         , "<fc=#FF9837> Ua</fc>")
-                         , ("us"         , "<fc=#E8D176> Us</fc>") ]                         -- keyboard layout indicator
-               , Run StdinReader                                                             -- xmonad workspace : title
+                         , ("us"         , "<fc=#E8D176> Us</fc>") ]                            -- keyboard layout indicator
+               , Run XMonadLog                                                                  -- Xmonad output
         ]
    }
 
