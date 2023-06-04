@@ -88,14 +88,14 @@ myScratchpads =
     t = 0.98 - h   -- bottom 2%
     l = 0.01       -- left 1%
 
-  spawnWebB  = "firefox-developer-edition --new-window http://localhost:3000 --devtools"
+  spawnWebB  = "firefox-developer-edition --no-remote --new-window http://localhost:3000 --devtools"
   findWebB   = className =? "firefoxdeveloperedition"
   manageWebB = customFloating $ W.RationalRect l t w h                 -- geometry:
    where
-    h = 0.78       -- height 78%
-    w = 0.57       -- width 57%
-    t = 0.03       -- top 3%
-    l = 0.99 - w   -- right 1%
+    h = 0.78         -- height 78%
+    w = 0.57         -- width 57%
+    t = 0.03         -- top 3%
+    l = 0.99 - w     -- right 1%
 
 
 scratchTermSR :: X ()
