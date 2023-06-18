@@ -30,7 +30,7 @@ autorandr -c
 DISPLAY=":0" picom -b
 
 # Keyboard layout
-setxkbmap -layout "dvorak,ua,ru,us" -option "grp:alt_shift_toggle,caps:escape" &
+setxkbmap -layout "us,ua" -variant "dvorak," -option "grp:alt_shift_toggle,caps:escape" &
 
 # Start WM
 exec xmonad
