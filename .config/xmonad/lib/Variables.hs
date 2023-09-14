@@ -18,7 +18,7 @@ module Variables
   , myScreenshotSelected
   ) where
 
-import           ScreenRecorder                 ( myGifRecorder )
+-- import           ScreenRecorder                 ( myGifRecorder )
 
 import           Data.Time                      ( formatTime
                                                 , getCurrentTime

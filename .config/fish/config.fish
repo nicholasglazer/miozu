@@ -1,3 +1,13 @@
+# -- Nicholas Glazer <glazer.nicholas@gmail.com> --
+
+
+# --- Functions
+# Keybindings
+function fish_user_key_bindings
+    bind \eu forward-word # autocomplete suggented by 1 word per use
+    bind \cu forward-char # autocomplete suggented line
+end
+
 # --- Executables
 # This command ensures that /usr/local/bin is searched first when looking for executable programs
 set -x PATH /usr/local/bin $PATH
@@ -6,7 +16,7 @@ set -x PATH $HOME/.emacs.d/bin $PATH
 # Set an editor
 set -x EDITOR "nvim"
 # Comments below will be substituted with miozu variables automatically after you run ./install.sh
-# INSERT MIOZU_DIR HERE
+set -x MIOZU_DIR /home/n/.miozu
 # INSERT MIOZU GLOBAL
 
 # --- Internal settings
@@ -14,6 +24,12 @@ set -x EDITOR "nvim"
 # Remove fish greeting -U will need to run it once to remove completely
 set -x fish_greeting ""
 # set -U fish_greeting
+
+# pnpm
+set -gx PNPM_HOME "/home/n/.local/share/pnpm"
+if not string match -q -- $PNPM_HOME $PATH
+  set -gx PATH "$PNPM_HOME" $PATH
+end
 
 # --- Aliases
 # Please allow me ;)
@@ -58,3 +74,5 @@ alias h 'htop'
 alias lns 'ln -si'
 # Remove package
 alias remove 'sudo pacman -Rsc'
+# Qick move to miozu dir
+alias m "cd $MIOZU_DIR"

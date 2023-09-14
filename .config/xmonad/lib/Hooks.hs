@@ -1,17 +1,22 @@
 module Hooks
   ( myEventHook
   , myStartupHook
-  , LibNotifyUrgencyHook (..),
-  )
-where
+  , LibNotifyUrgencyHook(..)
+  ) where
 
-import XMonad
-import XMonad.Hooks.FadeWindows (fadeWindowsEventHook, isUnfocused, opacity, opaque)
-import XMonad.Hooks.UrgencyHook (UrgencyHook (..))
-import qualified XMonad.StackSet as W
-import XMonad.Util.NamedWindows (getName)
-import XMonad.Util.Run (safeSpawn, hPutStrLn)
-import XMonad.Util.SpawnOnce (spawnOnce)
+import           XMonad
+import           XMonad.Hooks.FadeWindows       ( fadeWindowsEventHook
+                                                , isUnfocused
+                                                , opacity
+                                                , opaque
+                                                )
+import           XMonad.Hooks.UrgencyHook       ( UrgencyHook(..) )
+import qualified XMonad.StackSet               as W
+import           XMonad.Util.NamedWindows       ( getName )
+import           XMonad.Util.Run                ( hPutStrLn
+                                                , safeSpawn
+                                                )
+import           XMonad.Util.SpawnOnce          ( spawnOnce )
 --import XMonad.Hooks.FadeWindows (fadeWindowsLogHook)
 
 ------------------------------------------------------------------------
@@ -23,9 +28,9 @@ import XMonad.Util.SpawnOnce (spawnOnce)
 ------------------------------------------------------------------------
 myStartupHook :: X ()
 myStartupHook = do
-  -- spawnOnce "feh --no-fehbg --bg-scale '$HOME/.config/wallpapers/miozu.png'"
-  -- spawnOnce "autorandr -c"
+  spawn "bash $MIOZU_DIR/bin/tools/deck_dual.sh"
   spawnOnce "emacsclient -nc --eval '(doom/quickload-session)'"
+  --spawn "mons -S 2,0:R"
 
 
 ------------------------------------------------------------------------
@@ -43,11 +48,12 @@ myEventHook = fadeWindowsEventHook
 -- Allows you to use notifications for xmonad
 -- thanks to https://pbrisbin.com/posts/using_notify_osd_for_xmonad_notifications/
 ---------------------------------------------------------------------------
-data LibNotifyUrgencyHook = LibNotifyUrgencyHook deriving (Read, Show)
+data LibNotifyUrgencyHook = LibNotifyUrgencyHook
+  deriving (Read, Show)
 
 instance UrgencyHook LibNotifyUrgencyHook where
   urgencyHook LibNotifyUrgencyHook w = do
-    name <- getName w
+    name     <- getName w
     Just idx <- fmap (W.findTag w) $ gets windowset
     safeSpawn "notify-send" [show name, "workspace " ++ idx]
 

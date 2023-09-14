@@ -12,6 +12,8 @@ shfmt
 
 # Browser
 firefox-developer-edition
+firefox-nightly
+microsoft-edge-stable
 chromium
 
 # Web development
@@ -20,6 +22,9 @@ npm
 
 # Misc
 tree
+
+# Design
+figma-linux
 
 # Social
 telegram-desktop

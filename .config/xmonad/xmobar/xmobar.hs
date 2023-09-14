@@ -25,7 +25,7 @@ Config {
   -- layout
   , sepChar          = "%"     -- delineator between plugin names and straight text
   , alignSep         = "}{"    -- separator between left-right alignment
-  , template         = " %nowplaying% } %XMonadLog% { <action=`setxkbmap -layout 'dvorak, us, ua' -option 'grp:alt_shift_toggle,caps:escape'`>%kbd%</action> %date% "
+  , template         = " %nowplaying% } %XMonadLog% { <action=`setxkbmap -layout 'us,ua' -variant 'dvorak,' -option 'grp:alt_shift_toggle,caps:escape'`>%kbd%</action> %date% "
   -- general behavior
   , lowerOnStart     = True  -- send to bottom of window stack on start
   , hideOnStart      = False -- start with window unmapped (hidden)

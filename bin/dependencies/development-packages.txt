@@ -1,0 +1,10 @@
+# emacs modes
+editorconfig-core-c
+tidy
+stylelint
+js-beautify
+
+# js
+volta-bin
+npm
+pnpm

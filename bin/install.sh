@@ -151,5 +151,12 @@ sudo sed -i 's/#ReconnectIntervals=.*/ReconnectIntervals=3/' /etc/bluetooth/main
 #systemctl --user enable greenclip.service
 #systemctl --user start greenclip.service
 
+# set syttem clock according to api
+timedatectl set-timezone "$(curl --fail https://ipapi.co/timezone)"
+
+# create a /etc/X11/xorg.conf.d/00-keyboard.conf to persist languages and layouts
+# NOTE ukrainian language and us dvorak layout, change this line to match your preferences
+localectl set-x11-keymap us,ua "" dvorak grp:alt_shift_toggle,caps:escape
+
 # Recompile and restart xmonad
 xmonad --recompile && xmonad --restart

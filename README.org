@@ -1,35 +1,28 @@
 * About
-  This is simply my environment/configurations for Arch Linux. It's inspired by the great community, which I very grateful.
-  -----
-  It is also a part of [[https://github.com/nicholasglazer/arch-cheat-sheet][arch-sheat-sheet]] repository.
+This is simply my environment/configurations for Arch Linux. It's inspired by the great community, which I very grateful.
+-----
+It is also a part of [[https://github.com/nicholasglazer/arch-cheat-sheet][arch-sheat-sheet]] repository.
 ** What is inside?
- | Name                             | Description                     |
- |----------------------------------+---------------------------------|
- | .xinitrc, .Xresources, .xprofile | X11 Misc Linux files            |
- | [[https://github.com/syl20bnr/spacemacs][.spacemacs]]                       | Emacs configuration file        |
- | .gitconfig                       | Git configurations              |
- | .jsbeautifyrc, .eslint           | Javascript linting and beautify |
- | [[https://github.com/ambientsound/pms][pms]], mpd                         | Audio Player, Audio daemon      |
- | ranger                           | File manager                    |
- | rofi "onemon.rasi" theme         | Launch manager                  |
- | [[https://github.com/cmus/cmus][cava]]                             | Audio Visualizer                |
- | [[https://github.com/rakshasa/rtorrent][rtorrent]]                         | Command line torrent tracker    |
- | [[http://www.knopwob.org/dunst/][dunst]]                            | Notification manager            |
- | [[https://wiki.archlinux.org/index.php/Termite][termite]], urxvt                   | Vim based terminal emulator     |
- | [[https://wiki.archlinux.org/index.php/Zathura][zathura]]                          | Document viwer                  |
- | [[https://wiki.archlinux.org/index.php/Font_configuration][fontconfig]]                       | Font configuration file         |
- | xmonad                           | Window manager                  |
- | xmobar                           | Status bar                      |
- | and more                         | ...                             |
+| Name                   | Description                     | Theme | Screenshot |
+|------------------------+---------------------------------+-------+------------|
+| [[https://github.com/nicholasglazer/miozu/blob/master/.config/xmonad/xmonad.hs][xmonad]]                 | Window manager                  | [[https://github.com/miozutheme/xmonad/blob/main/Miozu.hs][miozu]] |            |
+| [[https://github.com/nicholasglazer/miozu/blob/master/.config/xmonad/xmobar/xmobar.hs][xmobar]]                 | Status bar                      |       |            |
+| [[https://github.com/nicholasglazer/miozu/blob/master/.config/picom/picom.conf][picom]]                  | Compositor for Xorg             |       |            |
+| [[https://github.com/nicholasglazer/miozu/blob/master/.config/rofi/miozu.rasi][wezterm]]                | Terminal emulator               | [[https://github.com/miozutheme/wezterm/blob/main/Miozu.toml][miozu]] |            |
+| [[https://github.com/ambientsound/pms][pms]], mpd               | Audio Player, Audio daemon      |       |            |
+| n3                     | File manager                    |       |            |
+| [[https://github.com/nicholasglazer/miozu/blob/master/.config/rofi/miozu.rasi][rofi]]                   | Launch manager                  |       |            |
+| [[https://github.com/nicholasglazer/miozu/tree/master/.config/doom][doom-emacs]]             | Emacs configuration files       |       |            |
+| [[https://github.com/rakshasa/rtorrent][rtorrent]]               | Command line torrent tracker    |       |            |
+| [[http://www.knopwob.org/dunst/][dunst]]                  | Notification manager            |       |            |
+| [[https://wiki.archlinux.org/index.php/Zathura][zathura]]                | Document viwer                  |       |            |
+| [[https://wiki.archlinux.org/index.php/Font_configuration][fontconfig]]             | Font configuration file         |       |            |
+| .xinitrc, .Xresources  | X11 Misc Linux files            |       |            |
+| .gitconfig             | Git configurations              |       |            |
+| .jsbeautifyrc, .eslint | Javascript linting and beautify |       |            |
+| and more               | ...                             |       |            |
 
 ** How it's look?
-   Status bar (XMobar):
-   [[https://raw.githubusercontent.com/nicholasglazer/arch-cheat-sheet/master/img/xmobar.gif]]
-   -----
-   Rofi onemon theme:
-   [[https://nicholasglazer.github.io/arch-cheat-sheet/img/rofi.gif]]
-   -----
-   Layouts:
-   [[https://raw.githubusercontent.com/nicholasglazer/arch-cheat-sheet/master/img/layouts.gif]]
-   -----
-   You can find more GIFs [[https://github.com/nicholasglazer/arch-cheat-sheet][here]].
+Status bar (XMobar):
+-----
+You can find more info at [[https://github.com/nicholasglazer/miozu.com][miozu.com github]].

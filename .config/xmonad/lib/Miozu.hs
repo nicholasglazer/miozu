@@ -1,6 +1,23 @@
 -- Author Glazer Nicholas <glazer.nicholas@gmail.com>
 -- Read more about colors at https://miozu.com/colors
-module Miozu where
+module Miozu
+  ( miozu00
+  , miozu01
+  , miozu02
+  , miozu03
+  , miozu04
+  , miozu05
+  , miozu06
+  , miozu07
+  , yellow
+  , cyan
+  , orange
+  , green
+  , peach
+  , magenta
+  , blue
+  , red
+  ) where
 
 -- Miozu color palette
 miozu00 :: [Char]

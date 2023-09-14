@@ -36,38 +36,6 @@
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
 
-(after! projectile (setq projectile-project-root-files-bottom-up (remove
-            ".git" projectile-project-root-files-bottom-up)))
-
-(after! counsel
-  (setq counsel-rg-base-command "rg -M 240 --with-filename --no-heading --line-number --color never %s || true"))
-
-
-;; define macroses
-(defun my/console-log-macro ()
-  "Inserts a console.log statement."
-  (interactive)
-  (let ((selected-text (if (evil-visual-state-p)
-                           (buffer-substring-no-properties evil-visual-beginning evil-visual-end)
-                         "")))
-    (progn
-      (end-of-line)                                         ; Move to the end of the line
-      (newline-and-indent)                                  ; New line with indent
-      (insert "console.log(`log: :" selected-text "${}`);") ; Insert the statement
-      (end-of-line)                                         ; Move to the end of the line
-      (backward-char 4)                                     ; Move forward to be after "${"
-      (evil-insert-state)                                   ; Enter insert mode
-      )))
-
-(map! :leader
-      :desc "Insert console.log"
-      "-" #'my/console-log-macro)
-
-
-;; Configure the lsp to use your perfered formatter
-;; (after! lsp-haskell
-;;   (setq lsp-haskell-formatting-provider "brittany"))
-
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
@@ -85,3 +53,142 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
+
+;; Use packages
+(use-package! lsp-tailwindcss)
+
+;; After pkgs loaded
+(after! projectile (setq projectile-project-root-files-bottom-up (remove
+            ".git" projectile-project-root-files-bottom-up)))
+
+(after! counsel
+  (setq counsel-rg-base-command "rg -M 240 --with-filename --no-heading --line-number --color never %s || true"))
+
+;; rss feed rules
+;;
+;; Load elfeed-org
+(require 'elfeed-org)
+
+;; Initialize elfeed-org
+;; This hooks up elfeed-org to read the configuration when elfeed
+;; is started with =M-x elfeed=
+(elfeed-org)
+
+;; Specify a number of files containing elfeed
+;; configuration. If not set then the location below is used.
+;; Note: The customize interface is also supported.
+;;
+;; (setq rmh-elfeed-org-files (list "~/.miozu/elfeed.org"));;
+(setq rmh-elfeed-org-files '("~/.miozu/elfeed.org"))
+
+;; Automatically updating feed when opening elfeed
+(add-hook! 'elfeed-search-mode-hook #'elfeed-update)
+
+;; The default filter
+(after! elfeed
+  (setq elfeed-search-filter "@1-month-ago +unread"))
+
+
+;; Mark all YouTube entries
+(add-hook 'elfeed-new-entry-hook
+          (elfeed-make-tagger :feed-url "youtube\\.com"
+                              :add '(video youtube)))
+
+;; Entries older than 2 weeks are marked as read
+(add-hook 'elfeed-new-entry-hook
+          (elfeed-make-tagger :before "3 weeks ago"
+                              :remove 'unread))
+
+;; Configure the lsp to use your perfered formatter
+;; (after! lsp-haskell
+;;   (setq lsp-haskell-formatting-provider "brittany"))
+;;
+
+;; Define macroses
+;; e - elfeed
+(map! :leader
+      :desc "start elfeed"
+      :prefix "e"
+      :nv "e" 'elfeed)
+
+(map! :leader
+      :desc "add elfeed feed"
+      :prefix "e"
+      :nv "a" 'elfeed-add-feed)
+
+(map! :leader
+      :desc "update elfeed"
+      :prefix "e"
+      :nv "u" 'elfeed-update)
+
+;; d - development
+
+(map! :leader
+      :desc "console-log-macro"
+      :prefix "d"
+      :nv "c" (λ! (move-end-of-line nil)
+                  (insert "\nconsole.log(`log:  $`, );")
+                  (backward-char 7)
+                  (evil-insert-state)
+                  (evil-mc-make-cursor-here)
+                  (evil-mc-make-and-goto-next-cursor)
+                  (evil-forward-char 5)))
+
+(map! :leader
+      :desc "code-json-macro"
+      :prefix "d"
+      :nv "j" (λ! (insert "\n<pre>{JSON.stringify(, null, 2)}</pre>")
+                  (backward-char 17)
+                  (evil-insert-state)))
+
+(map! :leader
+      :desc "svelte-script-macro"
+      :prefix "d"
+      :nv "t" (λ! (insert "<script>")
+                  (insert "\n</script>")
+                  (evil-open-above 1)))
+
+(map! :leader
+      :desc "svelte-style-macro"
+      :prefix "d"
+      :nv "e" (λ! (insert "<style>")
+                  (insert "\n</style>")
+                  (evil-open-above 1)))
+
+(map! :leader
+      :desc "svelte-section-macro"
+      :prefix "d"
+      :nv "n" (λ! (move-end-of-line nil)
+                  (insert "\n<section class=\"\">")
+                  (insert "\n</section>")
+                  (evil-open-above 1)))
+
+(map! :leader
+      :desc "svelte-div-macro"
+      :prefix "d"
+      :nv "d" (λ! (move-end-of-line nil)
+                  (insert "\n<div class=\"\">")
+                  (insert "\n</div>")
+                  (evil-open-above 1)))
+
+(map! :leader
+      :desc "svelte-load-fn-macro"
+      :prefix "d"
+      :nv "l" (λ! (insert "export async function load({}) {")
+                  (insert "\n}")
+                  (forward-line -1)
+                  (move-end-of-line nil)
+                  (backward-char 4)
+                  (evil-insert-state)))
+
+(map! :leader
+      :desc "svelte-multicursor-empty-block-macro"
+      :prefix "d"
+      :nv "b" (λ! (insert "\n{#}")
+                  (insert "\n{/}")
+                  (backward-char 1)
+                  (evil-insert-state)
+                  (evil-mc-make-cursor-here)
+                  (evil-mc-make-and-goto-next-cursor)
+                  (forward-line -1)
+                  (evil-forward-char 2)))

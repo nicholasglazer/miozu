@@ -10,7 +10,7 @@ import System.Process
 import System.Exit (exitWith, ExitCode(ExitSuccess))
 -- Import /lib modules
 import Scratchpads (scratchTermSL, scratchTermBL, scratchTermSR, scratchTermBR, scratchFM, scratchWebA, scratchWebB)
-import ScreenRecorder (myGifRecorder, runRecorder)
+-- import ScreenRecorder (myGifRecorder, runRecorder)
 import GridSelect (myColorizer, myGSConfig1) -- Gridselect module
 import Variables (myTerminal, myAltTerminal, myLaunchManager, myTextEditor, myScreenshot, myScreenshotSelected)
 
@@ -22,9 +22,9 @@ import Graphics.X11.ExtraTypes.XF86 (xF86XK_AudioMute, xF86XK_AudioLowerVolume, 
 import qualified Data.Map as M
 import XMonad.Actions.CycleWS (moveTo, toggleWS', emptyWS, Direction1D(Next), WSType(Not), WSType(WSIs)) -- Provides bindings to cycle forward or backward through the list of workspaces, to move windows between workspaces, and to cycle between screens.
 import XMonad.Actions.GridSelect (goToSelected)
-import XMonad.Actions.RotSlaves (rotSlavesDown, rotSlavesUp)                               -- Rotate all windows except the master window and keep the focus in place.
-import XMonad.Actions.SinkAll (sinkAll)                                                  -- http://xmonad.org/xmonad-docs/xmonad-contrib/XMonad-Actions-SinkAll.html
-import XMonad.Actions.OnScreen
+import XMonad.Actions.RotSlaves (rotSlavesDown, rotSlavesUp) -- Rotate all windows except the master window and keep the focus in place.
+import XMonad.Actions.SinkAll (sinkAll) -- http://xmonad.org/xmonad-docs/xmonad-contrib/XMonad-Actions-SinkAll.html
+import XMonad.Actions.OnScreen (viewOnScreen) -- for doual screen binding
 
 -- Utils
 import XMonad.Util.Run              (safeSpawn)                          --  https://hackage.haskell.org/package/xmonad-contrib-0.15/docs/XMonad-Hooks-DynamicLog.htm
@@ -48,8 +48,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask,   xK_k         ), windows W.swapUp                                               ) -- Swap the focused window with the previous window
     , ((modm .|. controlMask, xK_j         ), rotSlavesDown                                                  ) -- Rotate all windows except the master window, while the focus stays where it is
     , ((modm .|. controlMask, xK_k         ), rotSlavesUp                                                    ) -- Rotate all windows except the master window, while the focus stays where it is
-    , ((modm,                 xK_h         ), sendMessage Shrink                                             ) -- Shrink the master area
-    , ((modm,                 xK_l         ), sendMessage Expand                                             ) -- Expand the master area
+    , ((modm .|. shiftMask,   xK_h         ), sendMessage Shrink                                             ) -- Shrink the master area
+    , ((modm .|. shiftMask,   xK_l         ), sendMessage Expand                                             ) -- Expand the master area
     , ((modm,                 xK_s         ), withFocused $ windows . W.sink                                 ) -- Push window back into tiling
     , ((modm .|. controlMask, xK_s         ), sinkAll                                                        ) -- Bring all float windows back to tile
     , ((modm,                 xK_comma     ), sendMessage (IncMasterN 1)                                     ) -- Increment the number of windows in the master area
@@ -64,8 +64,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [
       ((0, xK_Print                        ), spawn myScreenshot                                             ) -- Print current display using maim with nametag: year-month-day-time-screenshot.png
     , ((modm,                 xK_Print     ), spawn myScreenshotSelected                                     ) -- Xclip selected screen using maim
-    , ((modm .|. shiftMask,   xK_Print     ), runRecorder                                                    )
-    , ((modm,                 xK_y         ), runRecorder                                                    ) -- Toggle bar
+    --, ((modm .|. shiftMask,   xK_Print     ), runRecorder                                                    )
+    --, ((modm,                 xK_y         ), runRecorder                                                    ) -- Toggle bar
     , ((0, xF86XK_KbdBrightnessDown        ), spawn "brightnessctl set 20-"                                  ) -- F5 Monitor brightness down
     , ((0, xF86XK_KbdBrightnessUp          ), spawn "brightnessctl set +20"                                  ) -- F6 Monitor brightness up
     , ((0, xF86XK_KbdLightOnOff            ), spawn "~/.miozu/bin/backlight-toggle.sh"                       ) -- TODO F7 fix toggle monitor backlight
@@ -85,10 +85,10 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     ]
     ++
     [-- ScratchPads keybindings
-      ((modm,                 xK_r         ), scratchTermBR                                                  ) -- bir right terminal SP
-    , ((modm .|. shiftMask,   xK_r         ), scratchTermSR                                                  ) -- small right terminal SP
-    , ((modm,                 xK_t         ), scratchTermBL                                                  ) -- big left terminal SP
-    , ((modm .|. shiftMask,   xK_t         ), scratchTermSL                                                  ) -- small right terminal SP
+      ((modm,                 xK_t         ), scratchTermBR                                                  ) -- bir right terminal SP
+    , ((modm .|. shiftMask,   xK_t         ), scratchTermSR                                                  ) -- small right terminal SP
+    , ((modm,                 xK_h         ), scratchTermBL                                                  ) -- big left terminal SP
+    , ((modm .|. shiftMask,   xK_h         ), scratchTermSL                                                  ) -- small right terminal SP
     , ((modm,                 xK_f         ), scratchFM                                                      ) -- file manager SP
     , ((modm .|. shiftMask,   xK_w         ), scratchWebA                                                    ) -- run chromium big SP
     , ((modm,                 xK_w         ), scratchWebB                                                    ) -- run chromium small SP

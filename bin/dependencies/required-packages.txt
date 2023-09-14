@@ -18,8 +18,8 @@ arandr
 # Boot manager
 refind
 
-# Compositor
-picom
+# Compositor (picom fork to enable animations)
+picom-arian8j2-git
 
 # Notifications
 dunst
@@ -28,9 +28,10 @@ dunst
 alsa-utils
 alsa-ucm-conf-git
 pipewire
-pipewire-alsa
 pipewire-audio
+pipewire-alsa
 pipewire-pulse
+wireplumber
 playerctl
 youtube-dl
 
@@ -72,7 +73,7 @@ feh
 hsetroot
 
 # Screenshots and gifs
-scrot
+maim
 byzanz
 
 # Fonts | 40 most popular google fonts, including ttf-ibm-plex-sans. See the full list https://aur.archlinux.org/packages/ttf-google-fonts-typewolf

@@ -48,3 +48,11 @@
 ;(unpin! pinned-package another-pinned-package)
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
+
+;; Tailwind github packange
+(package! lsp-tailwindcss
+  :recipe (:host github :repo "merrickluo/lsp-tailwindcss"))
+
+;; Svelte github package
+(package! svelte-mode
+  :recipe (:host github :repo "leafOfTree/svelte-mode"))
