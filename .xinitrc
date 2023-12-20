@@ -26,12 +26,11 @@ feh --bg-fill $HOME/Pictures/wallpapers/miozu_keybindings.png &
 # Start notification manager
 dunst &
 
-# Run autorandr
-#autorandr -c
+# Run dual monitor script
 bash $MIOZU_DIR/bin/tools/deck_dual.sh
 
 # Start compositor
-DISPLAY=":0" picom -b
+#DISPLAY=":0" picom -b
 
 # Keyboard layout
 setxkbmap -layout "us,ua" -variant "dvorak," -option "grp:alt_shift_toggle,caps:escape" &
