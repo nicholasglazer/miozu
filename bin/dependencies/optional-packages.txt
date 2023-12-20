@@ -1,31 +1,11 @@
-# IDE
-emacs-nativecomp
-cabal-install
-ripgrep
-fd
-haskell-language-server
-hoogle
-marked
-rust-analyzer
-shellcheck
-shfmt
-
 # Browser
-firefox-developer-edition
-firefox-nightly
-microsoft-edge-stable
+firefox
 chromium
-
-# Web development
-nvm
-npm
-
-# Misc
-tree
-
-# Design
-figma-linux
+torbrowser-launcher
 
 # Social
 telegram-desktop
 discord
+
+# Misc
+tree

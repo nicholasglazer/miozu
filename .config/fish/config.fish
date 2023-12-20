@@ -76,3 +76,7 @@ alias lns 'ln -si'
 alias remove 'sudo pacman -Rsc'
 # Qick move to miozu dir
 alias m "cd $MIOZU_DIR"
+
+# bun
+set --export BUN_INSTALL "$HOME/.bun"
+set --export PATH $BUN_INSTALL/bin $PATH

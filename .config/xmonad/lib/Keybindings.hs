@@ -48,8 +48,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask,   xK_k         ), windows W.swapUp                                               ) -- Swap the focused window with the previous window
     , ((modm .|. controlMask, xK_j         ), rotSlavesDown                                                  ) -- Rotate all windows except the master window, while the focus stays where it is
     , ((modm .|. controlMask, xK_k         ), rotSlavesUp                                                    ) -- Rotate all windows except the master window, while the focus stays where it is
-    , ((modm .|. shiftMask,   xK_h         ), sendMessage Shrink                                             ) -- Shrink the master area
-    , ((modm .|. shiftMask,   xK_l         ), sendMessage Expand                                             ) -- Expand the master area
+    , ((modm .|. controlMask, xK_h         ), sendMessage Shrink                                             ) -- Shrink the master area
+    , ((modm .|. controlMask, xK_l         ), sendMessage Expand                                             ) -- Expand the master area
     , ((modm,                 xK_s         ), withFocused $ windows . W.sink                                 ) -- Push window back into tiling
     , ((modm .|. controlMask, xK_s         ), sinkAll                                                        ) -- Bring all float windows back to tile
     , ((modm,                 xK_comma     ), sendMessage (IncMasterN 1)                                     ) -- Increment the number of windows in the master area
@@ -62,10 +62,11 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     ]
     ++
     [
-      ((0, xK_Print                        ), spawn myScreenshot                                             ) -- Print current display using maim with nametag: year-month-day-time-screenshot.png
-    , ((modm,                 xK_Print     ), spawn myScreenshotSelected                                     ) -- Xclip selected screen using maim
-    --, ((modm .|. shiftMask,   xK_Print     ), runRecorder                                                    )
-    --, ((modm,                 xK_y         ), runRecorder                                                    ) -- Toggle bar
+      ((0, xK_Print                    ), spawn myScreenshot                                             ) -- Print current display using maim with nametag: year-month-day-time-screenshot.png
+    , ((modm,                 xK_w     ), spawn myScreenshot                                             ) -- Xclip selected screen using maim
+    , ((modm .|. controlMask, xK_w     ), spawn myScreenshotSelected                                     )
+
+    -- , ((modm,                 xK_y         ), runRecorder                                                    ) 
     , ((0, xF86XK_KbdBrightnessDown        ), spawn "brightnessctl set 20-"                                  ) -- F5 Monitor brightness down
     , ((0, xF86XK_KbdBrightnessUp          ), spawn "brightnessctl set +20"                                  ) -- F6 Monitor brightness up
     , ((0, xF86XK_KbdLightOnOff            ), spawn "~/.miozu/bin/backlight-toggle.sh"                       ) -- TODO F7 fix toggle monitor backlight
@@ -90,8 +91,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,                 xK_h         ), scratchTermBL                                                  ) -- big left terminal SP
     , ((modm .|. shiftMask,   xK_h         ), scratchTermSL                                                  ) -- small right terminal SP
     , ((modm,                 xK_f         ), scratchFM                                                      ) -- file manager SP
-    , ((modm .|. shiftMask,   xK_w         ), scratchWebA                                                    ) -- run chromium big SP
-    , ((modm,                 xK_w         ), scratchWebB                                                    ) -- run chromium small SP
+    , ((modm .|. shiftMask,   xK_x         ), scratchWebA                                                    ) -- run chromium big SP
+    , ((modm,                 xK_x         ), scratchWebB                                                    ) -- run chromium small SP
     ]
     ++
     -- [ -- SelectGrid

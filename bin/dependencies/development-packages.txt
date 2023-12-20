@@ -1,10 +1,28 @@
-# emacs modes
+# js
+volta-bin
+npm
+pnpm
+
+# nodejs
+nvm
+
+# IDE: Emacs && tools
+emacs-nativecomp
+cabal-install
+ripgrep
+fd
+haskell-language-server
+hoogle
+marked
+rust-analyzer
+shellcheck
+shfmt
+
+# Emacs: modes
 editorconfig-core-c
 tidy
 stylelint
 js-beautify
 
-# js
-volta-bin
-npm
-pnpm
+# Design
+figma-linux

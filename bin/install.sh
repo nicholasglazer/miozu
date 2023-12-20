@@ -62,11 +62,19 @@ fi
 # Install req packages
 echo "$password" | paru -Syu --noconfirm --needed $(grep -v '^#' $MIOZU_DIR/bin/dependencies/required-packages.txt)
 
-# Prompt to install optional packages
+# Prompt to install optional packages: browser and some social tools
 read -r -p "Do you want to install optional packages? (y/n): " choice
 if [[ $choice =~ ^[yY] ]]; then
 	# install optional packages with paru
 	paru -S --noconfirm --needed $(grep -v '^#' $MIOZU_DIR/bin/dependencies/optional-packages.txt)
+fi
+
+# This will install Emacs IDE as well as its dependencies and other tools and languages
+# To keep it simple, I removed many packages like python, rust etc (maybe I'll add them in the future)
+read -r -p "Do you want to install developer packages? (y/n): " choice
+if [[ $choice =~ ^[yY] ]]; then
+	# install optional packages with paru
+	paru -S --noconfirm --needed $(grep -v '^#' $MIOZU_DIR/bin/dependencies/developer-packages.txt)
 	# install doom-emacs
 	mv $HOME/.emacs.d $HOME/.tmp/.emacs.d.bak
 	git clone https://github.com/hlissner/doom-emacs ~/.emacs.d
@@ -154,9 +162,13 @@ sudo sed -i 's/#ReconnectIntervals=.*/ReconnectIntervals=3/' /etc/bluetooth/main
 # set syttem clock according to api
 timedatectl set-timezone "$(curl --fail https://ipapi.co/timezone)"
 
-# create a /etc/X11/xorg.conf.d/00-keyboard.conf to persist languages and layouts
+# Create a /etc/X11/xorg.conf.d/00-keyboard.conf to persist languages and layouts
 # NOTE ukrainian language and us dvorak layout, change this line to match your preferences
 localectl set-x11-keymap us,ua "" dvorak grp:alt_shift_toggle,caps:escape
+
+
+# Enable tor
+echo "$password" | sudo systemctl enable tor.service
 
 # Recompile and restart xmonad
 xmonad --recompile && xmonad --restart

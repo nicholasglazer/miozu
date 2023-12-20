@@ -28,6 +28,7 @@ dunst &
 
 # Run autorandr
 #autorandr -c
+bash $MIOZU_DIR/bin/tools/deck_dual.sh
 
 # Start compositor
 DISPLAY=":0" picom -b
