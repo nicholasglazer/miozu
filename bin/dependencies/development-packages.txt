@@ -24,5 +24,8 @@ tidy
 stylelint
 js-beautify
 
+# Emacs: fonts
+ttf-nerd-font-symbols
+
 # Design
 figma-linux

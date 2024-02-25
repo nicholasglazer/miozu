@@ -23,7 +23,7 @@ import qualified Data.Map as M
 import XMonad.Actions.CycleWS (moveTo, toggleWS', emptyWS, Direction1D(Next), WSType(Not), WSType(WSIs)) -- Provides bindings to cycle forward or backward through the list of workspaces, to move windows between workspaces, and to cycle between screens.
 import XMonad.Actions.GridSelect (goToSelected)
 import XMonad.Actions.RotSlaves (rotSlavesDown, rotSlavesUp) -- Rotate all windows except the master window and keep the focus in place.
-import XMonad.Actions.SinkAll (sinkAll) -- http://xmonad.org/xmonad-docs/xmonad-contrib/XMonad-Actions-SinkAll.html
+import XMonad.Actions.WithAll
 import XMonad.Actions.OnScreen (viewOnScreen) -- for doual screen binding
 
 -- Utils

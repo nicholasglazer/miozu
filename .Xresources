@@ -21,7 +21,7 @@
 #define anarchy0F #C43444
 
 ! black            01 & 02
-*color0: anarchy01
+*color0: anarchy03 !01
 *color8: anarchy02
 ! red              0E & 0F
 *color1: anarchy0E
@@ -63,7 +63,7 @@ Xcursor.size:   16
 ! URxvt settings
 !-----------------------
 URxvt*font:           xft:Hack:size=9
-URxvt*background:     anarchy01
+URxvt*background:     anarchy0E !01
 URxvt*foreground:     anarchy05
 URxvt*highlightColor: anarchy03
 URxvt*cursorColor:    anarchy0E

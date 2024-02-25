@@ -1,12 +1,9 @@
-------------------------------------------------------------------------
--- Layouts:
---
--- You can specify and transform your layouts by modifying these values.
--- If you change layout bindings be sure to use 'mod-shift-space' after
--- restarting (with 'mod-q') to reset your layout state to the new
--- defaults, as xmonad preserves your old layout settings by default.
---
--- The available layouts. Note that each layout is separated by |||,
+------------------------------------------------------------------------ --
+--Layouts: -- -- You can specify and transform your layouts by modifying these
+--values.  -- If you change layout bindings be sure to use 'mod-shift-space'
+--after -- restarting (with 'mod-q') to reset your layout state to the new --
+--defaults, as xmonad preserves your old layout settings by default.  -- The
+--available layouts. Note that each layout is separated by |||,
 -- which denotes layout choice.
 ------------------------------------------------------------------------
 module Layouts
@@ -21,7 +18,6 @@ import XMonad
 import XMonad.Hooks.ManageDocks -- This module provides tools to automatically manage dock type programs, such as gnome-panel, kicker, dzen, and xmobar.
 import XMonad.Layout (Choose, Full (..), Mirror (..), Tall (Tall), (|||))
 import XMonad.Layout.Accordion (Accordion (..))
-import XMonad.Layout.Circle (Circle (..))
 import XMonad.Layout.Fullscreen (FullscreenFull, fullscreenFull)
 import XMonad.Layout.Grid (Grid (Grid))
 import XMonad.Layout.LayoutModifier (ModifiedLayout)
@@ -38,11 +34,9 @@ import XMonad.Layout.WindowArranger (windowArrange)
 -- import XMonad.Layout.Magnifier
 
 -- Fullscreen layout without borders, and circle layout.
-mediaLayout :: ModifiedLayout WithBorder (Choose (ModifiedLayout FullscreenFull Full) Circle) Window
-mediaLayout = noBorders $ fullscreenFull Full ||| Circle
+mediaLayout = noBorders $ Full
 
 -- Tiled, fullscreen, and accordion layouts with gaps.
-workLayout :: Choose Tall (Choose Full (Choose (ModifiedLayout Spacing Tall) (Choose (ModifiedLayout Spacing (Mirror Tall)) (ModifiedLayout WithBorder Accordion)))) Window
 workLayout = tiled ||| Full ||| gap ||| gapM ||| noBorders Accordion
   where
     nmaster = 1 -- The default number of windows in the master pane
@@ -57,8 +51,7 @@ workLayout = tiled ||| Full ||| gap ||| gapM ||| noBorders Accordion
         Tall nmaster delta ratio -- tiling algo partitions the screen with spacing tall
 
 -- Three column mid layout with gaps, fullscreen layout without borders, circle layout, grid layout, and accordion layout.
-defLayout :: Choose (ModifiedLayout Spacing ThreeCol) (Choose (ModifiedLayout WithBorder Full) (Choose Circle (Choose Grid (ModifiedLayout WithBorder Accordion)))) Window
-defLayout = gap ||| noBorders Full ||| Circle ||| Grid ||| noBorders Accordion
+defLayout = gap ||| noBorders Full ||| Grid ||| noBorders Accordion
   where
     nmaster = 1 -- The default number of windows in the master pane
     ratio = 0.5 -- Default proportion of screen occupied by master pane

@@ -31,6 +31,14 @@
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/Documents/org/")
 
+;; Fish (and possibly other non-POSIX shells) is known to inject garbage
+;;  output into some of the child processes that Emacs spawns. Many Emacs
+;;  packages/utilities will choke on this output, causing unpredictable
+;;  issues. To get around this, either:
+
+;;    - Add the following to $DOOMDIR/config.el:
+
+(setq shell-file-name (executable-find "bash"))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -59,7 +67,7 @@
 
 ;; After pkgs loaded
 (after! projectile (setq projectile-project-root-files-bottom-up (remove
-            ".git" projectile-project-root-files-bottom-up)))
+                                                                  ".git" projectile-project-root-files-bottom-up)))
 
 (after! counsel
   (setq counsel-rg-base-command "rg -M 240 --with-filename --no-heading --line-number --color never %s || true"))
@@ -192,3 +200,20 @@
                   (evil-mc-make-and-goto-next-cursor)
                   (forward-line -1)
                   (evil-forward-char 2)))
+
+
+
+
+;; make files open faster in fundamental mode without undo
+(defun my-find-file-check-make-large-file-read-only-hook ()
+  "If a file is over a given size, make the buffer read only."
+  (when (> (buffer-size) (* 1024 1024))
+    (setq buffer-read-only t)
+    (buffer-disable-undo)
+    (fundamental-mode)
+    (linum-mode -1)
+    (font-lock-mode -1)
+    )
+  )
+
+(add-hook 'find-file-hook 'my-find-file-check-make-large-file-read-only-hook)
