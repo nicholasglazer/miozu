@@ -1,49 +1,50 @@
 ! ~/.Xresources
 ! -- Arnarchy theme by Nicholas Glazer <glazer.nicholas@gmail.com>
 ! -- say hi - nicholasglazer.com
-! -- Anarchy palette --
+! -- miozu palette --
+! ---- TODO put definitions in separate file as git repo
 !-----------------------
-#define anarchy00 #1D1D23
-#define anarchy01 #242733
-#define anarchy02 #38384C
-#define anarchy03 #64647E
-#define anarchy04 #A1A1B7
-#define anarchy05 #C9CBD7
-#define anarchy06 #E0E0E8
-#define anarchy07 #FAF8FB
-#define anarchy08 #8683FF
-#define anarchy09 #4385E7
-#define anarchy0A #FF9922
-#define anarchy0B #7DB359
-#define anarchy0C #2DD9F0
-#define anarchy0D #CF8DFF
-#define anarchy0E #F4517D
-#define anarchy0F #C43444
+#define miozu00 #1D1D23
+#define miozu01 #242733
+#define miozu02 #38384C
+#define miozu03 #64647E
+#define miozu04 #A1A1B7
+#define miozu05 #C9CBD7
+#define miozu06 #E0E0E8
+#define miozu07 #FAF8FB
+#define miozu08 #8683FF
+#define miozu09 #4385E7
+#define miozu0A #FF9922
+#define miozu0B #7DB359
+#define miozu0C #2DD9F0
+#define miozu0D #CF8DFF
+#define miozu0E #F4517D
+#define miozu0F #C43444
 
 ! black            01 & 02
-*color0: anarchy03 !01
-*color8: anarchy02
+*color0: miozu03 !01
+*color8: miozu02
 ! red              0E & 0F
-*color1: anarchy0E
-*color9: anarchy0F
+*color1: miozu0E
+*color9: miozu0F
 ! green            0B & 0B
-*color2: anarchy0B
-*color10: anarchy0B
+*color2: miozu0B
+*color10: miozu0B
 ! blue             0A & 09
-*color4: anarchy0D
-*color12: anarchy09
+*color4: miozu0D
+*color12: miozu09
 ! yellow           0A & 09
-*color3: anarchy0A
-*color11: anarchy09
+*color3: miozu0A
+*color11: miozu09
 ! magenta          08 & 0B
-*color5: anarchy08
-*color13: anarchy0B
+*color5: miozu08
+*color13: miozu0B
 ! cyan             0C & 03
-*color6: anarchy0C
-*color14: anarchy03
+*color6: miozu0C
+*color14: miozu03
 ! white            05 & 06
-*color7: anarchy05
-*color15: anarchy06
+*color7: miozu05
+*color15: miozu06
 
 ! Xft settings
 !-----------------------
@@ -63,12 +64,12 @@ Xcursor.size:   16
 ! URxvt settings
 !-----------------------
 URxvt*font:           xft:Hack:size=9
-URxvt*background:     anarchy0E !01
-URxvt*foreground:     anarchy05
-URxvt*highlightColor: anarchy03
-URxvt*cursorColor:    anarchy0E
-URxvt*cursorColor2:   anarchy03
-URxvt*colorUL:        anarchy0A
+URxvt*background:     miozu0E !01
+URxvt*foreground:     miozu05
+URxvt*highlightColor: miozu03
+URxvt*cursorColor:    miozu0E
+URxvt*cursorColor2:   miozu03
+URxvt*colorUL:        miozu0A
 URxvt*letterSpace:    -1
 URxvt*scrollBar:      false
 URxvt*transparent:    true
