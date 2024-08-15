@@ -33,6 +33,9 @@ bash $MIOZU_DIR/bin/tools/deck_dual.sh
 #DISPLAY=":0" picom -b
 
 # Keyboard layout
+# set xorg 00-keyboard.conf every time
+localectl set-x11-keymap us,ua , dvorak grp:alt_shift_toggle,caps:escape
+# set xkb
 setxkbmap -layout "us,ua" -variant "dvorak," -option "grp:alt_shift_toggle,caps:escape" &
 
 # Start WM
