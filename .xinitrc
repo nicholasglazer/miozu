@@ -34,6 +34,7 @@ bash $MIOZU_DIR/bin/tools/deck_dual.sh
 
 # Keyboard layout
 # set xorg 00-keyboard.conf every time
+# NOTE it can't create a new file, only modify existing one
 localectl set-x11-keymap us,ua , dvorak grp:alt_shift_toggle,caps:escape
 # set xkb
 setxkbmap -layout "us,ua" -variant "dvorak," -option "grp:alt_shift_toggle,caps:escape" &
