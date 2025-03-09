@@ -28,7 +28,7 @@ print_header() {
 
 check_dependencies() {
     print_header "Checking Dependencies"
-    local deps=(git curl)
+    local deps=(git curl openssh)
     for dep in "${deps[@]}"; do
         if ! command -v "$dep" &>/dev/null; then
             echo "$dep not found - installing..."
@@ -68,14 +68,34 @@ setup_directories() {
 
 handle_miozu_repo() {
     print_header "Updating Miozu Repository"
-    if [ -d "$MIOZU_DIR" ]; then
-        git -C "$MIOZU_DIR" fetch
-        if [ $(git -C "$MIOZU_DIR" rev-parse HEAD) != $(git -C "$MIOZU_DIR" rev-parse @{u}) ]; then
-            git -C "$MIOZU_DIR" pull
-            echo "Repository updated"
+    local repo_url="https://github.com/nicholasglazer/miozu.git"
+    local retries=3
+    local success=false
+
+    for ((i=0; i<retries; i++)); do
+        if [ -d "$MIOZU_DIR" ]; then
+            echo "Found existing repository, updating..."
+            (
+                cd "$MIOZU_DIR"
+                git remote set-url origin "$repo_url"
+                git fetch --all
+                if [ $(git rev-parse HEAD) != $(git rev-parse @{u}) ]; then
+                    git reset --hard HEAD
+                    git clean -fd
+                    git pull --ff-only
+                fi
+            ) && success=true && break
+        else
+            echo "Cloning fresh repository..."
+            git clone "$repo_url" "$MIOZU_DIR" && success=true && break
         fi
-    else
-        git clone https://github.com/nicholasglazer/miozu.git "$MIOZU_DIR"
+        echo "Retrying in 5 seconds..."
+        sleep 5
+    done
+
+    if ! $success; then
+        echo -e "${RED}Failed to update repository${NC}"
+        exit 1
     fi
 }
 

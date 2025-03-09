@@ -20,6 +20,9 @@ picom
 # Notifications
 dunst
 
+# Network
+openssh
+
 # Audio | youtube-dl to stream youtube to xmobar trough moc
 alsa-utils
 alsa-ucm-conf-git
