@@ -1,4 +1,4 @@
--- Last updated May 10 2023
+-- Last updated Aug 30 2024
 -- Nicholas Glazer <glazer.nicholas@gmail.com>
 --
 -- Pull in the wezterm API
@@ -13,7 +13,7 @@ if wezterm.config_builder then
   config = wezterm.config_builder()
 end
 
--- This is where you actually apply your config choices
+---- User configs ----
 -- Miozu dark color scheme
 config.color_scheme = 'Miozu'
 

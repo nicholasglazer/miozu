@@ -1,174 +1,163 @@
 #!/bin/bash
 # Last updated 12 May 2023
 # Author: Nicholas Glazer <glazer.nicholas@gmail.com>
-#
-# Miozu dotfiles package varibales
+#!/bin/bash
+
+# Miozu Environment Installer
+set -euo pipefail
+trap 'echo -e "${RED}Error at line $LINENO${NC}"; exit 1' ERR
+
+# Configuration
 MIOZU_DIR="$HOME/.miozu"
-#MIOZU_REPO_URL="https://github.com/nicholasglazer/miozu.git"
+BACKUP_DIR="$HOME/.tmp/configs_backup"
+LOG_FILE="$HOME/.miozu_install.log"
 
-# Set password once
-# TODO FIX password should be prompted only once
-read -r -s -p "Hey, you're about to install miozu environment. Enter your password: " password
+# Color codes
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
 
-# Create all necessary directories in a loop
-dirs=(
-	"$HOME/.miozu"
-	"$HOME/.ssh"
-	"$HOME/.config/aria2"
-	"$HOME/.config/doom/themes"
-	"$HOME/.config/dunst"
-	"$HOME/.config/fish"
-	"$HOME/.config/fontconfig"
-	"$HOME/.config/nvim"
-	"$HOME/.config/rofi/colors"
-	"$HOME/.config/wezterm/colors"
-	"$HOME/.config/xmonad/xmobar"
-	"$HOME/.config/xmonad/lib"
-	"$HOME/.config/zathura"
-	"$HOME/.tmp/configs_backup"
-	"$HOME/code/github"
-	"$HOME/code/sandbox"
-	"$HOME/Documents"
-	"$HOME/Downloads"
-	"$HOME/Music"
-	"$HOME/Pictures/gifs"
-	"$HOME/Pictures/screenshots"
-	"$HOME/Videos"
-)
+# Initialize logging
+exec > >(tee -a "$LOG_FILE") 2>&1
 
-# if dir doesn't exist, create one
-for dir in "${dirs[@]}"; do
-	if [ ! -d "$dir" ]; then
-		mkdir -p "$dir"
-	fi
-done
+# --- Functions ---
+print_header() {
+    echo -e "${YELLOW}\n=== $1 ===${NC}"
+}
 
-# Check if dir exists and it is a git repo
-if [ -d "$MIOZU_DIR" ] && [ -d "$MIOZU_DIR/.git" ]; then
-	cd "$MIOZU_DIR"
-	# Fetch latest changes
-	git fetch
-	if [ $(git rev-parse HEAD) != $(git rev-parse @{u}) ]; then
-		git pull
-		echo "Miozu repository updated"
-	else
-		echo "Miozu repository up to date"
-	fi
-else
-	echo "Miozu repository not found at '$MIOZU_DIR'"
-	exit 1
-fi
+check_dependencies() {
+    print_header "Checking Dependencies"
+    local deps=(git curl)
+    for dep in "${deps[@]}"; do
+        if ! command -v "$dep" &>/dev/null; then
+            echo "$dep not found - installing..."
+            sudo pacman -S --noconfirm --needed "$dep"
+        fi
+    done
+}
 
-# Install req packages
-echo "$password" | paru -Syu --noconfirm --needed $(grep -v '^#' $MIOZU_DIR/bin/dependencies/required-packages.txt)
+install_paru() {
+    if ! command -v paru &>/dev/null; then
+        print_header "Installing Paru"
+        sudo pacman -S --noconfirm --needed base-devel
+        temp_dir=$(mktemp -d)
+        git clone https://aur.archlinux.org/paru.git "$temp_dir"
+        (cd "$temp_dir" && makepkg -si --noconfirm)
+        rm -rf "$temp_dir"
+    fi
+}
 
-# Prompt to install optional packages: browser and some social tools
-read -r -p "Do you want to install optional packages? (y/n): " choice
-if [[ $choice =~ ^[yY] ]]; then
-	# install optional packages with paru
-	paru -S --noconfirm --needed $(grep -v '^#' $MIOZU_DIR/bin/dependencies/optional-packages.txt)
-fi
+setup_directories() {
+    print_header "Creating Directory Structure"
+    local dirs=(
+        "$HOME/.ssh"
+        "$HOME/.config/doom/themes"
+        "$HOME/.config/wezterm/colors"
+        "$HOME/code/github"
+    )
+    
+    for dir in "${dirs[@]}"; do
+        if [ ! -d "$dir" ]; then
+            mkdir -p "$dir"
+            echo "Created directory: $dir"
+        fi
+    done
+    chmod 700 "$HOME/.ssh"
+}
 
-# This will install Emacs IDE as well as its dependencies and other tools and languages
-# To keep it simple, I removed many packages like python, rust etc (maybe I'll add them in the future)
-read -r -p "Do you want to install developer packages? (y/n): " choice
-if [[ $choice =~ ^[yY] ]]; then
-	# install optional packages with paru
-	paru -S --noconfirm --needed $(grep -v '^#' $MIOZU_DIR/bin/dependencies/developer-packages.txt)
-	# install doom-emacs
-	mv $HOME/.emacs.d $HOME/.tmp/.emacs.d.bak
-	git clone https://github.com/hlissner/doom-emacs ~/.emacs.d
-	~/.emacs.d/bin/doom install
-	# install miozu theme for doom-emacs
-	git clone https://github.com/miozutheme/doom-miozu.git $HOME/.config/doom/themes
-	# run emacs as a systemd unit
-	systemctl --user enable emacs.service
-	systemctl --user start emacs.service
-fi
+handle_miozu_repo() {
+    print_header "Updating Miozu Repository"
+    if [ -d "$MIOZU_DIR" ]; then
+        git -C "$MIOZU_DIR" fetch
+        if [ $(git -C "$MIOZU_DIR" rev-parse HEAD) != $(git -C "$MIOZU_DIR" rev-parse @{u}) ]; then
+            git -C "$MIOZU_DIR" pull
+            echo "Repository updated"
+        fi
+    else
+        git clone https://github.com/nicholasglazer/miozu.git "$MIOZU_DIR"
+    fi
+}
 
-declare -A dotfiles=(
-	[".config/aria2"]="$HOME/.config/aria2"
-	[".config/doom"]="$HOME/.config/doom"
-	[".config/dunst"]="$HOME/.config/dunst"
-	[".config/fish"]="$HOME/.config/fish"
-	[".config/fontconfig"]="$HOME/.config/fontconfig"
-	[".config/nvim"]="$HOME/.config/nvim"
-	[".config/rofi"]="$HOME/.config/rofi"
-	[".config/wezterm"]="$HOME/.config/wezterm"
-	[".config/xmonad/xmobar"]="$HOME/.config/xmonad/xmobar"
-	[".config/xmonad/lib"]="$HOME/.config/xmonad/lib"
-	[".config/xmonad"]="$HOME/.config/xmonad"
-	[".config/zathura"]="$HOME/.config/zathura"
-	[".xinitrc"]="$HOME/.xinitrc"
-	[".Xresources"]="$HOME/.Xresources"
-	[".gitconfig"]="$HOME/.gitconfig"
-	["X11/xorg.conf.d/00-keyboard.conf"]="/etc/X11/xorg.conf.d/00-keyboard.conf"
-	["X11/xorg.conf.d/30-touchpad.conf"]="/etc/X11/xorg.conf.d/30-touchpad.conf"
-)
+install_packages() {
+    local pkg_type=$1
+    print_header "Installing $pkg_type Packages"
+    local pkg_file="$MIOZU_DIR/bin/dependencies/${pkg_type}-packages.txt"
+    
+    paru -S --needed --noconfirm $(grep -v '^#' "$pkg_file" | tr '\n' ' ')
+}
 
-# Create a backup dir for already existing configs
-backup_dir="$HOME/.tmp/configs_backup"
+setup_dotfiles() {
+    print_header "Configuring Dotfiles"
+    rsync -av --backup --backup-dir="$BACKUP_DIR" \
+        "$MIOZU_DIR/" "$HOME/" \
+        --exclude='.git/' \
+        --exclude='.tmp/'
+}
 
-for file in "${!dotfiles[@]}"; do
-	dest="${dotfiles[$file]}"
-	backup="$backup_dir/$file.$(date +%Y%m%d_%H:%M.bkp)"
-	# check if file exists and it's not a symbolic link
-	if [ -e "$dest" ] && [ ! -L "$dest" ]; then
-		echo "Backing up $dest to $backup"
-		echo "$password" | mv "$dest" "$backup"
-	fi
-	# check if file is a directory
-	if [ -d "$MIOZU_DIR/$file" ]; then
-		# if yes, link all it contents to $dest
-		for f in "$MIOZU_DIR/$file"/*; do
-			ln -sf "$f" "$dest/$(basename "$f")"
-			echo "Linked $f to $dest/$(basename "$f")"
-		done
-	else
-		# if not, simply link the file
-		ln -sf "$MIOZU_DIR/$file" "$dest"
-		echo "Linked $MIOZU_DIR/$file to $dest"
-	fi
-done
+configure_services() {
+    print_header "Configuring Services"
+    sudo systemctl enable --now bluetooth.service
+    systemctl --user enable --now emacs.service
+}
 
-# Clone themes:
-# wezterm
-git clone https://github.com/miozutheme/wezterm.git $HOME/.config/wezterm/colors
-# rofi
-git clone https://github.com/miozutheme/rofi.git $HOME/.config/rofi/colors
-# xmonad
-git clone https://github.com/miozutheme/xmonad.git $HOME/.config/xmonad/lib/Themes
+setup_emacs() {
+    print_header "Setting Up Emacs"
+    if [ ! -d "$HOME/.emacs.d" ]; then
+        git clone https://github.com/hlissner/doom-emacs ~/.emacs.d
+    fi
+    ~/.emacs.d/bin/doom install
+    
+    # Apply custom theme
+    if [ ! -d "$HOME/.config/doom/themes/miozu" ]; then
+        git clone https://github.com/miozutheme/doom-miozu.git \
+            "$HOME/.config/doom/themes/miozu"
+    fi
+}
 
-# Find the location of the Fish shell executable with 'which'. 'chsh' to use Fish as a default shell
-chsh -s $(which fish)
-echo "Fish is now your default shell!"
-# Write path for miozu dir into fish config to make a global variable
-sed -i 's|# INSERT MIOZU_DIR HERE|set -x MIOZU_DIR '"$MIOZU_DIR"'|' $MIOZU_DIR/.config/fish/config.fish
-# TODO For later usage to update repo | so you can write something like "miozu update"
-#sed -i 's|# INSERT MIOZU GLOBAL|set -x MIOZU_DIR '"$MIOZU_DIR"'|' $MIOZU_DIR/.config/fish/config.fish
+post_install() {
+    print_header "Finalizing Setup"
+    chsh -s "$(which fish)"
+    fc-cache -fv
+    xmonad --recompile && xmonad --restart
+    echo -e "${GREEN}\nInstallation complete!${NC}"
+}
 
-# Enable & start services/daemons
-# Bluetooth
-echo "$password" | sudo systemctl enable bluetooth.service
-echo "$password" | sudo systemctl start bluetooth.service
-# Set the AutoEnable option in the Bluetooth service configuration to automatically pair devices with 10 attempts each 3 sec
-sudo sed -i 's/#AutoEnable=.*/AutoEnable=true/' /etc/bluetooth/main.conf
-sudo sed -i 's/#ReconnectAttempts=.*/ReconnectAttempts=10/' /etc/bluetooth/main.conf
-sudo sed -i 's/#ReconnectIntervals=.*/ReconnectIntervals=3/' /etc/bluetooth/main.conf
-# Greenclip TODO implement rofi-greenclip later
-#systemctl --user enable greenclip.service
-#systemctl --user start greenclip.service
+# --- Main Execution ---
+main() {
+    echo -e "${YELLOW}Starting Miozu Environment Installation${NC}"
+    
+    # Initial setup
+    check_dependencies
+    install_paru
+    setup_directories
+    handle_miozu_repo
+    
+    # Package installation
+    install_packages "required"
+    
+    # Optional components
+    read -p "Install optional packages? [y/N]: " -n 1 -r
+    [[ $REPLY =~ ^[Yy]$ ]] && install_packages "optional"
+    
+    read -p "Install developer tools? [y/N]: " -n 1 -r
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        install_packages "developer"
+        setup_emacs
+    fi
+    
+    # Configuration
+    setup_dotfiles
+    configure_services
+    post_install
+}
 
-# set syttem clock according to api
-timedatectl set-timezone "$(curl --fail https://ipapi.co/timezone)"
+# Keep sudo alive in background
+while true; do
+    sudo -n true
+    sleep 60
+    kill -0 "$$" || exit
+done 2>/dev/null &
 
-# Create a /etc/X11/xorg.conf.d/00-keyboard.conf to persist languages and layouts
-# NOTE ukrainian language and us dvorak layout, change this line to match your preferences
-localectl set-x11-keymap us,ua "" dvorak grp:alt_shift_toggle,caps:escape
-
-
-# Enable tor
-echo "$password" | sudo systemctl enable tor.service
-
-# Recompile and restart xmonad
-xmonad --recompile && xmonad --restart
+# Start main process
+main

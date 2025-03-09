@@ -28,9 +28,9 @@ import           XMonad.Util.SpawnOnce          ( spawnOnce )
 ------------------------------------------------------------------------
 myStartupHook :: X ()
 myStartupHook = do
-  spawn "bash $MIOZU_DIR/bin/tools/deck_dual.sh"
+  spawn "bash $MIOZU_DIR/bin/display/device_mono.sh"
+  spawn "setxkbmap -layout \"us,ua\" -variant \"dvorak,\" -option \"grp:alt_shift_toggle,caps:escape\""
   spawnOnce "emacsclient -nc --eval '(doom/quickload-session)'"
-  --spawn "mons -S 2,0:R"
 
 
 ------------------------------------------------------------------------

@@ -1,4 +1,5 @@
 # Browser
+vivaldi
 firefox
 chromium
 torbrowser-launcher

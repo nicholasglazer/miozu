@@ -1,6 +1,5 @@
 # js
 volta-bin
-npm
 pnpm
 
 # nodejs
@@ -8,15 +7,14 @@ nvm
 
 # IDE: Emacs && tools
 emacs-nativecomp
-cabal-install
 ripgrep
 fd
 haskell-language-server
 hoogle
 marked
-rust-analyzer
-shellcheck
 shfmt
+#shellcheck
+#rust-analyzer
 
 # Emacs: modes
 editorconfig-core-c
