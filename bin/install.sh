@@ -204,6 +204,28 @@ configure_services() {
     systemctl --user start emacs.service || true
 }
 
+setup_keyboard() {
+    print_header "Keyboard Layout Setup"
+    read -p "Choose keyboard layout (1: dvorak, 2: qwerty) [1/2]: " -n 1 -r
+    echo
+
+    if [[ $REPLY == "1" ]]; then
+        echo "Setting up Dvorak layout..."
+        sudo localectl set-keymap dvorak
+        sudo localectl set-x11-keymap us pc105 dvorak
+
+        # Symlink the Dvorak config
+        if [ -f "$MIOZU_DIR/X11/xorg.conf.d/00-keyboard.conf" ]; then
+            echo "Symlinking Dvorak configuration..."
+            sudo ln -sf "$MIOZU_DIR/X11/xorg.conf.d/00-keyboard.conf" /etc/X11/xorg.conf.d/00-keyboard.conf
+        else
+            echo -e "${RED}Dvorak config not found!${NC}"
+        fi
+    else
+        echo "Keeping QWERTY layout. No symlink created."
+    fi
+}
+
 setup_emacs() {
     print_header "Setting Up Emacs"
     if [ ! -d "$HOME/.emacs.d" ]; then
@@ -252,6 +274,7 @@ main() {
 
     # Configuration
     setup_dotfiles
+    setup_keyboard
     configure_services
     post_install
 }
