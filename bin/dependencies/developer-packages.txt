@@ -6,7 +6,7 @@ pnpm
 nvm
 
 # IDE: Emacs && tools
-emacs-nativecomp
+emacs
 ripgrep
 fd
 haskell-language-server
@@ -23,7 +23,7 @@ stylelint
 js-beautify
 
 # Emacs: fonts
-ttf-nerd-font-symbols
+ttf-nerd-fonts-symbols
 
 # Design
 figma-linux

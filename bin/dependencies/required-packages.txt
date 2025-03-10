@@ -25,7 +25,7 @@ openssh
 
 # Audio | youtube-dl to stream youtube to xmobar trough moc
 alsa-utils
-alsa-ucm-conf-git
+alsa-ucm-conf
 pipewire
 pipewire-audio
 pipewire-alsa
@@ -57,6 +57,7 @@ neovim
 
 # File manager
 nnn
+ncdu
 
 # App launcher
 rofi
@@ -78,7 +79,8 @@ hsetroot
 maim
 
 # Fonts | 40 most popular google fonts, including ttf-ibm-plex-sans. See the full list https://aur.archlinux.org/packages/ttf-google-fonts-typewolf
-ttf-google-fonts-typewolf
+ttf-roboto
+ttf-ibm-plex
 otf-ipafont
 
 # Archiving and compression

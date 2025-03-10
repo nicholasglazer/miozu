@@ -1,5 +1,5 @@
 #!/bin/bash
-# Last updated 12 May 2023
+# Last updated 9 March 2025
 # Author: Nicholas Glazer <glazer.nicholas@gmail.com>
 #!/bin/bash
 
@@ -28,7 +28,7 @@ print_header() {
 
 check_dependencies() {
     print_header "Checking Dependencies"
-    local deps=(git curl openssh)
+    local deps=(git curl openssh fish)
     for dep in "${deps[@]}"; do
         if ! command -v "$dep" &>/dev/null; then
             echo "$dep not found - installing..."
@@ -56,7 +56,7 @@ setup_directories() {
         "$HOME/.config/wezterm/colors"
         "$HOME/code/github"
     )
-    
+
     for dir in "${dirs[@]}"; do
         if [ ! -d "$dir" ]; then
             mkdir -p "$dir"
@@ -72,7 +72,7 @@ handle_miozu_repo() {
     local retries=3
     local success=false
 
-    for ((i=0; i<retries; i++)); do
+    for ((i = 0; i < retries; i++)); do
         if [ -d "$MIOZU_DIR" ]; then
             echo "Found existing repository, updating..."
             (
@@ -103,22 +103,105 @@ install_packages() {
     local pkg_type=$1
     print_header "Installing $pkg_type Packages"
     local pkg_file="$MIOZU_DIR/bin/dependencies/${pkg_type}-packages.txt"
-    
+
     paru -S --needed --noconfirm $(grep -v '^#' "$pkg_file" | tr '\n' ' ')
 }
 
 setup_dotfiles() {
     print_header "Configuring Dotfiles"
-    rsync -av --backup --backup-dir="$BACKUP_DIR" \
-        "$MIOZU_DIR/" "$HOME/" \
-        --exclude='.git/' \
-        --exclude='.tmp/'
+
+    # make configs backup
+    mkdir -p "$BACKUP_DIR"
+
+    # Git itself for dotfile management
+    (
+        cd "$MIOZU_DIR"
+        git ls-files | while read -r file; do
+            src_file="$MIOZU_DIR/$file"
+            dest_file="$HOME/$file"
+
+            # Backup existing files
+            if [ -f "$dest_file" ]; then
+                mkdir -p "$BACKUP_DIR/$(dirname "$file")"
+                mv -v "$dest_file" "$BACKUP_DIR/$file"
+            fi
+
+            # Create parent directory if needed
+            mkdir -p "$(dirname "$dest_file")"
+
+            # Create symlink
+            ln -sfv "$src_file" "$dest_file"
+        done
+    )
+
+    echo -e "${GREEN}Dotfiles configured with symlinks${NC}"
+}
+
+setup_monitor_hotplug() {
+    print_header "Configuring Display Hotplug Autodetection"
+
+    local script_src="$MIOZU_DIR/bin/display/monitor-hotplug.sh"
+    local script_dest="/usr/local/bin/monitor-hotplug.sh"
+    local udev_rule="/etc/udev/rules.d/95-monitor-hotplug.rules"
+    local service_file="/etc/systemd/system/monitor-hotplug.service"
+
+    # Validate script exists in repo
+    if [ ! -f "$script_src" ]; then
+        echo -e "${RED}Error: monitor-hotplug.sh not found in Miozu repository${NC}"
+        return 1
+    fi
+
+    # Install script
+    echo "Installing hotplug script to system bin"
+    sudo cp -v "$script_src" "$script_dest"
+    sudo chmod +x "$script_dest"
+
+    # Create udev rule (updated service name)
+    echo "Creating udev rule for display changes"
+    sudo tee "$udev_rule" >/dev/null <<EOF
+ACTION=="change", SUBSYSTEM=="drm", RUN+="/usr/bin/systemctl start monitor-hotplug.service"
+EOF
+
+    # Create systemd service (updated service name)
+    echo "Creating hotplug service for user $USER"
+    sudo tee "$service_file" >/dev/null <<EOF
+[Unit]
+Description=Monitor Hotplug Service
+After=graphical.target
+
+[Service]
+Type=oneshot
+User=$USER
+Environment="DISPLAY=:0"
+Environment="XAUTHORITY=/home/$USER/.Xauthority"
+ExecStart=$script_dest
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    # Enable system components
+    sudo systemctl daemon-reload
+    sudo systemctl enable monitor-hotplug.service
+    sudo udevadm control --reload-rules
+    sudo udevadm trigger
+
+    echo -e "${GREEN}Hotplug configuration complete${NC}"
 }
 
 configure_services() {
     print_header "Configuring Services"
     sudo systemctl enable --now bluetooth.service
-    systemctl --user enable --now emacs.service
+
+    # Configure emacs service more robustly
+    if ! systemctl --user is-enabled emacs.service &>/dev/null; then
+        echo "Enabling emacs service (will start at next login)"
+        systemctl --user enable emacs.service
+    fi
+
+    # Try starting but don't fail installation
+    echo "Attempting to start emacs service..."
+    systemctl --user start emacs.service || true
 }
 
 setup_emacs() {
@@ -127,7 +210,7 @@ setup_emacs() {
         git clone https://github.com/hlissner/doom-emacs ~/.emacs.d
     fi
     ~/.emacs.d/bin/doom install
-    
+
     # Apply custom theme
     if [ ! -d "$HOME/.config/doom/themes/miozu" ]; then
         git clone https://github.com/miozutheme/doom-miozu.git \
@@ -146,26 +229,27 @@ post_install() {
 # --- Main Execution ---
 main() {
     echo -e "${YELLOW}Starting Miozu Environment Installation${NC}"
-    
+
     # Initial setup
     check_dependencies
     install_paru
     setup_directories
     handle_miozu_repo
-    
+    setup_monitor_hotplug
+
     # Package installation
     install_packages "required"
-    
+
     # Optional components
     read -p "Install optional packages? [y/N]: " -n 1 -r
     [[ $REPLY =~ ^[Yy]$ ]] && install_packages "optional"
-    
+
     read -p "Install developer tools? [y/N]: " -n 1 -r
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         install_packages "developer"
         setup_emacs
     fi
-    
+
     # Configuration
     setup_dotfiles
     configure_services
