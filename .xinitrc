@@ -21,13 +21,13 @@ hsetroot -solid '#252835' &
 # mons -a -x "$MIOZU_DIR/.config/mons/dual_deck.sh"
 
 # Uncomment to use image instaed of solid hex background color
-feh --bg-fill $HOME/Pictures/wallpapers/miozu_keybindings.png &
+#feh --bg-fill $HOME/Pictures/wallpapers/miozu_keybindings.png &
 
 # Start notification manager
 dunst &
 
 # Run dual monitor script
-bash $MIOZU_DIR/bin/tools/deck_dual.sh
+bash $MIOZU_DIR/bin/display/steamdeck_dual.sh
 
 # Start compositor
 #DISPLAY=":0" picom -b
@@ -39,5 +39,11 @@ localectl set-x11-keymap us,ua , dvorak grp:alt_shift_toggle,caps:escape
 # set xkb
 setxkbmap -layout "us,ua" -variant "dvorak," -option "grp:alt_shift_toggle,caps:escape" &
 
+# set steamdeck to performance mode
+#sudo sh -c "echo performance > /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor"
+source $HOME/.bashrc
+
 # Start WM
 exec xmonad
+#exec i3
+
