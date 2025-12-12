@@ -1,124 +1,194 @@
 /**
- * Last modified 12 May 2023
- * Author Nicholas Glazer <glazer.nicholas@gmail.com>
- **/
+ * Miozu Theme for Rofi
+ * Author: Nicholas Glazer <glazer.nicholas@gmail.com>
+ * Based on official rofi theme structure
+ */
 
-/* Import Miozu color scheme */
-/* Colors are provided by https://github.com/miozutheme/rofi */
-@import "colors/miozu.rasi"
-
-/*--- Config -----*/
 configuration {
-	modi:                "drun";
-    show-icons:          false;
-    display-drun:        "";
-	drun-display-format: "{name}";
-	window-format:       "{w} · {c} · {t}";
+    modi: "drun,run,window";
+    show-icons: true;
+    icon-theme: "Papirus";
+    drun-display-format: "{name}";
+
+    keybindings {
+      kb-accept-entry: "Return";
+      kb-row-down: "Down,Control+j,Control+n";
+      kb-row-up: "Up,Control+k,Control+p";
+    }
 }
+
 * {
-    background:     var(base1);
-    foreground:     var(base7);
-    alt-background: var(base2);
-    alt-foreground: var(peach);
+    /* Miozu color palette in rgba format */
+    miozu-bg:           rgba ( 44, 48, 64, 100 % );      /* #2C3040 */
+    miozu-bg-alt:       rgba ( 35, 39, 51, 100 % );      /* #232733 */
+    miozu-select:       rgba ( 62, 67, 89, 100 % );      /* #3E4359 */
+    miozu-fg:           rgba ( 208, 210, 219, 100 % );   /* #D0D2DB */
+    miozu-fg-dim:       rgba ( 115, 126, 153, 100 % );   /* #737E99 */
+    miozu-peach:        rgba ( 255, 153, 130, 100 % );   /* #FF9982 */
+    miozu-cyan:         rgba ( 64, 255, 226, 100 % );    /* #40FFE2 */
+
+    background:                  @miozu-bg;
+    foreground:                  @miozu-fg;
+    normal-background:           @miozu-bg;
+    normal-foreground:           @miozu-fg;
+    alternate-normal-background: @miozu-bg;
+    alternate-normal-foreground: @miozu-fg;
+    selected-normal-background:  @miozu-select;
+    selected-normal-foreground:  @miozu-peach;
+    border-color:                @miozu-select;
+    background-color:            rgba ( 0, 0, 0, 0 % );
+    separatorcolor:              @miozu-select;
+
+    active-background:           @miozu-select;
+    active-foreground:           @miozu-cyan;
+    selected-active-background:  @miozu-select;
+    selected-active-foreground:  @miozu-cyan;
+    alternate-active-background: @miozu-bg;
+    alternate-active-foreground: @miozu-cyan;
+
+    urgent-background:           @miozu-peach;
+    urgent-foreground:           @miozu-bg-alt;
+    selected-urgent-background:  @miozu-peach;
+    selected-urgent-foreground:  @miozu-bg-alt;
+    alternate-urgent-background: @miozu-bg;
+    alternate-urgent-foreground: @miozu-peach;
 }
 
-/* General */
 window {
-    transparency:     "real";
-    location:         center;
-    anchor:           center;
-    fullscreen:       false;
-    width:            512px;
-    x-offset:         0px;
-    y-offset:         0px;
-    enabled:          true;
     background-color: @background;
-    margin:           0px;
-    padding:          0px;
-    cursor:           "default";
+    border:           2;
+    border-radius:    8;
+    padding:          20;
+    width:            600px;
 }
 
-/* Box */
 mainbox {
-    enabled:          true;
-    spacing:          8px;
-    margin:           0px;
-    padding:          24px;
-    background-color: transparent;
-    children:         [ "inputbar", "listview"];
+    border:  0;
+    padding: 0;
 }
 
-/* Input */
-inputbar {
-    enabled:          true;
-    spacing:          8px;
-    margin:           0px;
-    padding:          0px;
-    border:           0px solid;
-    border-radius:    4px;
-    padding:          8px;
-    background-color: @foreground;
-    text-color:       @background;
-    children:         [ "prompt", "entry" ];
-}
-prompt {
-    enabled:          true;
-    background-color: inherit;
-    text-color:       inherit;
-}
-entry {
-    enabled:          true;
-    background-color: inherit;
-    text-color:       inherit;
-    cursor:           text;
-    placeholder:      " ";
+message {
+    border:       2px 0px 0px;
+    border-color: @separatorcolor;
+    padding:      10px;
 }
 
-/* List */
+textbox {
+    text-color: @foreground;
+}
+
 listview {
-    enabled:          true;
-    layout:           vertical;
-    columns:          1;
-    lines:            4;
-    cycle:            true;
-    dynamic:          true;
-    fixed-height:     true;
-    fixed-columns:    true;
-    scrollbar:        false;
-    reverse:          false;
-    spacing:          4px;
-    margin:           0px;
-    padding:          0px;
-    border:           0px solid;
-    border-radius:    0px;
-    background-color: transparent;
-    text-color:       @foreground;
-    cursor:           "pointer";
+    fixed-height: 0;
+    border:       0;
+    spacing:      4px;
+    scrollbar:    false;
+    padding:      10px 0px 0px;
+    lines:        8;
 }
 
-/* Elements */
 element {
-    enabled:          true;
-    spacing:          8px;
-    margin:           0px;
-    padding:          8px;
-    border:           0px solid;
-    border-radius:    4px;
-    background-color: transparent;
-    text-color:       @foreground;
-    cursor:           pointer;
+    border:        0;
+    padding:       8px 12px;
+    border-radius: 6;
 }
-element normal.normal {
-    background-color: var(background);
-    text-color:       var(foreground);
-}
-element selected.normal {
-    background-color: var(alt-background);
-    text-color:       var(alt-foreground);
-}
+
 element-text {
-    background-color: transparent;
+    background-color: inherit;
     text-color:       inherit;
-    highlight:        inherit;
-    cursor:           inherit;
+}
+
+element-icon {
+    background-color: inherit;
+    size:             24px;
+}
+
+element.normal.normal {
+    background-color: @normal-background;
+    text-color:       @normal-foreground;
+}
+
+element.normal.urgent {
+    background-color: @urgent-background;
+    text-color:       @urgent-foreground;
+}
+
+element.normal.active {
+    background-color: @active-background;
+    text-color:       @active-foreground;
+}
+
+element.selected.normal {
+    background-color: @selected-normal-background;
+    text-color:       @selected-normal-foreground;
+}
+
+element.selected.urgent {
+    background-color: @selected-urgent-background;
+    text-color:       @selected-urgent-foreground;
+}
+
+element.selected.active {
+    background-color: @selected-active-background;
+    text-color:       @selected-active-foreground;
+}
+
+element.alternate.normal {
+    background-color: @alternate-normal-background;
+    text-color:       @alternate-normal-foreground;
+}
+
+element.alternate.urgent {
+    background-color: @alternate-urgent-background;
+    text-color:       @alternate-urgent-foreground;
+}
+
+element.alternate.active {
+    background-color: @alternate-active-background;
+    text-color:       @alternate-active-foreground;
+}
+
+scrollbar {
+    width:        4px;
+    border:       0;
+    handle-color: @miozu-select;
+    handle-width: 8px;
+    padding:      0;
+}
+
+mode-switcher {
+    border:       2px 0px 0px;
+    border-color: @separatorcolor;
+    padding:      10px 0px 0px;
+}
+
+button {
+    spacing:    8px;
+    text-color: @miozu-fg-dim;
+    padding:    8px;
+}
+
+button.selected {
+    background-color: @selected-normal-background;
+    text-color:       @selected-normal-foreground;
+}
+
+inputbar {
+    spacing:          8px;
+    text-color:       @normal-foreground;
+    padding:          12px;
+    background-color: @miozu-bg-alt;
+    border-radius:    6;
+    children:         [ prompt, entry ];
+}
+
+prompt {
+    spacing:    0;
+    text-color: @miozu-cyan;
+}
+
+entry {
+    spacing:    0;
+    text-color: @normal-foreground;
+    placeholder: "Search...";
+    placeholder-color: @miozu-fg-dim;
 }

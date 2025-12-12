@@ -11,6 +11,11 @@ end
 # --- Executables
 # This command ensures that /usr/local/bin is searched first when looking for executable programs
 set -x PATH /usr/local/bin $PATH
+
+# Ghostty shell integration
+if test "$GHOSTTY_RESOURCES_DIR"
+    source "$GHOSTTY_RESOURCES_DIR/shell-integration/fish/vendor_conf.d/ghostty-shell-integration.fish"
+end
 # Make doom-emacs as a var
 set -x PATH $HOME/.emacs.d/bin $PATH
 # Set an editor
@@ -18,6 +23,13 @@ set -x EDITOR "nvim"
 # Comments below will be substituted with miozu variables automatically after you run ./install.sh
 set -x MIOZU_DIR /home/n/.miozu
 # INSERT MIOZU GLOBAL
+
+# --- SSH Agent (Fish-compatible)
+# Start ssh-agent if not running
+if test -z "$SSH_AUTH_SOCK"
+    eval (ssh-agent -c)
+    ssh-add ~/.ssh/id_ng 2>/dev/null
+end
 
 # --- Internal settings
 # Set fish-specific variables
@@ -82,3 +94,10 @@ set --export BUN_INSTALL "$HOME/.bun"
 set --export PATH $BUN_INSTALL/bin $PATH
 set -gx VOLTA_HOME "$HOME/.volta"
 set -gx PATH "$VOLTA_HOME/bin" $PATH
+
+# android path
+set -gx ANDROID_HOME "$HOME/code/Android/Sdk"
+set -gx PATH $PATH "$ANDROID_HOME/tools" "$ANDROID_HOME/platform-tools"
+set -gx JAVA_HOME /opt/android-studio/jbr
+set -gx ANDROID_HOME $HOME/Android/Sdk
+set -gx NDK_HOME $ANDROID_HOME/ndk/(ls -1 $ANDROID_HOME/ndk | tail -1)

@@ -25,7 +25,7 @@ Config {
   -- layout
   , sepChar          = "%"     -- delineator between plugin names and straight text
   , alignSep         = "}{"    -- separator between left-right alignment
-  , template         = " %nowplaying% } %XMonadLog% { <action=`setxkbmap -layout 'us,ua' -variant 'dvorak,' -option 'grp:alt_shift_toggle,caps:escape'`>%kbd%</action> %date% "
+  , template         = " } %XMonadLog% { %battery% <action=`setxkbmap -layout 'us,ua' -variant 'dvorak,' -option 'grp:alt_shift_toggle,caps:escape'`>%kbd%</action> %date% "
   -- general behavior
   , lowerOnStart     = True  -- send to bottom of window stack on start
   , hideOnStart      = False -- start with window unmapped (hidden)
@@ -39,6 +39,20 @@ Config {
                , Run Kbd [ ("us(dvorak)" , "<fc=#FF9982> Dv</fc>")
                          , ("ua"         , "<fc=#FF9837> Ua</fc>")
                          , ("us"         , "<fc=#E8D176> Us</fc>") ]                            -- keyboard layout indicator
+               , Run Battery [ "--template" , "<acstatus>"
+                             , "--Low"      , "20"        -- units: %
+                             , "--High"     , "85"        -- units: %
+                             , "--low"      , "#ff0000"   -- red for low battery
+                             , "--normal"   , "#fd971f"   -- orange for normal
+                             , "--high"     , "#3ae03a"   -- green for high battery
+                             , "--"         -- battery specific options
+                               -- discharging status
+                             , "-o"  , "<left>% (<timeleft>) <watts>W"
+                               -- AC "on" status (charging)
+                             , "-O"  , "<left>%<fc=#3ae03a><watts>W</fc>"
+                               -- charged status
+                             , "-i"  , "<fc=#3ae03a><watts></fc>"
+                             ] 50
                , Run XMonadLog                                                                  -- Xmonad output
         ]
    }

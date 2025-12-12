@@ -1,8 +1,8 @@
 # Browser
 vivaldi
-firefox
-chromium
-torbrowser-launcher
+#firefox
+#chromium
+#torbrowser-launcher
 
 # Social
 telegram-desktop

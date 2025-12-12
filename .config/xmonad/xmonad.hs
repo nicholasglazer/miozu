@@ -14,11 +14,12 @@ import XMonad
 import XMonad.Hooks.EwmhDesktops (ewmh, ewmhFullscreen)
 import XMonad.Hooks.ManageDocks (docks)
 import XMonad.Actions.DynamicProjects (dynamicProjects)
-import XMonad.Hooks.StatusBar (withEasySB, defToggleStrutsKey)
+import XMonad.Hooks.StatusBar (withEasySB, withSB, defToggleStrutsKey, statusBarProp)
+import qualified XMonad.Hooks.StatusBar as SB
 -- Import /lib modules
 import XMonad.Hooks.UrgencyHook (withUrgencyHook)
-import Hooks (myEventHook, myStartupHook, LibNotifyUrgencyHook (..))
-import Bar (mySB)
+import Hooks (myEventHook, myStartupHook, myLogHook, LibNotifyUrgencyHook (..))
+import Bar (mySB, myBottomSB)
 import Keybindings (myKeys)
 import Layouts (myLayout)
 import Projects (myProjects)
@@ -41,6 +42,7 @@ main = xmonad
     . ewmhFullscreen
     . ewmh
     . withEasySB mySB defToggleStrutsKey
+    . withSB myBottomSB
     $ defaults
 
 defaults = def {
@@ -54,6 +56,6 @@ defaults = def {
   layoutHook          = myLayout,
   manageHook          = myManageHook,
   handleEventHook     = myEventHook,
-  startupHook         = myStartupHook
---  logHook             = myLogHook
+  startupHook         = myStartupHook,
+  logHook             = myLogHook
 }

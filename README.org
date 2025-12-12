@@ -1,8 +1,17 @@
 * About
-This is simply my environment/configurations for Arch Linux. It's inspired by the great community, which I very grateful.
+Miozu is a comprehensive Linux desktop environment configuration focused on productivity, aesthetics, and performance. Built for Arch Linux and designed around XMonad window manager, it creates a cohesive, keyboard-driven computing experience.
+
+This configuration is inspired by the great Arch Linux community and serves as both a personal setup and a reference implementation for modern tiling window manager workflows.
 -----
-It is also a part of [[https://github.com/nicholasglazer/arch-cheat-sheet][arch-sheat-sheet]] repository.
-** What is inside?
+It is also a part of [[https://github.com/nicholasglazer/arch-cheat-sheet][arch-cheat-sheet]] repository.
+
+** Design Philosophy
+- *Keyboard-centric workflow*: Minimize mouse dependency for maximum efficiency
+- *Consistency*: Unified theming across all applications using the Miozu color scheme
+- *Performance*: Lightweight components chosen for speed and resource efficiency
+- *Modularity*: Configuration split into logical, maintainable modules
+- *Extensibility*: Easy to customize and extend for personal preferences
+** Components Overview
 | Name                   | Description                     | Theme | Screenshot |
 |------------------------+---------------------------------+-------+------------|
 | [[https://github.com/nicholasglazer/miozu/blob/master/.config/xmonad/xmonad.hs][xmonad]]                 | Window manager                  | [[https://github.com/miozutheme/xmonad/blob/main/Miozu.hs][miozu]] |            |
@@ -22,7 +31,32 @@ It is also a part of [[https://github.com/nicholasglazer/arch-cheat-sheet][arch-
 | .jsbeautifyrc, .eslint | Javascript linting and beautify |       |            |
 | and more               | ...                             |       |            |
 
-** How it's look?
+** Terminal Multiplexer Research & Future Plans
+*** Current Analysis:
+The project currently uses individual terminal scratchpads in XMonad, but there's potential to create a more integrated terminal session management system.
+
+*** Tmux Alternatives Evaluated:
+- *Zellij* (Rust-based): Modern UI with built-in keybinding hints, plugin system
+- *WezTerm* (Rust-based): GPU-accelerated with built-in multiplexing
+- *GNU Screen*: Lightweight, traditional approach
+
+*** XMonad-Based Terminal Multiplexer Concept:
+Potential to develop a custom solution leveraging XMonad's Haskell ecosystem:
+- Native integration with XMonad's window management
+- Haskell-based configuration for type safety and expressiveness  
+- Custom layouts optimized for terminal workflows
+- Session persistence through XMonad's state management
+- Integration with existing scratchpad system
+
+*** Implementation Approaches:
+1. *Pure Haskell*: Custom terminal multiplexer written in Haskell
+2. *Rust Integration*: Extend existing Rust tools (Zellij/WezTerm) with XMonad bindings
+3. *Hybrid Approach*: Enhanced XMonad configuration with tmux/zellij integration
+
+** Screenshots & Demo
 Status bar (XMobar):
 -----
 You can find more info at [[https://github.com/nicholasglazer/miozu.com][miozu.com github]].
+
+** Installation & Usage
+See CLAUDE.md for detailed installation instructions and development workflow.

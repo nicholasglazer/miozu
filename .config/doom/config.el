@@ -217,3 +217,23 @@
   )
 
 (add-hook 'find-file-hook 'my-find-file-check-make-large-file-read-only-hook)
+
+;; Claude
+
+;; Claude Code - Simple setup matching the documentation
+(use-package! claude-code
+  :after eat
+  :bind-keymap
+  ("C-c c" . claude-code-command-map)
+  :config
+  (claude-code-mode))
+
+;; Enhanced Claude functionality
+(defun my-claude-paste-and-send ()
+  "Paste from clipboard and send directly to Claude."
+  (interactive)
+  (let ((text (current-kill 0 t))) ; Get clipboard content
+    (when text
+      (claude-code-send-command text))))
+
+(global-set-key (kbd "C-c C-v") 'my-claude-paste-and-send)

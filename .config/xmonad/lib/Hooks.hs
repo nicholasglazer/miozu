@@ -1,10 +1,12 @@
 module Hooks
   ( myEventHook
   , myStartupHook
+  , myLogHook
   , LibNotifyUrgencyHook(..)
   ) where
 
 import           XMonad
+import           Control.Monad                  ( when )
 import           XMonad.Hooks.FadeWindows       ( fadeWindowsEventHook
                                                 , isUnfocused
                                                 , opacity
@@ -17,6 +19,9 @@ import           XMonad.Util.Run                ( hPutStrLn
                                                 , safeSpawn
                                                 )
 import           XMonad.Util.SpawnOnce          ( spawnOnce )
+import           XMonad.Hooks.SetWMName         ( setWMName )
+import qualified XMonad.StackSet               as W
+import           Workspaces                     ( toolsWS )
 --import XMonad.Hooks.FadeWindows (fadeWindowsLogHook)
 
 ------------------------------------------------------------------------
@@ -31,6 +36,7 @@ myStartupHook = do
   spawn "bash $MIOZU_DIR/bin/display/device_mono.sh"
   spawn "setxkbmap -layout \"us,ua\" -variant \"dvorak,\" -option \"grp:alt_shift_toggle,caps:escape\""
   spawnOnce "emacsclient -nc --eval '(doom/quickload-session)'"
+  setWMName "LG3D"
 
 
 ------------------------------------------------------------------------
@@ -75,9 +81,9 @@ instance UrgencyHook LibNotifyUrgencyHook where
 ---------------------------------------------------------------------------
 -- Log Hook:
 --
--- TODO write a log hook
+-- Handle workspace switching events and set appropriate keyboard layout
 ---------------------------------------------------------------------------
--- logHook = composeAll [ fadeWindowsLogHook myFadeHook ]
--- , focusedBorderColor = myFocusedBorderColor
--- , normalBorderColor  = myNormalBorderColor
--- }
+myLogHook :: X ()
+myLogHook = return ()
+-- Workspace-based keyboard switching disabled to prevent leader key issues
+-- Use manual keyboard switching with Alt+Shift instead

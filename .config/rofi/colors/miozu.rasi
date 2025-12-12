@@ -1,0 +1,54 @@
+/**
+ * Miozu Color Scheme for Rofi
+ * Author: Nicholas Glazer <glazer.nicholas@gmail.com>
+ * Generated from Miozu.hs color definitions
+ */
+
+* {
+    /* Base colors from Miozu palette */
+    base0: #232733;  /* Darkest Background */
+    base1: #2C3040;  /* Lighter Background */
+    base2: #3E4359;  /* Selection Background */
+    base3: #565E78;  /* Comments, Invisibles */
+    base4: #737E99;  /* Dark Foreground */
+    base5: #D0D2DB;  /* Default Foreground */
+    base6: #F3F4F7;  /* Light Foreground */
+    base7: #FAFDFB;  /* Light Background */
+
+    /* Accent colors */
+    yellow:  #E8D176;
+    cyan:    #40FFE2;
+    orange:  #FF9837;
+    green:   #6DD672;
+    peach:   #FF9982;
+    magenta: #C974E6;
+    blue:    #83D2FC;
+    red:     #EB3137;
+
+    /* Rofi-specific mappings */
+    background:        @base0;
+    background-color:  @base0;
+    foreground:        @base5;
+    border-color:      @base2;
+
+    normal-background: @base0;
+    normal-foreground: @base5;
+
+    urgent-background: @red;
+    urgent-foreground: @base7;
+
+    active-background: @base2;
+    active-foreground: @cyan;
+
+    selected-background: @base2;
+    selected-foreground: @peach;
+
+    alternate-normal-background: @base1;
+    alternate-normal-foreground: @base5;
+
+    alternate-urgent-background: @orange;
+    alternate-urgent-foreground: @base0;
+
+    alternate-active-background: @base1;
+    alternate-active-foreground: @cyan;
+}

@@ -50,7 +50,7 @@ cmus
 gstreamer gst-plugins-base gst-plugins-good gst-plugins-ugly gst-libav
 
 # Terminal
-wezterm
+alacritty
 
 # Terminal text editor
 neovim
@@ -82,6 +82,7 @@ maim
 ttf-roboto
 ttf-ibm-plex
 otf-ipafont
+noto-fonts-emoji
 
 # Archiving and compression
 zip

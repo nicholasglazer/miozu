@@ -13,7 +13,7 @@
 -- To match on the WM_NAME, you can use 'title' in the same way that
 -- 'className' and 'resource' are used below.
 ------------------------------------------------------------------------
-module WorkspaceRules (myManageHook) where
+module WorkspaceRules (myManageHook, role) where
 
 import XMonad
 import XMonad.Hooks.ManageHelpers
@@ -24,10 +24,20 @@ import qualified XMonad.StackSet as W
 import Workspaces (webWS, emacsWS, workWS, termWS, mediaWS, socialWS, toolsWS, magicWS, dualWS)
 import Scratchpads (myScratchpads)
 
-myManageHook = (composeAll . concat $
+-- Helper to match window role
+role :: Query String
+role = stringProperty "WM_WINDOW_ROLE"
+
+myManageHook = composeAll
+  [
+  -- Chromium: force tiling in workspace 2 as master, NEVER float
+    (className =? "Chromium" <||> className =? "chromium" <||> className =? "Google-chrome") --> doF (W.shift emacsWS) <> doF W.swapMaster
+  , (className =? "Chromium" <||> className =? "chromium") <&&> (role =? "browser") --> doF (W.shift emacsWS)
+  ] <+> (composeAll . concat $
   [
     [ className =? c -->  doF (W.shift webWS   )                              | c <- myClassWebShifts     ]
   , [ className =? c -->  doF (W.shift emacsWS )                              | c <- myClassEmacsShifts   ]
+  , [ className =? c -->  doF (W.shift toolsWS )                              | c <- myClassToolsShifts   ]
   -- , [ className =? t --> (doF (W.view termWS   ) <+> doF (W.shift termWS   )) | t <- myClassTermShifts    ]
   -- , [ className =? t --> (doF (W.view workWS   ) <+> doF (W.shift workWS   )) | t <- myClassWorkShifts    ]
   -- , [ className =? t --> (doF (W.view mediaWS  ) <+> doF (W.shift mediaWS  )) | t <- myClassMediaShifts   ]
@@ -38,19 +48,17 @@ myManageHook = (composeAll . concat $
   -- , [ className =? c --> doCenterFloat                                        | c <- myClassMagicShifts   ]
   -- , [ className =? c --> doFloat                                              | c <- myClassFloats        ]
   -- , [ className =? c --> doFullFloat                                          | c <- myClassFloats        ]
-  --, [ isDialog       --> doCenterFloat                                                                    ]
-  --, [ isFullscreen   --> doFullFloat                                                                      ]
   ]) <+> namedScratchpadManageHook myScratchpads
      <+> manageHook def
 
   where
     myClassWebShifts      = ["Firefox Beta"]
     myClassEmacsShifts    = ["Emacs"]
+    myClassToolsShifts    = ["Steam", "steam"]
     -- myClassWorkShifts     = [""]
     -- myClassTermShifts     = ["Termite", "Konsole", "uxterm", "xterm", "", "org.wezfurlong.wezterm"]
     -- myClassMediaShifts    = ["vlc"]
     -- myClassSocialShifts   = ["TelegramDesktop", "discord"]
-    -- myClassToolsShifts    = [""]
     -- myClassMagicShifts    = ["Wine", "Lutris"]
     -- myClassDualShifts     = [""]
     -- --myClassFloats         = ["firefox-developer-edition", "chromium", "FileManager"]

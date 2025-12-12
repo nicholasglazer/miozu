@@ -1,0 +1,13 @@
+[Unit]
+Description=Battery Level Monitor
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+Environment=DISPLAY=:0
+ExecStart=%h/.miozu/bin/battery-monitor.sh
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

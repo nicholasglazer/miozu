@@ -1,0 +1,12 @@
+[Unit]
+Description=Fix Steam Leader Key Grabbing
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash -c 'while true; do if pgrep -x steam > /dev/null; then xdotool key XF86Ungrab 2>/dev/null; xmodmap -e "clear mod4" 2>/dev/null; xmodmap -e "add mod4 = Super_L Super_R" 2>/dev/null; fi; sleep 3; done'
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=default.target

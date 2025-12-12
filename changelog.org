@@ -1,0 +1,82 @@
+#+TITLE: Miozu Changelog
+#+AUTHOR: Nicholas Glazer
+#+DATE: 2025-07-09
+
+* [Unreleased]
+** Known Issues
+*** Repository Management
+- Files extracting to root instead of staying in ~/.miozu/
+- Install script needs to work properly when run from miozu/ directory
+- Symlink process putting files in wrong locations
+
+*** Doom Emacs Theme Installation
+- Theme cloning creates recursive structure in themes/
+- Directory structure issues preventing proper theme access
+- Target location should be ~/.config/doom/themes/miozu/
+
+*** Missing System Services
+- systemd-resolved.service not enabled by default
+- systemd-networkd.service not enabled by default
+
+** Planned Fixes
+*** Repository Management Improvements
+- Modify handle_miozu_repo() function to check if running from miozu/ directory
+- If ~/.miozu doesn't exist, rename current dir to ~/.miozu
+- If ~/.miozu exists, cd there and git pull instead of extracting files
+- Fix setup_dotfiles() function to ensure symlinks are created correctly
+- Prevent files from being copied to root directory
+
+*** Doom Emacs Theme Installation Fixes
+- Correct doom theme cloning path to ~/.config/doom/themes/miozu/
+- Fix recursive directory creation issue
+- Ensure theme files are accessible to doom emacs
+
+*** System Services Enhancement
+- Add systemd-resolved.service to configure_services()
+- Add systemd-networkd.service to configure_services()
+- Ensure both services are enabled and started automatically
+
+* Version History
+** 2025-07-09 - Configuration Updates
+*** Added
+- Claude Code integration for Emacs
+  - Added claude-code package to Doom Emacs packages.el
+  - Configured claude-code with C-c c keybindings in config.el
+  - Added eat terminal emulator package as dependency
+- .gitignore file for repository management
+  - Excludes .DS_Store, .idea, logs, tmp/, .claude/, and CLAUDE.md
+- Changelog.org file for tracking project changes
+
+*** Changed
+- Keyboard configuration improvements (X11/xorg.conf.d/00-keyboard.conf)
+  - Added comment section for clarity
+  - Removed XkbModel option (commented out)
+  - Fixed indentation consistency
+- Optional packages configuration (bin/dependencies/optional-packages.txt)
+  - Disabled firefox, chromium, and torbrowser-launcher by default
+  - Kept vivaldi as primary browser option
+- Installation script modifications (bin/install.sh)
+  - Temporarily disabled setup_keyboard function call
+  - Streamlined installation process
+
+*** Technical Details
+- Doom Emacs packages.el: Reformatted comments for better readability
+- Claude Code backend integration with eat terminal emulator
+- Repository management improvements in progress
+
+** Initial Release
+- XMonad configuration with Stack build system
+- Doom Emacs configuration with Miozu theme
+- WezTerm terminal emulator setup
+- Rofi application launcher configuration
+- Picom compositor setup
+- Monitor hotplug detection system
+- Package management via paru (AUR helper)
+- Basic installation script (install.sh)
+
+** Technical Notes
+- Current MIOZU_DIR="$HOME/.miozu" is correct
+- Main issue is file handling and symlink creation
+- Theme cloning URL: https://github.com/miozutheme/doom-miozu.git
+- XMonad recompile command: xmonad --recompile && xmonad --restart
+- Emacs health check: ~/.emacs.d/bin/doom doctor

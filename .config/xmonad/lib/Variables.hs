@@ -10,6 +10,7 @@ module Variables
   , myAltTerminal
   , myTextEditor
   , myBar
+  , myBottomBar
   , myLaunchManager
   , myDateFormat
   , myScreenshotsDir
@@ -70,12 +71,14 @@ myMiozuDir = readProcess "fish" ["-c", "echo $MIOZU_DIR"] ""
 -- Call xmobar with its config file
 myBar :: String
 myBar = "xmobar ~/.config/xmonad/xmobar/xmobar.hs"
+myBottomBar :: String
+myBottomBar = "xmobar ~/.config/xmonad/xmobar/xmobar-bottom.hs"
 -- Main terminal emulator
 myTerminal :: String
-myTerminal = "/usr/bin/wezterm"
--- Alt reminal TODO change logic to run alt terminal if main failed
+myTerminal = "/usr/bin/alacritty"
+-- Alt terminal fallback to xterm if foot fails
 myAltTerminal :: String
-myAltTerminal = "/usr/bin/wezterm"
+myAltTerminal = "/usr/bin/xterm"
 -- Run emacsclient if emacs daemon is running to avoid full emacs reload
 myTextEditor :: String
 myTextEditor = "emacsclient -nc"
@@ -85,10 +88,10 @@ myLaunchManager = "rofi -show drun -theme ~/.config/rofi/miozu.rasi"
 -- Return the window ID of the window that the mouse cursor is currently over and make a screenshot
 myScreenshot :: String
 myScreenshot =
-  "maim -i $(xdotool getmouselocation | grep -oP 'window:\\K[0-9a-fA-F]+')"
+  "maim -i $(xdotool getmouselocation | grep -oP 'window:\\K[0-9a-fA-F]+') | tee "
     ++ myScreenshotsDir
     ++ myDateFormat
-    ++ ".png && dunstify -h string:x-dunst-stack-tag:screenshot 'Screenshot saved'"
+    ++ ".png | xclip -selection clipboard -t image/png && dunstify -h string:x-dunst-stack-tag:screenshot 'Screenshot saved and copied to clipboard'"
 -- Make a screenshot of selected area also copy screenshot to a clipboard
 myScreenshotSelected :: String
 myScreenshotSelected =
