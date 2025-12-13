@@ -87,7 +87,10 @@ You should see a black/gray screen with an X cursor. This is correct - the X ser
 
 In WSL terminal:
 
-    startx
+    export DISPLAY=$(grep nameserver /etc/resolv.conf | awk '{print $2}'):0
+    xmonad
+
+NOTE: Don't use `startx` - that tries to start a local X server. We want to connect to VcXsrv.
 
 XMonad should now appear. Press Mod+Shift+Enter to open a terminal.
 
@@ -137,7 +140,9 @@ If empty, reload shell:
 
 Or manually set:
 
-    export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0
+    export DISPLAY=$(grep nameserver /etc/resolv.conf | awk '{print $2}'):0
+
+Then run `xmonad` (not startx).
 
 ---
 
