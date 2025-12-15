@@ -1,0 +1,28 @@
+# Miozu WSL2 Developer Packages
+# Development tools that work well in WSL
+
+# JavaScript/Node
+volta-bin
+pnpm
+nvm
+
+# IDE: Emacs && tools
+emacs
+ripgrep
+fd
+haskell-language-server
+hoogle
+marked
+shfmt
+
+# Emacs: modes
+editorconfig-core-c
+tidy
+stylelint
+js-beautify
+
+# Emacs: fonts (already in required, but listed for clarity)
+ttf-nerd-fonts-symbols
+
+# Note: For WSL, you might prefer using Windows-native IDEs
+# like VS Code with WSL extension for better performance

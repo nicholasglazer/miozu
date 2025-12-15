@@ -1,0 +1,87 @@
+# Miozu WSL2 Required Packages
+# Hardware-specific packages removed (no bluetooth, audio hardware, brightness)
+# For native Linux, use required-packages.txt
+
+# Xorg (X11 forwarding to VcXsrv/WSLg)
+xorg-server
+xorg-xinit
+xorg-xrandr
+xorg-xsetroot
+xorg-xset
+xdotool
+xterm
+xclip
+
+# Window manager
+xmonad
+xmonad-contrib
+xmobar
+haskell-dbus
+
+# Notifications
+dunst
+
+# Network
+openssh
+
+# Terminal
+alacritty
+wezterm
+
+# Terminal text editor
+neovim
+
+# Shell
+fish
+
+# File manager
+nnn
+ncdu
+
+# App launcher
+rofi
+rofi-greenclip
+
+# Download files/torrents
+aria2
+
+# Document reader
+zathura
+zathura-djvu
+zathura-pdf-mupdf
+
+# Wallpaper/Background
+feh
+hsetroot
+
+# Screenshots
+maim
+
+# Fonts
+ttf-roboto
+ttf-ibm-plex
+otf-ipafont
+noto-fonts-emoji
+ttf-nerd-fonts-symbols
+ttf-font-awesome
+
+# Archiving and compression
+zip
+unzip
+
+# Basic utilities
+wget
+curl
+git
+ripgrep
+fd
+
+# Note: The following are EXCLUDED for WSL (no hardware support):
+# - picom (compositing over X forwarding is problematic)
+# - bluez, bluez-utils (no bluetooth in WSL)
+# - brightnessctl (no hardware brightness)
+# - alsa-utils, pipewire, wireplumber, etc. (no hardware audio)
+# - playerctl (no media control without audio)
+# - youtube-dl, vlc, ffmpeg (media playback over X is poor)
+# - easyeffects, cmus (audio apps)
+# - gstreamer plugins (audio/video codecs)

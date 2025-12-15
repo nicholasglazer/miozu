@@ -1,6 +1,11 @@
 #!/bin/bash
 # Configuration functions for Miozu installer
 
+# Check if running in WSL (can be overridden by sourcing wsl.sh)
+_is_wsl() {
+    grep -qi microsoft /proc/version 2>/dev/null
+}
+
 setup_directories() {
     print_header "Creating Directory Structure"
     local dirs=(
@@ -87,6 +92,12 @@ setup_dotfiles() {
 setup_monitor_hotplug() {
     print_header "Configuring Display Hotplug Autodetection"
 
+    # Skip in WSL - no hardware monitor hotplug
+    if _is_wsl; then
+        echo "Skipping monitor hotplug setup (not applicable in WSL)"
+        return 0
+    fi
+
     local script_src="$MIOZU_DIR/bin/display/monitor-hotplug.sh"
     local script_dest="/usr/local/bin/monitor-hotplug.sh"
     local udev_rule="/etc/udev/rules.d/95-monitor-hotplug.rules"
@@ -152,8 +163,23 @@ setup_emacs() {
 
 post_install() {
     print_header "Finalizing Setup"
-    chsh -s "$(which fish)"
+
+    # Set default shell to fish
+    if [[ "$SHELL" != "$(which fish)" ]]; then
+        chsh -s "$(which fish)" || echo -e "${YELLOW}Could not change shell, run: chsh -s $(which fish)${NC}"
+    fi
+
+    # Rebuild font cache
     fc-cache -fv
-    xmonad --recompile && xmonad --restart
-    echo -e "${GREEN}\nInstallation complete!${NC}"
+
+    # Compile XMonad (skip restart in WSL if no X display)
+    if _is_wsl; then
+        echo "Compiling XMonad configuration..."
+        xmonad --recompile || echo -e "${YELLOW}XMonad compilation failed - check config${NC}"
+        echo -e "${GREEN}\nWSL Installation complete!${NC}"
+        echo "Run 'start-xmonad' to launch XMonad (after setting up VcXsrv/WSLg)"
+    else
+        xmonad --recompile && xmonad --restart
+        echo -e "${GREEN}\nInstallation complete!${NC}"
+    fi
 }
