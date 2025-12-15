@@ -50,6 +50,15 @@ install_wsl_packages() {
         return 1
     fi
 
+    # Get available AUR helper
+    local aur_helper
+    aur_helper=$(get_aur_helper)
+
+    if [[ -z "$aur_helper" ]]; then
+        echo -e "${RED}No AUR helper found. Installation failed.${NC}"
+        return 1
+    fi
+
     # Filter out comments and empty lines
     local packages
     packages=$(grep -v '^#' "$pkg_file" | grep -v '^$' | tr '\n' ' ')
@@ -59,8 +68,8 @@ install_wsl_packages() {
         return 0
     fi
 
-    echo "Installing packages from: $pkg_file"
-    paru -S --needed --noconfirm $packages
+    echo "Installing packages from: $pkg_file (using $aur_helper)"
+    $aur_helper -S --needed --noconfirm $packages
 }
 
 # Print banner
