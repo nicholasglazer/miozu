@@ -8,5 +8,8 @@ vivaldi
 telegram-desktop
 discord
 
-# Misc
+# Misc utilities
 tree
+htop
+bat
+eza

@@ -1,12 +1,14 @@
 # Miozu WSL2 Optional Packages
 # GUI apps that work reasonably well over X11 forwarding
 
-# Browser (works but may be slow)
-# vivaldi
-# firefox
+# Browser
+vivaldi
+#firefox
+#chromium
 
-# Chat (lightweight, works okay)
-# telegram-desktop
+# Social
+telegram-desktop
+discord
 
 # Misc utilities
 tree

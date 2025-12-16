@@ -12,6 +12,7 @@ xorg-xrandr
 xmonad
 xmonad-contrib
 xmobar
+haskell-dbus
 
 # Compositor (picom fork to enable animations)
 #picom-arian8j2-git
@@ -51,6 +52,10 @@ gstreamer gst-plugins-base gst-plugins-good gst-plugins-ugly gst-libav
 
 # Terminal
 alacritty
+wezterm
+
+# Shell
+fish
 
 # Terminal text editor
 neovim
@@ -78,11 +83,13 @@ hsetroot
 # Screenshots and gifs
 maim
 
-# Fonts | 40 most popular google fonts, including ttf-ibm-plex-sans. See the full list https://aur.archlinux.org/packages/ttf-google-fonts-typewolf
+# Fonts
 ttf-roboto
 ttf-ibm-plex
 otf-ipafont
 noto-fonts-emoji
+ttf-nerd-fonts-symbols
+ttf-font-awesome
 
 # Archiving and compression
 zip

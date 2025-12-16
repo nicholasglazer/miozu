@@ -14,6 +14,8 @@ haskell-language-server
 hoogle
 marked
 shfmt
+#shellcheck
+#rust-analyzer
 
 # Emacs: modes
 editorconfig-core-c
@@ -24,5 +26,5 @@ js-beautify
 # Emacs: fonts (already in required, but listed for clarity)
 ttf-nerd-fonts-symbols
 
-# Note: For WSL, you might prefer using Windows-native IDEs
-# like VS Code with WSL extension for better performance
+# Design (use Windows-native Figma instead)
+#figma-linux
