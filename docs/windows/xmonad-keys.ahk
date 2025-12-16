@@ -1,6 +1,10 @@
 ; XMonad Key Passthrough for WSL2/VcXsrv
 ; Blocks Windows key from opening Start Menu when VcXsrv is focused
 ;
+; Based on official AutoHotkey v2 documentation:
+; https://www.autohotkey.com/docs/v2/Hotkeys.htm
+; https://www.autohotkey.com/docs/v2/lib/_HotIf.htm
+;
 ; Installation:
 ; 1. Install AutoHotkey v2: winget install AutoHotkey.AutoHotkey
 ; 2. Double-click this script to run it
@@ -14,123 +18,124 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 
-; Check if VcXsrv is active
-IsVcXsrvActive() {
-    return WinActive("ahk_exe vcxsrv.exe")
-}
-
-; When VcXsrv is active, block Win key from opening Start Menu
-#HotIf IsVcXsrvActive()
+; Context-sensitive hotkeys: only active when VcXsrv is focused
+; Using direct WinActive() call for optimization (per official docs)
+#HotIf WinActive("ahk_exe vcxsrv.exe")
 
 ; Block Win key alone (prevents Start Menu popup)
-LWin::return
-RWin::return
+LWin::Return
+RWin::Return
 
-; Block Win+key combinations (let them pass to VcXsrv)
-; Letters
-#a::return
-#b::return
-#c::return
-#d::return
-#e::return
-#f::return
-#g::return
-#h::return
-#i::return
-#j::return
-#k::return
-#l::return
-#m::return
-#n::return
-#o::return
-#p::return
-#q::return
-#r::return
-#s::return
-#t::return
-#u::return
-#v::return
-#w::return
-#x::return
-#y::return
-#z::return
+; Win+letter combinations
+#a::Return
+#b::Return
+#c::Return
+#d::Return
+#e::Return
+#f::Return
+#g::Return
+#h::Return
+#i::Return
+#j::Return
+#k::Return
+#l::Return
+#m::Return
+#n::Return
+#o::Return
+#p::Return
+#q::Return
+#r::Return
+#s::Return
+#t::Return
+#u::Return
+#v::Return
+#w::Return
+#x::Return
+#y::Return
+#z::Return
 
-; Numbers
-#1::return
-#2::return
-#3::return
-#4::return
-#5::return
-#6::return
-#7::return
-#8::return
-#9::return
-#0::return
+; Win+number combinations
+#1::Return
+#2::Return
+#3::Return
+#4::Return
+#5::Return
+#6::Return
+#7::Return
+#8::Return
+#9::Return
+#0::Return
 
-; Special keys
-#Enter::return
-#Space::return
-#Tab::return
-#Backspace::return
-#Escape::return
+; Win+special keys
+#Enter::Return
+#Space::Return
+#Tab::Return
+#Backspace::Return
+#Escape::Return
 
-; Win+Shift combinations
-#+a::return
-#+b::return
-#+c::return
-#+d::return
-#+e::return
-#+f::return
-#+g::return
-#+h::return
-#+i::return
-#+j::return
-#+k::return
-#+l::return
-#+m::return
-#+n::return
-#+o::return
-#+p::return
-#+q::return
-#+r::return
-#+s::return
-#+t::return
-#+u::return
-#+v::return
-#+w::return
-#+x::return
-#+y::return
-#+z::return
+; Win+Shift+letter combinations
+#+a::Return
+#+b::Return
+#+c::Return
+#+d::Return
+#+e::Return
+#+f::Return
+#+g::Return
+#+h::Return
+#+i::Return
+#+j::Return
+#+k::Return
+#+l::Return
+#+m::Return
+#+n::Return
+#+o::Return
+#+p::Return
+#+q::Return
+#+r::Return
+#+s::Return
+#+t::Return
+#+u::Return
+#+v::Return
+#+w::Return
+#+x::Return
+#+y::Return
+#+z::Return
 
-; Win+Shift+numbers
-#+1::return
-#+2::return
-#+3::return
-#+4::return
-#+5::return
-#+6::return
-#+7::return
-#+8::return
-#+9::return
-#+0::return
+; Win+Shift+number combinations
+#+1::Return
+#+2::Return
+#+3::Return
+#+4::Return
+#+5::Return
+#+6::Return
+#+7::Return
+#+8::Return
+#+9::Return
+#+0::Return
 
-; Win+Shift special
-#+Enter::return
-#+Space::return
+; Win+Shift+special keys
+#+Enter::Return
+#+Space::Return
 
+; End context-sensitive section
 #HotIf
 
-; Tray notification
+; Tray notification on startup
 TrayTip("XMonad Keys", "Win key blocked when VcXsrv focused", 1)
 
-; Tray menu
+; Configure tray menu
 A_TrayMenu.Delete()
-A_TrayMenu.Add("About", AboutBox)
+A_TrayMenu.Add("About", AboutHandler)
 A_TrayMenu.Add()
-A_TrayMenu.Add("Exit", (*) => ExitApp())
+A_TrayMenu.Add("Exit", ExitHandler)
 A_TrayMenu.Default := "About"
 TraySetIcon("shell32.dll", 173)
 
-AboutBox(*) {
-    MsgBox("XMonad Key Passthrough`n`nWhen VcXsrv is focused:`n• Win key blocked`n• Win+key combos blocked`n`nAlways works:`n• Alt+Tab (Windows)`n• Alt+Shift (language)", "XMonad Keys")
+; Menu handlers
+AboutHandler(*) {
+    MsgBox("XMonad Key Passthrough for WSL2`n`nWhen VcXsrv is focused:`n• Win key blocked (no Start Menu)`n• Win+key combos blocked`n`nAlways works:`n• Alt+Tab (Windows app switching)`n• Alt+Shift (language switch)", "XMonad Keys")
+}
+
+ExitHandler(*) {
+    ExitApp()
 }
