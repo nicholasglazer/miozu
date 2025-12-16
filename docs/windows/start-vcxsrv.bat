@@ -1,11 +1,13 @@
 @echo off
-:: Start VcXsrv for XMonad on WSL2
+:: Start VcXsrv and XMonad for WSL2
 :: Use display :1 because WSLg uses :0
 ::
-:: Usage: Double-click this file, or run from Command Prompt
-:: NOTE: Use Command Prompt, NOT PowerShell (PowerShell has issues with :1 syntax)
+:: Usage: Double-click this file
+:: NOTE: Use Command Prompt, NOT PowerShell
 
-echo Starting VcXsrv on display :1 for XMonad...
+echo ========================================
+echo   Starting VcXsrv + XMonad for WSL2
+echo ========================================
 echo.
 
 :: Check if VcXsrv is already running
@@ -24,6 +26,7 @@ if "%ERRORLEVEL%"=="0" (
 :: -ac = disable access control (allow connections from WSL2)
 :: -noreset = don't reset when last client disconnects
 
+echo Starting VcXsrv on display :1...
 if exist "C:\Program Files\VcXsrv\vcxsrv.exe" (
     start "" "C:\Program Files\VcXsrv\vcxsrv.exe" :1 -fullscreen -clipboard -wgl -ac -noreset
 ) else if exist "C:\Program Files (x86)\VcXsrv\vcxsrv.exe" (
@@ -35,11 +38,18 @@ if exist "C:\Program Files\VcXsrv\vcxsrv.exe" (
     exit /b 1
 )
 
+:: Wait for VcXsrv to start
+echo Waiting for VcXsrv to initialize...
+timeout /t 3 /nobreak >NUL
+
+:: Start XMonad in WSL
+echo Starting XMonad in WSL...
 echo.
-echo VcXsrv started on display :1
+
+:: Run start-xmonad.sh in WSL
+:: Using wsl -e to execute command directly
+wsl -d archlinux -e bash -c "export DISPLAY=localhost:1; export LIBGL_ALWAYS_INDIRECT=1; cd ~; ~/.local/bin/start-xmonad 2>&1 || ~/.miozu/bin/start-xmonad.sh 2>&1 || (echo 'Falling back to direct xmonad...'; xmonad)"
+
 echo.
-echo Now in WSL, run:
-echo   ~/start-xmonad.sh
-echo.
-echo Press any key to close this window...
-pause >NUL
+echo XMonad exited.
+pause

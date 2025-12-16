@@ -289,15 +289,18 @@ fi
 
 echo -e "${GREEN}X server connection OK!${NC}"
 
-# Configure keyboard: Caps Lock as Escape (like native Miozu)
-echo "Configuring keyboard (Caps Lock → Escape)..."
-setxkbmap -option caps:escape 2>/dev/null || true
+# Configure keyboard: us,ua layouts with dvorak variant
+# Alt+Shift to toggle language, Caps Lock as Escape (same as native Miozu)
+echo "Configuring keyboard..."
+echo "  Layout: us,ua (dvorak)"
+echo "  Alt+Shift: toggle language"
+echo "  Caps Lock: Escape"
+setxkbmap -layout "us,ua" -variant "dvorak," -option "grp:alt_shift_toggle,caps:escape" 2>/dev/null || true
 
 # Set cursor properly - try multiple methods
 echo "Setting cursor..."
-# Method 1: xsetroot with cursor font
 xsetroot -cursor_name left_ptr 2>/dev/null || true
-# Method 2: Set X cursor via xrdb if available
+# Set X resources for cursor
 if command -v xrdb &>/dev/null; then
     echo "Xcursor.theme: default" | xrdb -merge 2>/dev/null || true
 fi
@@ -311,13 +314,13 @@ if command -v dunst &>/dev/null; then
     dunst &
 fi
 
+echo ""
+echo -e "${YELLOW}NOTE: Windows/Super key captured by Windows by default.${NC}"
+echo -e "${YELLOW}Run xmonad-keys.ahk on Windows to fix. Alt+Tab works with Windows.${NC}"
+echo ""
 echo "Starting XMonad..."
-echo ""
-echo -e "${YELLOW}NOTE: Windows/Super key may be captured by Windows.${NC}"
-echo -e "${YELLOW}See ~/.miozu/docs/windows/disable-windows-key.md for solutions.${NC}"
-echo ""
 
-# Start XMonad
+# Start XMonad (use exec to replace shell process)
 exec xmonad
 EOF
     chmod +x "$HOME/.local/bin/start-xmonad"
