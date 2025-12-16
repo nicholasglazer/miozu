@@ -136,6 +136,54 @@ EOF
     echo -e "${GREEN}Created ~/.xinitrc${NC}"
 }
 
+# Check if mirrored networking mode is enabled (Windows 11)
+is_mirrored_mode() {
+    # In mirrored mode, localhost:6000 should be reachable when VcXsrv is running
+    # Also check if we can reach the Windows host via localhost
+    if timeout 1 bash -c "echo > /dev/tcp/localhost/6000" 2>/dev/null; then
+        return 0
+    fi
+    return 1
+}
+
+# Find working DISPLAY for X11
+find_working_display() {
+    local windows_ip
+    windows_ip=$(get_windows_host_ip)
+
+    # Try displays in order of preference
+    local displays=()
+
+    # Check mirrored mode first (Windows 11)
+    if is_mirrored_mode; then
+        displays+=("localhost:0")
+    fi
+
+    # Traditional NAT mode - use Windows host IP
+    if [[ -n "$windows_ip" ]]; then
+        displays+=("${windows_ip}:0")
+    fi
+
+    # Fallback
+    displays+=("127.0.0.1:0" ":0")
+
+    for disp in "${displays[@]}"; do
+        export DISPLAY="$disp"
+        if timeout 2 xset q &>/dev/null 2>&1; then
+            echo "$disp"
+            return 0
+        fi
+    done
+
+    # Return the most likely one even if not working (for error messages)
+    if [[ -n "$windows_ip" ]]; then
+        echo "${windows_ip}:0"
+    else
+        echo "localhost:0"
+    fi
+    return 1
+}
+
 # Create convenient start script for XMonad on WSL
 create_wsl_start_script() {
     print_header "Creating WSL XMonad Start Script"
@@ -147,20 +195,86 @@ create_wsl_start_script() {
 # Start XMonad on WSL2 with VcXsrv
 # NOTE: XMonad (and other WMs) REQUIRE VcXsrv - WSLg cannot run window managers
 #       because it has its own compositor that manages windows.
+#
+# This script auto-detects mirrored networking mode (Windows 11) vs NAT mode
 
-# Always use VcXsrv for XMonad (not WSLg)
-VCXSRV_DISPLAY=$(grep nameserver /etc/resolv.conf | awk '{print $2}'):0
+set -e
 
-# Check if user wants to override
-if [[ -n "$1" ]]; then
-    export DISPLAY="$1"
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+# Get Windows host IP for NAT mode
+WINDOWS_IP=$(grep nameserver /etc/resolv.conf 2>/dev/null | awk '{print $2}' | head -1)
+
+# Function to test X connection
+test_display() {
+    local disp="$1"
+    DISPLAY="$disp" timeout 2 xset q &>/dev/null 2>&1
+}
+
+# Find working display
+find_display() {
+    # If user specified display, use it
+    if [[ -n "$1" ]]; then
+        echo "$1"
+        return 0
+    fi
+
+    # Try mirrored mode first (Windows 11 with networkingMode=mirrored)
+    if test_display "localhost:0"; then
+        echo "localhost:0"
+        return 0
+    fi
+
+    # Try Windows host IP (traditional NAT mode)
+    if [[ -n "$WINDOWS_IP" ]] && test_display "${WINDOWS_IP}:0"; then
+        echo "${WINDOWS_IP}:0"
+        return 0
+    fi
+
+    # Nothing worked
+    return 1
+}
+
+echo -e "${CYAN}Starting XMonad on WSL2...${NC}"
+
+# Find working display
+if DISPLAY=$(find_display "$1"); then
+    export DISPLAY
+    echo -e "Using DISPLAY=${GREEN}$DISPLAY${NC}"
 else
-    export DISPLAY="$VCXSRV_DISPLAY"
+    echo ""
+    echo -e "${RED}ERROR: Cannot connect to X server${NC}"
+    echo ""
+    echo -e "${YELLOW}Tested displays:${NC}"
+    echo "  - localhost:0 (mirrored mode)"
+    echo "  - ${WINDOWS_IP}:0 (NAT mode)"
+    echo ""
+    echo -e "${YELLOW}Make sure VcXsrv is running on Windows:${NC}"
+    echo "  1. Double-click 'xmonad-fullscreen.xlaunch' on Windows Desktop"
+    echo "  2. You should see a black fullscreen window"
+    echo ""
+    echo -e "${YELLOW}If VcXsrv is running, fix the firewall:${NC}"
+    echo "  1. Copy firewall fix to Windows:"
+    echo "     cp ~/.miozu/docs/windows/fix-wsl-firewall.bat /mnt/c/Users/YOUR_USER/Desktop/"
+    echo "     cp ~/.miozu/docs/windows/fix-wsl-firewall.ps1 /mnt/c/Users/YOUR_USER/Desktop/"
+    echo "  2. Double-click fix-wsl-firewall.bat on Windows (runs as admin)"
+    echo "  3. Restart VcXsrv and try again"
+    echo ""
+    echo -e "${YELLOW}For Windows 11, try mirrored networking:${NC}"
+    echo "  Add to %USERPROFILE%\\.wslconfig:"
+    echo "  [wsl2]"
+    echo "  networkingMode=mirrored"
+    echo "  Then: wsl --shutdown (in PowerShell) and reopen WSL"
+    echo ""
+    echo -e "${YELLOW}Run diagnostic:${NC} ~/.miozu/bin/fix-wsl-x11.sh"
+    exit 1
 fi
 
 export LIBGL_ALWAYS_INDIRECT=1
-
-echo "Using DISPLAY=$DISPLAY"
 
 # Start dbus if not running
 if [[ -z "$DBUS_SESSION_BUS_ADDRESS" ]]; then
@@ -168,34 +282,16 @@ if [[ -z "$DBUS_SESSION_BUS_ADDRESS" ]]; then
     export DBUS_SESSION_BUS_ADDRESS
 fi
 
-# Test X connection
-echo "Testing X server connection..."
-if ! timeout 3 xset q &>/dev/null 2>&1; then
-    echo ""
-    echo "ERROR: Cannot connect to X server at $DISPLAY"
-    echo ""
-    echo "Make sure VcXsrv is running on Windows:"
-    echo "  1. Double-click 'xmonad-fullscreen.xlaunch' on your Windows Desktop"
-    echo "  2. You should see a black/gray fullscreen window"
-    echo "  3. Alt-Tab back to this terminal and run 'start-xmonad' again"
-    echo ""
-    echo "If VcXsrv is running but still fails:"
-    echo "  - Check Windows Firewall allows VcXsrv"
-    echo "  - Try: export DISPLAY=$VCXSRV_DISPLAY && xterm"
-    echo ""
-    exit 1
-fi
-
-echo "X server connection OK!"
+echo -e "${GREEN}X server connection OK!${NC}"
 echo "Starting XMonad..."
 
 # Set cursor and background
-xsetroot -cursor_name left_ptr 2>/dev/null
-xsetroot -solid "#1a1a2e" 2>/dev/null
+xsetroot -cursor_name left_ptr 2>/dev/null || true
+xsetroot -solid "#1a1a2e" 2>/dev/null || true
 
 # Start dunst for notifications
 if command -v dunst &>/dev/null; then
-    pkill dunst 2>/dev/null
+    pkill dunst 2>/dev/null || true
     dunst &
 fi
 
