@@ -197,6 +197,7 @@ create_wsl_start_script() {
 #       because it has its own compositor that manages windows.
 #
 # This script auto-detects mirrored networking mode (Windows 11) vs NAT mode
+# It also tries display :1 if :0 is taken by WSLg
 
 set -e
 
@@ -223,17 +224,26 @@ find_display() {
         return 0
     fi
 
-    # Try mirrored mode first (Windows 11 with networkingMode=mirrored)
-    if test_display "localhost:0"; then
-        echo "localhost:0"
-        return 0
+    # Try displays in order - :1 first (VcXsrv when WSLg uses :0)
+    # Then :0 for systems without WSLg
+    local displays=(
+        "localhost:1"      # Mirrored mode, display :1 (WSLg uses :0)
+        "localhost:0"      # Mirrored mode, display :0
+        "127.0.0.1:1"      # Mirrored mode alternative
+        "127.0.0.1:0"      # Mirrored mode alternative
+    )
+
+    # Add NAT mode displays if we have Windows IP
+    if [[ -n "$WINDOWS_IP" ]]; then
+        displays+=("${WINDOWS_IP}:1" "${WINDOWS_IP}:0")
     fi
 
-    # Try Windows host IP (traditional NAT mode)
-    if [[ -n "$WINDOWS_IP" ]] && test_display "${WINDOWS_IP}:0"; then
-        echo "${WINDOWS_IP}:0"
-        return 0
-    fi
+    for disp in "${displays[@]}"; do
+        if test_display "$disp"; then
+            echo "$disp"
+            return 0
+        fi
+    done
 
     # Nothing worked
     return 1
@@ -250,25 +260,20 @@ else
     echo -e "${RED}ERROR: Cannot connect to X server${NC}"
     echo ""
     echo -e "${YELLOW}Tested displays:${NC}"
-    echo "  - localhost:0 (mirrored mode)"
-    echo "  - ${WINDOWS_IP}:0 (NAT mode)"
+    echo "  - localhost:1, localhost:0 (mirrored mode)"
+    echo "  - ${WINDOWS_IP}:1, ${WINDOWS_IP}:0 (NAT mode)"
     echo ""
     echo -e "${YELLOW}Make sure VcXsrv is running on Windows:${NC}"
-    echo "  1. Double-click 'xmonad-fullscreen.xlaunch' on Windows Desktop"
-    echo "  2. You should see a black fullscreen window"
+    echo "  Run in Command Prompt (NOT PowerShell):"
+    echo '  "C:\Program Files\VcXsrv\vcxsrv.exe" :1 -fullscreen -clipboard -wgl -ac'
+    echo ""
+    echo "  NOTE: Use :1 because WSLg uses :0"
     echo ""
     echo -e "${YELLOW}If VcXsrv is running, fix the firewall:${NC}"
     echo "  1. Copy firewall fix to Windows:"
     echo "     cp ~/.miozu/docs/windows/fix-wsl-firewall.bat /mnt/c/Users/YOUR_USER/Desktop/"
-    echo "     cp ~/.miozu/docs/windows/fix-wsl-firewall.ps1 /mnt/c/Users/YOUR_USER/Desktop/"
     echo "  2. Double-click fix-wsl-firewall.bat on Windows (runs as admin)"
     echo "  3. Restart VcXsrv and try again"
-    echo ""
-    echo -e "${YELLOW}For Windows 11, try mirrored networking:${NC}"
-    echo "  Add to %USERPROFILE%\\.wslconfig:"
-    echo "  [wsl2]"
-    echo "  networkingMode=mirrored"
-    echo "  Then: wsl --shutdown (in PowerShell) and reopen WSL"
     echo ""
     echo -e "${YELLOW}Run diagnostic:${NC} ~/.miozu/bin/fix-wsl-x11.sh"
     exit 1
@@ -283,10 +288,21 @@ if [[ -z "$DBUS_SESSION_BUS_ADDRESS" ]]; then
 fi
 
 echo -e "${GREEN}X server connection OK!${NC}"
-echo "Starting XMonad..."
 
-# Set cursor and background
+# Configure keyboard: Caps Lock as Escape (like native Miozu)
+echo "Configuring keyboard (Caps Lock → Escape)..."
+setxkbmap -option caps:escape 2>/dev/null || true
+
+# Set cursor properly - try multiple methods
+echo "Setting cursor..."
+# Method 1: xsetroot with cursor font
 xsetroot -cursor_name left_ptr 2>/dev/null || true
+# Method 2: Set X cursor via xrdb if available
+if command -v xrdb &>/dev/null; then
+    echo "Xcursor.theme: default" | xrdb -merge 2>/dev/null || true
+fi
+
+# Set background color
 xsetroot -solid "#1a1a2e" 2>/dev/null || true
 
 # Start dunst for notifications
@@ -294,6 +310,12 @@ if command -v dunst &>/dev/null; then
     pkill dunst 2>/dev/null || true
     dunst &
 fi
+
+echo "Starting XMonad..."
+echo ""
+echo -e "${YELLOW}NOTE: Windows/Super key may be captured by Windows.${NC}"
+echo -e "${YELLOW}See ~/.miozu/docs/windows/disable-windows-key.md for solutions.${NC}"
+echo ""
 
 # Start XMonad
 exec xmonad

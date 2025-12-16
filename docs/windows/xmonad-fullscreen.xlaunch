@@ -3,7 +3,7 @@
   WindowMode="Fullscreen"
   ClientMode="NoClient"
   LocalClient="False"
-  Display="0"
+  Display="1"
   LocalProgram="xcalc"
   RemoteProgram="xterm"
   RemotePassword=""
