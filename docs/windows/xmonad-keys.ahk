@@ -1,5 +1,5 @@
 ; XMonad Key Passthrough for WSL2/VcXsrv
-; Remaps Windows key to work with XMonad when VcXsrv is focused
+; Blocks Windows key from opening Start Menu when VcXsrv is focused
 ;
 ; Installation:
 ; 1. Install AutoHotkey v2: winget install AutoHotkey.AutoHotkey
@@ -7,93 +7,121 @@
 ; 3. For auto-start: Win+R → shell:startup → copy this file there
 ;
 ; Behavior:
-; - When VcXsrv is focused: Win key works as Super/Mod key in XMonad
-; - When other windows are focused: Win key works normally
-; - Alt+Tab always works with Windows
-; - Alt+Shift switches keyboard layout (works in both)
+; - When VcXsrv focused: Win key blocked (no Start Menu)
+; - Alt+Tab: always works with Windows
+; - Alt+Shift: switches keyboard layout
 
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 
-; Get VcXsrv window class - it can be "VcXsrv/XWin" or just "vcxsrv"
+; Check if VcXsrv is active
 IsVcXsrvActive() {
     return WinActive("ahk_exe vcxsrv.exe")
 }
 
-; When VcXsrv is active, intercept Win key
+; When VcXsrv is active, block Win key from opening Start Menu
 #HotIf IsVcXsrvActive()
 
-; Simply suppress Win key alone (prevents Start Menu)
-; Win+other keys still work and pass through to VcXsrv
+; Block Win key alone (prevents Start Menu popup)
 LWin::return
 RWin::return
 
-; Win+Enter (terminal in XMonad)
-LWin & Enter::return
-RWin & Enter::return
+; Block Win+key combinations (let them pass to VcXsrv)
+; Letters
+#a::return
+#b::return
+#c::return
+#d::return
+#e::return
+#f::return
+#g::return
+#h::return
+#i::return
+#j::return
+#k::return
+#l::return
+#m::return
+#n::return
+#o::return
+#p::return
+#q::return
+#r::return
+#s::return
+#t::return
+#u::return
+#v::return
+#w::return
+#x::return
+#y::return
+#z::return
 
-; Win+letter combinations - let them pass through
-LWin & a::return
-LWin & b::return
-LWin & c::return
-LWin & d::return
-LWin & e::return
-LWin & f::return
-LWin & g::return
-LWin & h::return
-LWin & i::return
-LWin & j::return
-LWin & k::return
-LWin & l::return
-LWin & m::return
-LWin & n::return
-LWin & o::return
-LWin & p::return
-LWin & q::return
-LWin & r::return
-LWin & s::return
-LWin & t::return
-LWin & u::return
-LWin & v::return
-LWin & w::return
-LWin & x::return
-LWin & y::return
-LWin & z::return
+; Numbers
+#1::return
+#2::return
+#3::return
+#4::return
+#5::return
+#6::return
+#7::return
+#8::return
+#9::return
+#0::return
 
-; Win+numbers (workspace switching)
-LWin & 1::return
-LWin & 2::return
-LWin & 3::return
-LWin & 4::return
-LWin & 5::return
-LWin & 6::return
-LWin & 7::return
-LWin & 8::return
-LWin & 9::return
-LWin & 0::return
-
-; Win+Space, Win+Tab
-LWin & Space::return
-LWin & Tab::return
+; Special keys
+#Enter::return
+#Space::return
+#Tab::return
+#Backspace::return
+#Escape::return
 
 ; Win+Shift combinations
-LWin & +Enter::return
-LWin & +c::return
-LWin & +q::return
-LWin & +1::return
-LWin & +2::return
-LWin & +3::return
-LWin & +4::return
-LWin & +5::return
-LWin & +6::return
-LWin & +7::return
-LWin & +8::return
-LWin & +9::return
+#+a::return
+#+b::return
+#+c::return
+#+d::return
+#+e::return
+#+f::return
+#+g::return
+#+h::return
+#+i::return
+#+j::return
+#+k::return
+#+l::return
+#+m::return
+#+n::return
+#+o::return
+#+p::return
+#+q::return
+#+r::return
+#+s::return
+#+t::return
+#+u::return
+#+v::return
+#+w::return
+#+x::return
+#+y::return
+#+z::return
+
+; Win+Shift+numbers
+#+1::return
+#+2::return
+#+3::return
+#+4::return
+#+5::return
+#+6::return
+#+7::return
+#+8::return
+#+9::return
+#+0::return
+
+; Win+Shift special
+#+Enter::return
+#+Space::return
 
 #HotIf
 
-; Show tray notification
-TrayTip("XMonad Keys", "Active - Win key blocked when VcXsrv focused", 1)
+; Tray notification
+TrayTip("XMonad Keys", "Win key blocked when VcXsrv focused", 1)
 
 ; Tray menu
 A_TrayMenu.Delete()
@@ -104,5 +132,5 @@ A_TrayMenu.Default := "About"
 TraySetIcon("shell32.dll", 173)
 
 AboutBox(*) {
-    MsgBox("XMonad Key Passthrough`n`nWhen VcXsrv is focused:`n• Win key blocked (no Start Menu)`n• Win+key combos work in XMonad`n`nAlways works:`n• Alt+Tab (Windows)`n• Alt+Shift (language switch)", "XMonad Keys")
+    MsgBox("XMonad Key Passthrough`n`nWhen VcXsrv is focused:`n• Win key blocked`n• Win+key combos blocked`n`nAlways works:`n• Alt+Tab (Windows)`n• Alt+Shift (language)", "XMonad Keys")
 }
