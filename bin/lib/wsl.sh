@@ -22,7 +22,7 @@ get_wsl_version() {
     echo "0"
 }
 
-# Get Windows host IP for X11 display
+# Get Windows host IP for X11 display (for VcXsrv)
 get_windows_host_ip() {
     if [[ -f /etc/resolv.conf ]]; then
         grep nameserver /etc/resolv.conf | awk '{print $2}' | head -1
@@ -36,17 +36,12 @@ has_wslg() {
 }
 
 # Configure X11 DISPLAY variable for WSL
+# IMPORTANT: For window managers like XMonad, always use VcXsrv, not WSLg
 configure_wsl_display() {
     print_header "Configuring X11 Display for WSL"
 
     local windows_ip
     windows_ip=$(get_windows_host_ip)
-
-    if has_wslg; then
-        echo "WSLg detected - using native Wayland/X11 support"
-        echo "DISPLAY is automatically set by WSLg"
-        return 0
-    fi
 
     if [[ -z "$windows_ip" ]]; then
         echo -e "${RED}Could not determine Windows host IP${NC}"
@@ -55,44 +50,58 @@ configure_wsl_display() {
 
     echo "Windows host IP: $windows_ip"
 
-    # Add to Fish config if not present
+    if has_wslg; then
+        echo -e "${YELLOW}WSLg detected but XMonad requires VcXsrv for full WM support${NC}"
+        echo "Configuring for VcXsrv (you can still use WSLg for individual apps)"
+    fi
+
+    # Add to Fish config - always use VcXsrv IP for xmonad
     local fish_config="$HOME/.config/fish/config.fish"
     if [[ -f "$fish_config" ]]; then
-        if ! grep -q "WSL2 X11 Display" "$fish_config"; then
-            echo "Adding X11 DISPLAY configuration to Fish..."
-            cat >> "$fish_config" << 'EOF'
+        # Remove old WSL2 X11 Display config if present
+        sed -i '/# WSL2 X11 Display/,/LIBGL_ALWAYS_SOFTWARE/d' "$fish_config" 2>/dev/null || true
 
-# WSL2 X11 Display for VcXsrv
-if test -f /etc/resolv.conf
-    set -gx DISPLAY (grep nameserver /etc/resolv.conf | awk '{print $2}'):0
+        echo "Adding X11 DISPLAY configuration to Fish..."
+        cat >> "$fish_config" << 'EOF'
+
+# WSL2 X11 Display - Use VcXsrv for XMonad (window managers need full X server)
+# For individual GUI apps, WSLg works fine with DISPLAY=:0
+set -gx DISPLAY_VCXSRV (grep nameserver /etc/resolv.conf | awk '{print $2}'):0
+set -gx LIBGL_ALWAYS_INDIRECT 1
+
+# Add ~/.local/bin to PATH for start-xmonad script
+if not contains $HOME/.local/bin $PATH
+    set -gx PATH $HOME/.local/bin $PATH
 end
-set -gx LIBGL_ALWAYS_SOFTWARE 1
 EOF
-            echo -e "${GREEN}Fish X11 config added${NC}"
-        else
-            echo "Fish X11 config already present"
-        fi
+        echo -e "${GREEN}Fish X11 config added${NC}"
     fi
 
-    # Add to Bash config as fallback
+    # Add to Bash config
     if [[ -f "$HOME/.bashrc" ]]; then
-        if ! grep -q "WSL2 X11 Display" "$HOME/.bashrc"; then
-            echo "Adding X11 DISPLAY configuration to Bash..."
-            cat >> "$HOME/.bashrc" << 'EOF'
+        # Remove old config
+        sed -i '/# WSL2 X11 Display/,/LIBGL_ALWAYS/d' "$HOME/.bashrc" 2>/dev/null || true
 
-# WSL2 X11 Display for VcXsrv
-export DISPLAY=$(grep nameserver /etc/resolv.conf | awk '{print $2}'):0
-export LIBGL_ALWAYS_SOFTWARE=1
+        echo "Adding X11 DISPLAY configuration to Bash..."
+        cat >> "$HOME/.bashrc" << 'EOF'
+
+# WSL2 X11 Display - Use VcXsrv for XMonad (window managers need full X server)
+# For individual GUI apps, WSLg works fine with DISPLAY=:0
+export DISPLAY_VCXSRV=$(grep nameserver /etc/resolv.conf | awk '{print $2}'):0
+export LIBGL_ALWAYS_INDIRECT=1
+
+# Add ~/.local/bin to PATH for start-xmonad script
+export PATH="$HOME/.local/bin:$PATH"
 EOF
-            echo -e "${GREEN}Bash X11 config added${NC}"
-        fi
+        echo -e "${GREEN}Bash X11 config added${NC}"
     fi
 
-    # Set for current session
-    export DISPLAY="${windows_ip}:0"
-    export LIBGL_ALWAYS_SOFTWARE=1
+    # Create .profile for login shells
+    if [[ ! -f "$HOME/.profile" ]] || ! grep -q "\.local/bin" "$HOME/.profile"; then
+        echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.profile"
+    fi
 
-    echo -e "${GREEN}X11 display configured: $DISPLAY${NC}"
+    echo -e "${GREEN}X11 display configured for VcXsrv: ${windows_ip}:0${NC}"
 }
 
 # Create xinitrc for WSL (used with startx if needed)
@@ -135,20 +144,23 @@ create_wsl_start_script() {
 
     cat > "$HOME/.local/bin/start-xmonad" << 'EOF'
 #!/bin/bash
-# Start XMonad on WSL2 with VcXsrv or WSLg
+# Start XMonad on WSL2 with VcXsrv
+# NOTE: XMonad (and other WMs) REQUIRE VcXsrv - WSLg cannot run window managers
+#       because it has its own compositor that manages windows.
 
-# Set DISPLAY if not set
-if [[ -z "$DISPLAY" ]]; then
-    if [[ -d /mnt/wslg ]]; then
-        # WSLg sets DISPLAY automatically
-        export DISPLAY=:0
-    else
-        # VcXsrv - get Windows host IP
-        export DISPLAY=$(grep nameserver /etc/resolv.conf | awk '{print $2}'):0
-    fi
+# Always use VcXsrv for XMonad (not WSLg)
+VCXSRV_DISPLAY=$(grep nameserver /etc/resolv.conf | awk '{print $2}'):0
+
+# Check if user wants to override
+if [[ -n "$1" ]]; then
+    export DISPLAY="$1"
+else
+    export DISPLAY="$VCXSRV_DISPLAY"
 fi
 
-export LIBGL_ALWAYS_SOFTWARE=1
+export LIBGL_ALWAYS_INDIRECT=1
+
+echo "Using DISPLAY=$DISPLAY"
 
 # Start dbus if not running
 if [[ -z "$DBUS_SESSION_BUS_ADDRESS" ]]; then
@@ -157,19 +169,50 @@ if [[ -z "$DBUS_SESSION_BUS_ADDRESS" ]]; then
 fi
 
 # Test X connection
-if ! xset q &>/dev/null 2>&1; then
-    echo "Error: Cannot connect to X server at $DISPLAY"
+echo "Testing X server connection..."
+if ! timeout 3 xset q &>/dev/null 2>&1; then
     echo ""
-    echo "For VcXsrv: Start VcXsrv on Windows first (xmonad-fullscreen.xlaunch)"
-    echo "For WSLg: Ensure WSLg is enabled in Windows 11"
+    echo "ERROR: Cannot connect to X server at $DISPLAY"
+    echo ""
+    echo "Make sure VcXsrv is running on Windows:"
+    echo "  1. Double-click 'xmonad-fullscreen.xlaunch' on your Windows Desktop"
+    echo "  2. You should see a black/gray fullscreen window"
+    echo "  3. Alt-Tab back to this terminal and run 'start-xmonad' again"
+    echo ""
+    echo "If VcXsrv is running but still fails:"
+    echo "  - Check Windows Firewall allows VcXsrv"
+    echo "  - Try: export DISPLAY=$VCXSRV_DISPLAY && xterm"
+    echo ""
     exit 1
 fi
 
-echo "Starting XMonad on display $DISPLAY..."
+echo "X server connection OK!"
+echo "Starting XMonad..."
+
+# Set cursor and background
+xsetroot -cursor_name left_ptr 2>/dev/null
+xsetroot -solid "#1a1a2e" 2>/dev/null
+
+# Start dunst for notifications
+if command -v dunst &>/dev/null; then
+    pkill dunst 2>/dev/null
+    dunst &
+fi
+
+# Start XMonad
 exec xmonad
 EOF
     chmod +x "$HOME/.local/bin/start-xmonad"
     echo -e "${GREEN}Created ~/.local/bin/start-xmonad${NC}"
+
+    # Also create a simple alias script for those who don't have PATH set
+    cat > "$HOME/start-xmonad.sh" << 'EOF'
+#!/bin/bash
+# Convenience script - runs ~/.local/bin/start-xmonad
+exec "$HOME/.local/bin/start-xmonad" "$@"
+EOF
+    chmod +x "$HOME/start-xmonad.sh"
+    echo -e "${GREEN}Created ~/start-xmonad.sh (backup if PATH not set)${NC}"
 }
 
 # Setup systemd for WSL (if enabled)
@@ -225,37 +268,41 @@ print_wsl_instructions() {
     echo -e "${GREEN}Miozu is installed for WSL2!${NC}"
     echo ""
 
-    if has_wslg; then
-        echo "WSLg detected - you can run GUI apps natively!"
-        echo ""
-        echo "To start XMonad:"
-        echo "  start-xmonad"
-        echo ""
-    else
-        echo "Next steps on Windows:"
-        echo "------------------------"
-        echo "1. Install VcXsrv:"
-        echo "   winget install marha.VcXsrv"
-        echo ""
-        echo "2. Copy launcher to Desktop:"
-        echo "   cp ~/.miozu/docs/windows/xmonad-fullscreen.xlaunch /mnt/c/Users/YOUR_USER/Desktop/"
-        echo ""
-        echo "3. Add firewall rule (PowerShell as Admin):"
-        echo '   New-NetFirewallRule -DisplayName "VcXsrv" -Direction Inbound -Program "C:\Program Files\VcXsrv\vcxsrv.exe" -Action Allow'
-        echo ""
-        echo "To start XMonad:"
-        echo "----------------"
-        echo "1. Double-click xmonad-fullscreen.xlaunch on Windows Desktop"
-        echo "2. In WSL: start-xmonad"
+    echo -e "${YELLOW}IMPORTANT: XMonad requires VcXsrv (not WSLg)${NC}"
+    echo "WSLg cannot run window managers - it has its own compositor."
+    echo ""
+    echo "To start XMonad:"
+    echo "================"
+    echo ""
+    echo "1. On Windows: Double-click 'xmonad-fullscreen.xlaunch'"
+    echo "   (Copy it first: cp ~/.miozu/docs/windows/xmonad-fullscreen.xlaunch /mnt/c/Users/YOUR_USER/Desktop/)"
+    echo ""
+    echo "2. You'll see a black fullscreen window - this is correct!"
+    echo ""
+    echo "3. Alt-Tab back to WSL terminal and run:"
+    echo "   ~/start-xmonad.sh"
+    echo "   (or: ~/.local/bin/start-xmonad if PATH is set)"
+    echo ""
+    echo "4. Alt-Tab to VcXsrv window - XMonad should now be running!"
+    echo "   Press Mod+Shift+Enter to open a terminal"
+    echo ""
+
+    if ! command -v vcxsrv &>/dev/null 2>&1; then
+        echo "Install VcXsrv on Windows:"
+        echo "  winget install marha.VcXsrv"
         echo ""
     fi
 
+    echo "Firewall (run in PowerShell as Admin if needed):"
+    echo '  New-NetFirewallRule -DisplayName "VcXsrv" -Direction Inbound -Program "C:\Program Files\VcXsrv\vcxsrv.exe" -Action Allow'
+    echo ""
+
     echo "Key differences from native Linux:"
     echo "-----------------------------------"
+    echo "- Must use VcXsrv for XMonad (WSLg only for individual apps)"
     echo "- No hardware audio (use Windows audio)"
     echo "- No bluetooth"
-    echo "- No hardware brightness control"
-    echo "- Super/Win key may conflict with Windows (see docs for fix)"
+    echo "- Super/Win key may conflict with Windows"
     echo ""
     echo "Documentation: ~/.miozu/docs/WSL2_XMONAD_SETUP.md"
     echo ""
@@ -299,9 +346,9 @@ check_wsl_prerequisites() {
         fi
     done
 
-    # Check WSLg or ability to connect to X
+    # Check WSLg
     if has_wslg; then
-        echo -e "${GREEN}WSLg available (native GUI support)${NC}"
+        echo -e "${YELLOW}WSLg available (but XMonad needs VcXsrv for full WM)${NC}"
     else
         echo "WSLg not detected - will use VcXsrv for X11"
     fi
