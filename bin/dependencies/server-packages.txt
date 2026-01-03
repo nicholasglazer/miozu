@@ -1,0 +1,49 @@
+# Miozu Server Packages
+# Minimal production server setup for Arch Linux
+# Last updated: 2026-01-03
+
+# === Base System ===
+base
+base-devel
+linux
+linux-firmware
+
+# === Shell & Terminal ===
+neovim
+tmux
+git
+wget
+rsync
+unzip
+
+# === System Utilities ===
+btop
+ncdu
+duf
+jq
+
+# === Networking ===
+openssh
+net-tools
+inetutils
+
+# === Security ===
+nftables
+crowdsec
+crowdsec-firewall-bouncer-nftables
+arch-audit
+audit
+
+# === Containers ===
+docker
+docker-compose
+docker-buildx
+lazydocker
+
+# === Services ===
+cronie
+logrotate
+haveged
+
+# === AUR Helper ===
+paru
