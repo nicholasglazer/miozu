@@ -33,11 +33,10 @@ bash $MIOZU_DIR/bin/display/steamdeck_dual.sh
 #DISPLAY=":0" picom -b
 
 # Keyboard layout
-# set xorg 00-keyboard.conf every time
-# NOTE it can't create a new file, only modify existing one
-localectl set-x11-keymap us,ua , dvorak grp:alt_shift_toggle,caps:escape
-# set xkb
-setxkbmap -layout "us,ua" -variant "dvorak," -option "grp:alt_shift_toggle,caps:escape" &
+# setxkbmap applies the layout immediately to this X session.
+# localectl is NOT used here — it requires polkit auth and blocks
+# the entire .xinitrc (preventing 'exec xmonad' from running).
+setxkbmap -layout "us,ua" -variant "dvorak," -option "grp:ralt_rshift_toggle,caps:escape" &
 
 # set steamdeck to performance mode
 #sudo sh -c "echo performance > /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor"
