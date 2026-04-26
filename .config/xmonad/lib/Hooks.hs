@@ -33,9 +33,9 @@ import           Workspaces                     ( toolsWS )
 ------------------------------------------------------------------------
 myStartupHook :: X ()
 myStartupHook = do
-  spawn "bash $MIOZU_DIR/bin/display/device_mono.sh"
+  spawn "/usr/bin/xrandr --output eDP-1 --mode 2560x1600 --primary"
+  spawn "hsetroot -solid '#252835'"
   spawn "setxkbmap -layout \"us,ua\" -variant \"dvorak,\" -option \"grp:alt_shift_toggle,caps:escape\""
-  spawnOnce "emacsclient -nc --eval '(doom/quickload-session)'"
   setWMName "LG3D"
 
 
@@ -86,4 +86,4 @@ instance UrgencyHook LibNotifyUrgencyHook where
 myLogHook :: X ()
 myLogHook = return ()
 -- Workspace-based keyboard switching disabled to prevent leader key issues
--- Use manual keyboard switching with Alt+Shift instead
+-- Use manual keyboard switching with Right Alt + Right Shift instead
