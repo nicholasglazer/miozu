@@ -6,7 +6,7 @@ echo "================================"
 HEADPHONES_MAC="80:C3:BA:81:21:B4"
 CARD_NAME="bluez_card.${HEADPHONES_MAC//:/_}"
 
-/home/ng/.miozu/bin/fix-bluetooth-audio.sh
+$MIOZU_DIR/bin/fix-bluetooth-audio.sh
 
 echo ""
 echo "📌 Monitoring audio profile changes..."

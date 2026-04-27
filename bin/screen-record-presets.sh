@@ -46,6 +46,7 @@ for tool in xdotool xrandr ffmpeg notify-send; do
 done
 
 # Check if recording is already running
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Checking PID file: $PID_FILE exists=$([ -f "$PID_FILE" ] && echo yes || echo no)" >> "$LOG_FILE"
 if [ -f "$PID_FILE" ]; then
     # Recording is active - STOP it
     FFMPEG_PID=$(cat "$PID_FILE")
@@ -164,7 +165,7 @@ start_recording() {
         product)
             # PRODUCT DEMO: High quality, compact, smooth (current default)
             # Using veryfast preset for real-time capture without frame dropping
-            notify-send "🔴 RECORDING STARTED" "Product Demo (30fps)\nPress Mod+r to stop" -i camera-video -u normal
+            notify-send "🔴 PRODUCT DEMO" "30fps - Press Mod+r to stop" -i camera-video -u normal
             echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting product preset recording: ${width}x${height}+${offset_x}+${offset_y}" >> "$LOG_FILE"
             DISPLAY=:0 ffmpeg -f x11grab \
                 -video_size "${width}x${height}" \
@@ -187,7 +188,7 @@ start_recording() {
         tutorial)
             # TUTORIAL: 60fps, highest quality for detailed walkthroughs
             # Using fast preset because 60fps requires real-time encoding
-            notify-send "🔴 RECORDING STARTED" "Tutorial (60fps HQ)\nPress Mod+Shift+r to stop" -i camera-video -u normal
+            notify-send "🔴 TUTORIAL" "60fps HQ - Press Mod+Alt+r to stop" -i camera-video -u normal
             echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting tutorial preset recording: ${width}x${height}+${offset_x}+${offset_y}" >> "$LOG_FILE"
             DISPLAY=:0 ffmpeg -f x11grab \
                 -video_size "${width}x${height}" \
@@ -209,7 +210,7 @@ start_recording() {
 
         bug)
             # BUG REPORT: Fast, compact, good enough for bug reports
-            notify-send "🔴 RECORDING STARTED" "Bug Report (compact)\nPress Mod+Alt+r to stop" -i camera-video -u normal
+            notify-send "🔴 BUG REPORT" "Compact - Press any recording key to stop" -i camera-video -u normal
             echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting bug preset recording: ${width}x${height}+${offset_x}+${offset_y}" >> "$LOG_FILE"
             DISPLAY=:0 ffmpeg -f x11grab \
                 -video_size "${width}x${height}" \
@@ -290,6 +291,13 @@ case "$PRESET" in
         exit 0
         ;;
 
+    stop)
+        # STOP-ONLY: Just stop any active recording without starting new one
+        notify-send "Screen Recording" "No active recording to stop" -i dialog-information
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Stop requested but no recording active" >> "$LOG_FILE"
+        exit 0
+        ;;
+
     area)
         # AREA SELECTION: Use slop to select area
         if ! command -v slop &> /dev/null; then
@@ -314,7 +322,7 @@ case "$PRESET" in
 
         read WIDTH HEIGHT OFFSET_X OFFSET_Y <<< "$AREA"
 
-        notify-send "🔴 RECORDING STARTED" "Area selection (30fps)\nPress Mod+Ctrl+Shift+r to stop" -i camera-video -u normal
+        notify-send "🔴 AREA RECORDING" "30fps - Press Mod+Shift+r to stop" -i camera-video -u normal
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting area preset recording: ${WIDTH}x${HEIGHT}+${OFFSET_X}+${OFFSET_Y}" >> "$LOG_FILE"
 
         DISPLAY=:0 ffmpeg -f x11grab \
@@ -338,7 +346,13 @@ case "$PRESET" in
         echo "$FFMPEG_PID" > "$PID_FILE"
         echo "$OUTPUT_PATH" > "$INFO_FILE"
         echo "area" > "$PRESET_FILE"
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Area recording started with PID: $FFMPEG_PID" >> "$LOG_FILE"
+        # Verify PID file was created
+        if [ -f "$PID_FILE" ]; then
+            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Area recording started with PID: $FFMPEG_PID (PID file created successfully)" >> "$LOG_FILE"
+        else
+            echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: PID file NOT created! Path: $PID_FILE" >> "$LOG_FILE"
+            notify-send "⚠️ Recording Error" "PID file not created" -i dialog-warning
+        fi
         exit 0
         ;;
 

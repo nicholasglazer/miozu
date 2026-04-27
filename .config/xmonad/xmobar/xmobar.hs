@@ -34,7 +34,7 @@ Config {
   , pickBroadest     = True  -- choose widest display (multi-monitor)
   , persistent       = False -- enable/disable hiding (True = disabled)
 
-  , commands = [ Run Com "/home/n/.config/xmonad/xmobar/now-playing-bt.sh" [] "nowplaying" 10  -- Display current playing track using playctl
+  , commands = [ Run Com "$MIOZU_DIR/.config/xmonad/xmobar/now-playing-bt.sh" [] "nowplaying" 10  -- Display current playing track using playctl
                , Run Date "%a<fc=#83D2FC> %H:%M</fc> " "date" 10                               -- time and date indicator
                , Run Kbd [ ("us(dvorak)" , "<fc=#FF9982> Dv</fc>")
                          , ("ua"         , "<fc=#FF9837> Ua</fc>")

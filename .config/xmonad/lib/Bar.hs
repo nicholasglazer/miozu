@@ -42,7 +42,7 @@ myXmobarPP = def
 
     -- Make workspace clickable by wrapping with xmobar action tag
     clickable :: String -> String
-    clickable ws = "<action=`/home/ng/.miozu/bin/xmonad-switch-workspace.sh " ++ wsIndex ++ "`>" ++ ws ++ "</action>"
+    clickable ws = "<action=`$MIOZU_DIR/bin/xmonad-switch-workspace.sh " ++ wsIndex ++ "`>" ++ ws ++ "</action>"
       where
         wsIndex = show $ (+ 1) $ fromMaybe 0 $ elemIndex ws myWorkspaces
 

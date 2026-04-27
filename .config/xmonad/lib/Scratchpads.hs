@@ -17,7 +17,7 @@ module Scratchpads
   , numberedScratchpadAction
   ) where
 
-import           Variables                      ( myTerminal )
+import           Variables                      ( myTerminal, myAltTerminal )
 import           XMonad
 import qualified XMonad.StackSet               as W
 import           XMonad.Util.NamedScratchpad
@@ -90,7 +90,7 @@ myScratchpads =
     t = 0.03        -- top 3%
     l = 0.01        -- left 1%
 
-  spawnFileManager  = myTerminal ++ " --class FileManager -e nnn"   -- launch n3 file manager
+  spawnFileManager  = myAltTerminal ++ " --class FileManager -e nnn"   -- launch n3 file manager (uses alacritty for -e flag)
   findFileManager   = resource =? "FileManager"                        -- its window will be named "FileManager"
   manageFileManager = customFloating $ W.RationalRect l t w h          -- geometry
    where

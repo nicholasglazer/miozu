@@ -26,7 +26,7 @@ Config {
 
   , commands = [ 
       -- Now playing info
-      Run Com "/home/ng/.config/xmonad/xmobar/now-playing-bt.sh" [] "nowplaying" 10
+      Run Com "$MIOZU_DIR/.config/xmonad/xmobar/now-playing-bt.sh" [] "nowplaying" 10
       
       -- CPU load with color gradients
     , Run Cpu [ "--template" , "<total>%"

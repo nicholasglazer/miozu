@@ -83,7 +83,7 @@ build:
   copy-bins: true
   
 # Set local bin path
-local-bin-path: /home/ng/.local/bin
+local-bin-path: $HOME/.local/bin
 
 # Extra directories
 extra-include-dirs:

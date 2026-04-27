@@ -1,34 +1,43 @@
 #!/bin/bash
-# Quick launcher for teruwm — run from any TTY
-# Usage: ./run-teruwm.sh [release|debug]
+# Launcher for teruwm from any TTY.
+# Usage: ./run-teruwm.sh [debug|release|skip]
+#
+# Default is `debug`: always rebuilds, aborts if build breaks, so you
+# never silently launch stale code. Zig is incremental — on no-change
+# rebuild the cost is ~50ms. Use `skip` only when you deliberately want
+# to run the last-built binary (bisect, debugging a launch issue).
 
-cd ~/code/foss/teru || exit 1
+set -euo pipefail
 
-# Build if requested or binary is older than source
-MODE=${1:-skip}
-if [ "$MODE" = "release" ]; then
-    echo "Building release..."
-    zig build -Dcompositor=true -Doptimize=ReleaseSafe && strip zig-out/bin/teruwm
-elif [ "$MODE" = "debug" ]; then
-    echo "Building debug..."
-    zig build -Dcompositor=true
-fi
+cd ~/code/workbench/foss/teru
 
-# Keyboard layout fallback for TTY launch.
-# Canonical source: ~/.config/environment.d/10-miozu-keyboard.conf
-# (systemd user session reads it on graphical-session.target). When teruwm
-# is launched directly from a TTY without going through systemd-logind's
-# user manager, those vars aren't inherited — source the same file so
-# behaviour is identical and there's no duplicated config to drift.
+# Auto-detect + fix GCC 15 .sframe CRT issue (no-op if not needed)
+./tools/fix-crt.sh >/dev/null 2>&1 || true
+LIBC_FLAG=$([ -f .cache/crt-fix-all/libc.txt ] && echo "--libc .cache/crt-fix-all/libc.txt" || echo "")
+
+MODE="${1:-debug}"
+case "$MODE" in
+    release) zig build -Dcompositor -Doptimize=ReleaseSafe $LIBC_FLAG
+             strip zig-out/bin/teruwm ;;
+    debug)   zig build -Dcompositor $LIBC_FLAG ;;
+    skip)    echo "run-teruwm: skip mode — running last-built binary" ;;
+    *)       echo "usage: $0 [debug|release|skip]" >&2; exit 2 ;;
+esac
+
+# Show what we're about to run so there's no ambiguity about stale code.
+commit=$(git rev-parse --short HEAD 2>/dev/null || echo unknown)
+dirty=$(git diff --quiet 2>/dev/null && echo clean || echo dirty)
+built=$(stat -c %y zig-out/bin/teruwm 2>/dev/null | cut -d. -f1 || echo missing)
+echo "run-teruwm: $commit $dirty  built=$built"
+
+# Keyboard layout fallback for TTY launch (env inheritance break, see
+# docs/KEYBOARD.md). Canonical source: ~/.config/environment.d/10-miozu-keyboard.conf.
+# Redundant with the [keyboard] section in ~/.config/teruwm/config, kept as
+# belt-and-suspenders for GTK/Qt/XWayland clients teruwm spawns.
 KB_ENV="$HOME/.config/environment.d/10-miozu-keyboard.conf"
-if [ -f "$KB_ENV" ]; then
-    set -a
-    . "$KB_ENV"
-    set +a
-fi
+[ -f "$KB_ENV" ] && { set -a; . "$KB_ENV"; set +a; }
 
-# Clean stale Wayland locks
-rm -f /run/user/$(id -u)/wayland-*.lock 2>/dev/null
+# Clean stale Wayland locks from crashed sessions
+rm -f "/run/user/$(id -u)/wayland-"*.lock 2>/dev/null || true
 
-# Run
 exec ./zig-out/bin/teruwm

@@ -15,9 +15,9 @@ EOF
 
 echo "✓ Created PulseAudio configuration to lock A2DP"
 
-sudo tee /etc/udev/rules.d/99-bluetooth-audio.rules > /dev/null << 'EOF'
+sudo tee /etc/udev/rules.d/99-bluetooth-audio.rules > /dev/null << EOF
 # Force A2DP for MOMENTUM 4 headphones
-ACTION=="add", SUBSYSTEM=="bluetooth", ATTR{address}=="80:C3:BA:81:21:B4", RUN+="/home/ng/.miozu/bin/fix-bluetooth-audio.sh"
+ACTION=="add", SUBSYSTEM=="bluetooth", ATTR{address}=="80:C3:BA:81:21:B4", RUN+="$MIOZU_DIR/bin/fix-bluetooth-audio.sh"
 EOF
 
 echo "✓ Created udev rule for automatic A2DP on connection"

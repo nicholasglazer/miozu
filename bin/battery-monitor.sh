@@ -37,7 +37,7 @@ if [ "$STATUS" = "Discharging" ]; then
             echo "low" > "$NOTIFICATION_SENT_FILE"
             # Fix potential leader key issue after notification
             sleep 0.5
-            /home/ng/.miozu/bin/fix-leader-key.sh > /dev/null 2>&1
+            $MIOZU_DIR/bin/fix-leader-key.sh > /dev/null 2>&1
         fi
     else
         # Reset notification state when battery is above low level

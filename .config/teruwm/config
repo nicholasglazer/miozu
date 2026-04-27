@@ -1,0 +1,5 @@
+# Miozu compositor config
+#
+# Keyboard: XKB falls through to XKB_DEFAULT_* env vars exported by
+# ~/.config/environment.d/10-miozu-keyboard.conf (canonical source).
+# Fish sources that file at startup; teruwm inherits the env.

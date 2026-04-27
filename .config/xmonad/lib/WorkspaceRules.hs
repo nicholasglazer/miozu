@@ -30,9 +30,9 @@ role = stringProperty "WM_WINDOW_ROLE"
 
 myManageHook = composeAll
   [
-  -- Chromium: force tiling in workspace 2 as master, NEVER float
-    (className =? "Chromium" <||> className =? "chromium" <||> className =? "Google-chrome") --> doF (W.shift emacsWS) <> doF W.swapMaster
-  , (className =? "Chromium" <||> className =? "chromium") <&&> (role =? "browser") --> doF (W.shift emacsWS)
+  -- Chromium: force tiling in workspace 2, never float
+  -- Single rule to avoid double-shift bug (second shift would move the terminal too)
+    (className =? "Chromium" <||> className =? "chromium" <||> className =? "Google-chrome") --> (ask >>= doF . W.sink) <+> doF (W.shift emacsWS)
   ] <+> (composeAll . concat $
   [
     [ className =? c -->  doF (W.shift webWS   )                              | c <- myClassWebShifts     ]
@@ -53,7 +53,7 @@ myManageHook = composeAll
 
   where
     myClassWebShifts      = ["Firefox Beta"]
-    myClassEmacsShifts    = ["Emacs"]
+    myClassEmacsShifts    = []
     myClassToolsShifts    = ["Steam", "steam"]
     -- myClassWorkShifts     = [""]
     -- myClassTermShifts     = ["Termite", "Konsole", "uxterm", "xterm", "", "org.wezfurlong.wezterm"]

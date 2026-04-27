@@ -108,9 +108,11 @@
 
 [core]
 	excludesfile = ~/.gitignore_global
+	sshCommand = ssh -i ~/.ssh/id_ed25519
 
 [credential]
 	editor = nvim
+	helper = store
 
 [grep]
 	extendRegexp = true

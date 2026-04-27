@@ -11,13 +11,13 @@
 --
 --- General Imports
 import XMonad
-import XMonad.Hooks.EwmhDesktops (ewmh, ewmhFullscreen)
+import XMonad.Hooks.EwmhDesktops (ewmh, ewmhFullscreen, setEwmhActivateHook)
 import XMonad.Hooks.ManageDocks (docks)
 import XMonad.Actions.DynamicProjects (dynamicProjects)
 import XMonad.Hooks.StatusBar (withEasySB, withSB, defToggleStrutsKey, statusBarProp)
 import qualified XMonad.Hooks.StatusBar as SB
 -- Import /lib modules
-import XMonad.Hooks.UrgencyHook (withUrgencyHook)
+import XMonad.Hooks.UrgencyHook (withUrgencyHook, doAskUrgent)
 import Hooks (myEventHook, myStartupHook, myLogHook, LibNotifyUrgencyHook (..))
 import Bar (mySB, myBottomSB)
 import Keybindings (myKeys)
@@ -40,6 +40,7 @@ main = xmonad
     $ dynamicProjects myProjects
     $ docks
     . ewmhFullscreen
+    . setEwmhActivateHook doAskUrgent
     . ewmh
     . withEasySB mySB defToggleStrutsKey
     . withSB myBottomSB

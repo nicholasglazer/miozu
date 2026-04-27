@@ -73,12 +73,12 @@ myBar :: String
 myBar = "xmobar ~/.config/xmonad/xmobar/xmobar.hs"
 myBottomBar :: String
 myBottomBar = "xmobar ~/.config/xmonad/xmobar/xmobar-bottom.hs"
--- Main terminal emulator
+-- Main terminal emulator - teru (AI-first terminal, native X11 window)
 myTerminal :: String
-myTerminal = "/usr/bin/alacritty"
--- Alt terminal fallback to xterm if foot fails
+myTerminal = "$HOME/code/workbench/foss/teru/zig-out/bin/teru"
+-- Backup terminal - alacritty (used for scratchpads needing -e flag)
 myAltTerminal :: String
-myAltTerminal = "/usr/bin/xterm"
+myAltTerminal = "/usr/bin/alacritty"
 -- Run emacsclient if emacs daemon is running to avoid full emacs reload
 myTextEditor :: String
 myTextEditor = "emacsclient -nc"

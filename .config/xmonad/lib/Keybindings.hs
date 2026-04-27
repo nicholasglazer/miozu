@@ -13,13 +13,13 @@ import Scratchpads (scratchTermSL, scratchTermBL, scratchTermSR, scratchTermBR, 
 -- import ScreenRecorder (myGifRecorder, runRecorder)
 import GridSelect (myColorizer, myGSConfig1, myGSConfig2) -- Gridselect module
 import Variables (myTerminal, myAltTerminal, myLaunchManager, myTextEditor, myScreenshot, myScreenshotSelected)
-import Workspaces (myWorkspaces)
+import Workspaces (myWorkspaces, toolsWS)
 
 -- ManageHooks
 import qualified XMonad.StackSet as W
 import XMonad.Hooks.ManageDocks (ToggleStruts(ToggleStruts)) -- This module provides tools to automatically manage dock type programs, such as gnome-panel, kicker, dzen, and xmobar.
 -- Key bindings
-import Graphics.X11.ExtraTypes.XF86 (xF86XK_AudioMute, xF86XK_AudioLowerVolume, xF86XK_AudioRaiseVolume, xF86XK_KbdBrightnessDown, xF86XK_KbdBrightnessUp, xF86XK_KbdLightOnOff) -- XF86 Extra keys https://xmonad.github.io/xmonad-docs/X11-1.10.3.9/Graphics-X11-ExtraTypes-XF86.html
+import Graphics.X11.ExtraTypes.XF86 (xF86XK_AudioMute, xF86XK_AudioLowerVolume, xF86XK_AudioRaiseVolume, xF86XK_MonBrightnessDown, xF86XK_MonBrightnessUp, xF86XK_KbdLightOnOff) -- XF86 Extra keys https://xmonad.github.io/xmonad-docs/X11-1.10.3.9/Graphics-X11-ExtraTypes-XF86.html
 import qualified Data.Map as M
 import XMonad.Actions.CycleWS (moveTo, toggleWS', emptyWS, Direction1D(Next), WSType(Not), WSType(WSIs)) -- Provides bindings to cycle forward or backward through the list of workspaces, to move windows between workspaces, and to cycle between screens.
 import XMonad.Actions.GridSelect (goToSelected, gridselect, bringSelected, spawnSelected)
@@ -69,16 +69,16 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
       ((0, xK_Print                    ), spawn myScreenshot                                             ) -- Print current display using maim with nametag: year-month-day-time-screenshot.png
     , ((modm,                 xK_w     ), spawn myScreenshot                                             ) -- Xclip selected screen using maim
     , ((modm .|. controlMask, xK_w     ), spawn myScreenshotSelected                                     )
-    -- Screen recording hotkeys (preset system)
-    , ((modm,                           xK_r     ), spawn "~/.miozu/bin/screen-record-presets.sh product" ) -- Toggle Product Demo (current)
-    , ((modm .|. shiftMask,             xK_r     ), spawn "~/.miozu/bin/screen-record-presets.sh tutorial") -- Toggle Tutorial (60fps)
+    -- Screen recording hotkeys (preset system) - any key stops active recording
+    , ((modm,                           xK_r     ), spawn "~/.miozu/bin/screen-record-presets.sh product" ) -- Toggle Product Demo (30fps)
+    , ((modm .|. shiftMask,             xK_r     ), spawn "~/.miozu/bin/screen-record-presets.sh area"    ) -- Toggle Area Selection (30fps)
     , ((modm .|. controlMask,           xK_r     ), spawn "~/.miozu/bin/screen-record-presets.sh gif"     ) -- Quick GIF (10s auto-stop)
-    , ((modm .|. mod1Mask,              xK_r     ), spawn "~/.miozu/bin/screen-record-presets.sh bug"     ) -- Toggle Bug Report (compact)
-    , ((modm .|. controlMask .|. shiftMask, xK_r ), spawn "~/.miozu/bin/screen-record-presets.sh area"    ) -- Area selection mode
+    , ((modm .|. mod1Mask,              xK_r     ), spawn "~/.miozu/bin/screen-record-presets.sh tutorial") -- Toggle Tutorial (60fps)
+    , ((modm .|. shiftMask .|. controlMask, xK_r ), spawn "~/.miozu/bin/screen-record-presets.sh stop"    ) -- Stop any recording
 
     -- , ((modm,                 xK_y         ), runRecorder                                                    ) 
-    , ((0, xF86XK_KbdBrightnessDown        ), spawn "brightnessctl set 20-"                                  ) -- F5 Monitor brightness down
-    , ((0, xF86XK_KbdBrightnessUp          ), spawn "brightnessctl set +20"                                  ) -- F6 Monitor brightness up
+    , ((0, xF86XK_MonBrightnessDown        ), spawn "brightnessctl set 5%-"                                  ) -- F5 Monitor brightness down
+    , ((0, xF86XK_MonBrightnessUp          ), spawn "brightnessctl set +5%"                                  ) -- F6 Monitor brightness up
     , ((0, xF86XK_KbdLightOnOff            ), spawn "~/.miozu/bin/backlight-toggle.sh"                       ) -- TODO F7 fix toggle monitor backlight
     , ((0, xF86XK_AudioMute                ), spawn "pactl set-sink-mute 0 toggle"                           ) -- F10 Mute
     , ((0, xF86XK_AudioLowerVolume         ), spawn "pactl set-sink-mute 0 false;pactl set-sink-volume 0 -5%") -- F11 Lower volume
@@ -93,6 +93,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask,   xK_a         ), spawn "autorandr --change"                                     ) -- Launch Emacs TODO(add mods)
     , ((modm,                 xK_e         ), spawn myTextEditor                                             ) -- Launch Emacs TODO(add mods)
     , ((modm .|. shiftMask,   xK_d         ), spawn "dunstctl close-all"                                     ) -- Close all dunst notifications
+    , ((modm,                 xK_d         ), windows (W.greedyView toolsWS) >> spawn (myAltTerminal ++ " -e ~/.miozu/bin/browser-debug-tunnel.sh")) -- Start browser debug tunnel on workspace 7
     ]
     ++
     [-- ScratchPads keybindings

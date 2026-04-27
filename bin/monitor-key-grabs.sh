@@ -10,7 +10,7 @@ check_super() {
 }
 
 # Initial ungrab
-/home/ng/.miozu/bin/force-ungrab-keys.sh > /dev/null 2>&1
+$MIOZU_DIR/bin/force-ungrab-keys.sh > /dev/null 2>&1
 
 echo "Starting monitoring loop..."
 echo "Time | Super Works | Active Window"

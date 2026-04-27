@@ -21,13 +21,29 @@ set -x PATH $HOME/.emacs.d/bin $PATH
 # Set an editor
 set -x EDITOR "nvim"
 # Comments below will be substituted with miozu variables automatically after you run ./install.sh
-set -x MIOZU_DIR /home/n/.miozu
+set -x MIOZU_DIR $HOME/.miozu
 # INSERT MIOZU GLOBAL
 
+# --- Miozu keyboard (Dvorak + Ukrainian, Alt+Shift toggle, Caps=Esc)
+# Canonical source: ~/.config/environment.d/10-miozu-keyboard.conf
+# Sourced here for shells that don't inherit systemd user-session env
+# (TTY login, SSH, nested fish). TTY console itself is single-layout only
+# (/etc/vconsole.conf KEYMAP=dvorak); these vars kick in the moment a
+# Wayland/X process spawns from this shell.
+set -l _miozu_kb $HOME/.config/environment.d/10-miozu-keyboard.conf
+if test -f $_miozu_kb
+    for _line in (string match -rv '^\s*(#|$)' <$_miozu_kb)
+        set -l _kv (string split -m1 = -- $_line)
+        test (count $_kv) -eq 2; and set -x $_kv[1] $_kv[2]
+    end
+end
+
 # --- SSH Agent (Fish-compatible)
-# Start ssh-agent if not running
-if test -z "$SSH_AUTH_SOCK"
-    eval (ssh-agent -c)
+# Start ssh-agent only when no socket is set. Stdout silenced — otherwise
+# ssh-agent emits a `echo Agent pid XXX` line that fish's eval prints.
+# Interactive-only so scripts and subshells don't spawn a fresh agent.
+if status --is-interactive; and test -z "$SSH_AUTH_SOCK"
+    eval (ssh-agent -c) >/dev/null
     ssh-add ~/.ssh/id_ng 2>/dev/null
 end
 
@@ -38,7 +54,7 @@ set -x fish_greeting ""
 # set -U fish_greeting
 
 # pnpm
-set -gx PNPM_HOME "/home/n/.local/share/pnpm"
+set -gx PNPM_HOME "$HOME/.local/share/pnpm"
 if not string match -q -- $PNPM_HOME $PATH
   set -gx PATH "$PNPM_HOME" $PATH
 end
@@ -95,9 +111,10 @@ set --export PATH $BUN_INSTALL/bin $PATH
 set -gx VOLTA_HOME "$HOME/.volta"
 set -gx PATH "$VOLTA_HOME/bin" $PATH
 
-# android path
-set -gx ANDROID_HOME "$HOME/code/Android/Sdk"
-set -gx PATH $PATH "$ANDROID_HOME/tools" "$ANDROID_HOME/platform-tools"
-set -gx JAVA_HOME /opt/android-studio/jbr
-set -gx ANDROID_HOME $HOME/Android/Sdk
-set -gx NDK_HOME $ANDROID_HOME/ndk/(ls -1 $ANDROID_HOME/ndk | tail -1)
+# Android SDK — guarded so a missing install doesn't spam ls errors.
+if test -d "$HOME/Android/Sdk"
+    set -gx ANDROID_HOME "$HOME/Android/Sdk"
+    set -gx PATH $PATH "$ANDROID_HOME/tools" "$ANDROID_HOME/platform-tools"
+    test -d /opt/android-studio/jbr; and set -gx JAVA_HOME /opt/android-studio/jbr
+    test -d "$ANDROID_HOME/ndk"; and set -gx NDK_HOME "$ANDROID_HOME/ndk/"(ls -1 $ANDROID_HOME/ndk | tail -1)
+end
